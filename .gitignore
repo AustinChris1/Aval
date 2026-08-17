@@ -13,3 +13,6 @@ web/out/
 agent/node_modules/
 *.log
 .DS_Store
+
+# local rehearsal artifacts (chainId 31337)
+deployments/31337*.json
