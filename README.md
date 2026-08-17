@@ -189,6 +189,35 @@ And the rest of the same letter: [permitted job](https://scan.bohr.life/tx/0x8ad
 [examination 100/100](https://scan.bohr.life/tx/0x79abf3068801902e2f2e4b359560e3a695983a33699f900a3b9bfdba35844f9f) ·
 [drawn](https://scan.bohr.life/tx/0xcae91adb7df6c170b91067d4287884b5deb246e1cd82dd59d5d2c3e8fbebd8e4)
 
+## The dashboard
+
+```bash
+npx hardhat run scripts/export-abis.ts   # ABIs + addresses, generated not copied
+cd web && npm install && npm run dev
+```
+
+Four surfaces, no design system:
+
+- **Letters** — every letter, its status, and what has been spent against it.
+- **Letter replay** — one timeline from issuance to settlement. The refusals are
+  first-class rows, in red, with their decoded custom error — not errors hidden
+  as noise.
+- **Verify** — fetches the document bytes as they were emitted, re-hashes them
+  **in your browser**, and reads the examiner's answer out of the Validation
+  Registry. Four checks, one click, nothing taken on trust from the page.
+- **ERC-8004 on BOT Chain** — the canonical addresses checked live against
+  mainnet, next to the registries that actually work.
+
+One implementation note worth stating plainly, because it is the hardest part of
+showing this product. **A reverted transaction emits no logs**, so no amount of
+`eth_getLogs` will ever find the refusals — the exact thing worth showing is
+invisible to a normal indexer. The dashboard uses the explorer's transaction
+index purely to *discover* candidate hashes, then re-verifies every one against
+the RPC: the receipt must really be a failure, the calldata must really name this
+letter, and the revert reason is decoded by replaying the call with `eth_call`
+against its parent block. If the explorer is down the timeline degrades to the
+successful steps and says so, rather than silently dropping the refusals.
+
 ## Layout
 
 ```
@@ -200,6 +229,10 @@ contracts/
 agent/
   runtime.ts                propose → validate → authorize → submit → verify
   examiner.ts               re-derives every claim from chain state, then scores
+web/
+  app/letter/[id]/          the replay, and the in-browser verifier
+  app/erc8004/              the canonical-vs-working registry comparison
+  lib/indexer.ts            log indexing + revert recovery via eth_call replay
 scripts/
   chain-check.ts            pre-flight against a live endpoint
   deploy.ts / verify.ts     deploy and Blockscout verification
@@ -260,7 +293,8 @@ Deployed and **verified on BOT Chain testnet 968**, with a full lifecycle
 executed on-chain including the two mined refusals. 31 tests passing. Contracts
 are frozen.
 
-Still to come: the web dashboard, and the mainnet deployment.
+The dashboard is built and reads live testnet state. Still to come: the mainnet
+deployment, and a short demo video.
 
 ## Licence
 
