@@ -1,0 +1,28 @@
+{
+  "name": "letter-protocol",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "LETTER - on-chain documentary credit for AI agents on BOT Chain",
+  "scripts": {
+    "build": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:testnet": "hardhat run scripts/deploy.ts --network botTestnet",
+    "deploy:mainnet": "hardhat run scripts/deploy.ts --network botMainnet",
+    "verify:testnet": "hardhat run scripts/verify.ts --network botTestnet",
+    "verify:mainnet": "hardhat run scripts/verify.ts --network botMainnet",
+    "chain:check": "hardhat run scripts/chain-check.ts --network botTestnet"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-viem": "^5.0.0",
+    "@nomicfoundation/hardhat-verify": "^3.0.6",
+    "@types/node": "^22.18.8",
+    "hardhat": "^3.0.6",
+    "typescript": "~5.8.0"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.4.0",
+    "dotenv": "^17.2.3",
+    "viem": "^2.45.1"
+  }
+}

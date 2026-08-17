@@ -1,0 +1,15 @@
+node_modules/
+artifacts/
+cache/
+types/
+.env
+.env.local
+coverage/
+coverage.json
+deployments/*.local.json
+web/.next/
+web/node_modules/
+web/out/
+agent/node_modules/
+*.log
+.DS_Store
