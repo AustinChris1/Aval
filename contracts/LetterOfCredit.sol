@@ -163,6 +163,7 @@ contract LetterOfCredit is ERC721, ReentrancyGuard {
     error ValueNotAllowedForERC20Letter();
     error BadParams(string what);
     error DocumentsNotExamined(bytes32 docHash);
+    error DocumentHashMismatch(bytes32 computed, bytes32 committed);
     error ScoreBelowThreshold(uint8 score, uint8 required);
     error WrongValidationSubject();
     error DisputeWindowOpen(uint64 until);
@@ -323,15 +324,28 @@ contract LetterOfCredit is ERC721, ReentrancyGuard {
 
     /**
      * @notice Put the documents for this job on-chain and stop acting.
+     *
      * @dev `documents` is emitted in full so the evidence is readable directly
      *      from the explorer with no off-chain service to trust or keep alive.
      *      `docHash` is what the examiner scores in the Validation Registry.
+     *
+     *      When a body is supplied it must hash to `docHash`. Without this the
+     *      claim "the evidence is the event" would be false: an agent could emit
+     *      one document body while committing the examiner to a different hash,
+     *      and a reader opening the transaction would see bytes that have nothing
+     *      to do with what was scored.
+     *
+     *      An empty body is still permitted and means hash-only presentation, with
+     *      the documents held off-chain at `documentURI`. That is the ordinary
+     *      arrangement for a credit whose documents are bulky or confidential; the
+     *      invariant that matters is that an on-chain body always certifies itself.
      */
     function presentDocuments(uint256 letterId, string calldata documentURI, bytes32 docHash, bytes calldata documents)
         external
     {
         Letter storage L = _requireActing(letterId);
         if (docHash == bytes32(0)) revert BadParams("docHash");
+        if (documents.length > 0 && keccak256(documents) != docHash) revert DocumentHashMismatch(keccak256(documents), docHash);
 
         L.docHash = docHash;
         L.presentedAt = uint64(block.timestamp);

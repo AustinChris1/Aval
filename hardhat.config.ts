@@ -79,7 +79,11 @@ const config: HardhatUserConfig = {
     },
   },
   verify: {
+    // Blockscout is BOT Chain's explorer and needs no API key.
     blockscout: { enabled: true },
+    // Sourcify has no chain 968/677, so leaving it on makes `hardhat verify`
+    // exit non-zero even when Blockscout verification has already succeeded.
+    sourcify: { enabled: false },
     etherscan: { apiKey: process.env.ETHERSCAN_API_KEY || "" },
   },
   networks: {

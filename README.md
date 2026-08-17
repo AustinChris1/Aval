@@ -61,10 +61,19 @@ named at issuance has scored the exact document hash the agent presented, at or
 above the threshold written into the letter. The letter reads that score from the
 ERC-8004 Validation Registry.
 
+The examiner is a named, trusted party, exactly as the issuing bank is in a real
+documentary credit. The chain enforces that *this* examiner scored *this* hash
+above *this* threshold; it does not prove the examiner was honest. The applicant
+chose them at issuance, and that choice is the trust assumption. Anyone claiming
+otherwise about an escrow like this is overselling it.
+
 **The letter is itself a claim.** It is an ERC-721. Whoever holds it receives the
 proceeds, so a credit can be assigned or sold — which is how documentary credits
 work in the real world, and what makes this an RWA rather than an escrow with
-extra steps.
+extra steps. To be precise about what changes hands: the assignable asset is the
+*contingent claim on the reserved fee*, not the working capital. Capital already
+paid to a supplier the applicant named is spent and gone; that was the
+applicant's decision, taken at issuance.
 
 ## Why this is an RWA, honestly
 
@@ -136,7 +145,7 @@ its rejection.
 ```bash
 npm install
 npx hardhat compile
-npx hardhat test                       # 29 tests, no network needed
+npx hardhat test                       # 31 tests, no network needed
 
 npx hardhat run scripts/keygen.ts      # writes 4 dev keys to .env
 # fund them at https://faucet.botchain.ai/basic  (10 tBOT / 24h / address)
@@ -156,13 +165,29 @@ at all, run `npx hardhat node` and use `--network localhost`.
 Written to `deployments/<chainId>.json` by the deploy script, and read from there
 by every other script — no address is hardcoded twice.
 
-| Contract | Mainnet (677) | Testnet (968) |
+All five are **verified with source** on Blockscout.
+
+| Contract | Testnet (968) | Mainnet (677) |
 | --- | --- | --- |
-| IdentityRegistry | _pending_ | _pending_ |
-| ReputationRegistry | _pending_ | _pending_ |
-| ValidationRegistry | _pending_ | _pending_ |
-| LetterOfCredit | _pending_ | _pending_ |
-| ServiceVendor (demo) | _pending_ | _pending_ |
+| IdentityRegistry | [`0xe06a0801…5ffd`](https://scan.bohr.life/address/0xe06a0801706679e73dd04917a63aa796788f5ffd) | _pending_ |
+| ReputationRegistry | [`0x8a518ab8…1fbe`](https://scan.bohr.life/address/0x8a518ab8c75c562170d71a88151cf1611b811fbe) | _pending_ |
+| ValidationRegistry | [`0x84b1bb99…c511`](https://scan.bohr.life/address/0x84b1bb992c5bb33e4cd05b32cc969683d1f3c511) | _pending_ |
+| LetterOfCredit | [`0x1145970c…8e99`](https://scan.bohr.life/address/0x1145970c4eb218a7d1a05245503a0fc05e7b8e99) | _pending_ |
+| ServiceVendor (demo) | [`0xdd4ffa32…4d61`](https://scan.bohr.life/address/0xdd4ffa32cd6e8b2d0afeb1ab277683ad16bb4d61) | _pending_ |
+
+### The two transactions that are the product
+
+A full lifecycle ran on testnet 968. These two are mined, reverted, and permanent:
+
+| | |
+| --- | --- |
+| The agent tried to pay itself | [`0x001eb6da…b0b1`](https://scan.bohr.life/tx/0x001eb6da851df99a40eff70cc411ec495f6b2db04f5152c4e029be4f3c4db0b1) — `RecipientNotAllowed`, block 20204469 |
+| The agent tried a forbidden method on the *approved* supplier | [`0x86d0261f…b07d`](https://scan.bohr.life/tx/0x86d0261f862fb4e13d735576a6858541c59a40f3e955ef5885340932ebcfb07d) — `SelectorNotAllowed`, block 20204477 |
+
+And the rest of the same letter: [permitted job](https://scan.bohr.life/tx/0x8ad60d173cc1079242e7e811b222b2e9a0ee2282244a818a0df762e4b990a625) ·
+[documents](https://scan.bohr.life/tx/0x1c1df42749c8cd1bf7807894086b071b74abcbb2d832a4176fbd1e2e7012f16b) ·
+[examination 100/100](https://scan.bohr.life/tx/0x79abf3068801902e2f2e4b359560e3a695983a33699f900a3b9bfdba35844f9f) ·
+[drawn](https://scan.bohr.life/tx/0xcae91adb7df6c170b91067d4287884b5deb246e1cd82dd59d5d2c3e8fbebd8e4)
 
 ## Layout
 
@@ -180,7 +205,7 @@ scripts/
   deploy.ts / verify.ts     deploy and Blockscout verification
   setup-agent.ts            ERC-8004 registration + EIP-712 key binding
   demo.ts                   the full lifecycle
-test/letter.ts              29 tests, every mandate-violation path included
+test/letter.ts              31 tests, every mandate-violation path included
 docs/RESEARCH.md            verified BOT Chain facts, incl. three corrections
 ```
 
@@ -205,10 +230,23 @@ wallet as the agent. The applicant is protected by the mandate, not by key
 immutability. The wallet in force at issuance is recorded in `LetterIssued` so
 the audit trail still shows it.
 
+**A selector allowlist is not a full mandate — and this is a v1 limit.**
+`execute` constrains the target contract and the 4-byte method, and does not
+inspect the arguments. That is exactly right for `invoice(bytes32)`, where the
+value is capped and the money can only reach one contract. It would be
+insufficient for something like a DEX router, where the same selector can carry
+any path and any recipient — allowlisting one would let the agent choose where
+the funds end up. Argument-level constraints are the obvious next version;
+until then, mandates should name contracts whose methods cannot redirect value.
+The safe pattern today is `payTo` with named recipients.
+
 **Documents go on-chain in full, not to IPFS.** At 20 gwei on a chain with
 sub-second blocks, a document body costs a fraction of a cent as event data, and
 it then survives without a pinning service, a gateway, or this repo staying
-online. The hash is what the examiner scores.
+online. The hash is what the examiner scores, and the contract enforces that a
+supplied body hashes to it — otherwise "the evidence is the event" would be a
+claim rather than a guarantee. A hash-only presentation is still allowed for
+documents that are bulky or confidential.
 
 **A disputed letter is refundable after expiry.** Otherwise an examiner going
 offline would strand the funds forever. The trade-off is that an applicant could
@@ -218,10 +256,11 @@ before expiry with a short dispute window.
 
 ## Status
 
-Contracts, tests, agent runtime, examiner and the full on-chain lifecycle are
-done and passing. Still to come: the web dashboard for issuing letters and
-replaying a letter's history with explorer links, and mainnet deployment with
-verified source.
+Deployed and **verified on BOT Chain testnet 968**, with a full lifecycle
+executed on-chain including the two mined refusals. 31 tests passing. Contracts
+are frozen.
+
+Still to come: the web dashboard, and the mainnet deployment.
 
 ## Licence
 

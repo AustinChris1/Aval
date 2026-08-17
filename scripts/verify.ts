@@ -31,27 +31,36 @@ const constructorArgs: Record<string, string[]> = {
   ServiceVendor: [record.deployer],
 };
 
-let failures = 0;
 for (const [name, address] of Object.entries(record.contracts) as [string, string][]) {
   console.log(`\nverifying ${name} at ${address}`);
-  const args = [
-    "hardhat",
-    "verify",
-    "--network",
-    networkName,
-    address,
-    ...constructorArgs[name],
-  ];
-  const result = spawnSync("npx", args, { stdio: "inherit", shell: true });
-  if (result.status !== 0) {
-    failures++;
-    console.log(`  ${name} did not verify; retry individually:`);
-    console.log(`  npx hardhat verify --network ${networkName} ${address} ${constructorArgs[name].join(" ")}`);
+  const args = ["hardhat", "verify", "--network", networkName, address, ...constructorArgs[name]];
+  spawnSync("npx", args, { stdio: "inherit", shell: true });
+}
+
+/**
+ * The exit code of `hardhat verify` is not the answer. It runs every configured
+ * verifier and fails the command if any of them declines — Sourcify does not know
+ * chain 677 or 968, so a perfectly verified contract still exits non-zero. Ask
+ * the explorer what it actually holds instead.
+ */
+console.log("\nconfirming with the explorer:");
+let unverified = 0;
+for (const [name, address] of Object.entries(record.contracts) as [string, string][]) {
+  try {
+    const res = await fetch(`${record.explorer}/api/v2/addresses/${address}`);
+    const body = (await res.json()) as { is_verified?: boolean; name?: string };
+    const ok = body.is_verified === true;
+    if (!ok) unverified++;
+    console.log(`  ${ok ? "verified " : "MISSING  "} ${name.padEnd(20)} ${body.name ?? "?"}`);
+  } catch (e) {
+    unverified++;
+    console.log(`  UNKNOWN   ${name.padEnd(20)} explorer lookup failed: ${(e as Error).message}`);
   }
 }
 
 console.log(
-  failures === 0
+  unverified === 0
     ? `\nAll ${Object.keys(record.contracts).length} contracts verified on ${record.explorer}`
-    : `\n${failures} contract(s) still unverified`,
+    : `\n${unverified} contract(s) still unverified`,
 );
+process.exitCode = unverified === 0 ? 0 : 1;

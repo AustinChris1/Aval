@@ -407,6 +407,25 @@ describe("LETTER — documentary credit for agents", async () => {
       ]);
     }
 
+    it("refuses a document body that does not hash to the committed hash", async () => {
+      const id = await issueLetter();
+      const agent = await asAgent();
+      const lie = stringToHex(JSON.stringify({ job: "something else entirely" }));
+      // Committing to `docHash` while emitting different bytes would make the
+      // on-chain evidence meaningless, so the letter rejects it outright.
+      await expectRevert(
+        agent.write.presentDocuments([id, "https://letter.example/docs/1.json", docHash, lie]),
+        "DocumentHashMismatch",
+      );
+    });
+
+    it("allows a hash-only presentation with the body held off-chain", async () => {
+      const id = await issueLetter();
+      const agent = await asAgent();
+      await agent.write.presentDocuments([id, "https://letter.example/docs/1.json", docHash, "0x"]);
+      assert.equal((await letter.read.getLetter([id])).docHash, docHash);
+    });
+
     it("will not pay before the documents have been examined", async () => {
       const id = await issueLetter();
       await present(id);
