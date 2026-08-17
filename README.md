@@ -196,6 +196,12 @@ npx hardhat run scripts/export-abis.ts   # ABIs + addresses, generated not copie
 cd web && npm install && npm run dev
 ```
 
+Next.js 15, Tailwind CSS 4, motion, lenis and lucide-react. Deploys to Vercel as
+-is: import the repo, set the Root Directory to `web`, deploy. There are no
+environment variables, no database and no external services — the RPC endpoints
+are public, and every page reads the chain on the server with a short revalidate
+window.
+
 Four surfaces, no design system:
 
 - **Letters** — every letter, its status, and what has been spent against it.
@@ -205,6 +211,12 @@ Four surfaces, no design system:
 - **Verify** — fetches the document bytes as they were emitted, re-hashes them
   **in your browser**, and reads the examiner's answer out of the Validation
   Registry. Four checks, one click, nothing taken on trust from the page.
+
+Motion is treated as an enhancement rather than a dependency. `prefers-reduced-motion`
+turns off the smooth scrolling, the background field and every reveal, and all
+figures — including the refusal count — render their true values in the server
+HTML before any JavaScript runs. A page whose argument is "two payments were
+refused" must not say "0 refusals" while a script is still loading.
 - **ERC-8004 on BOT Chain** — the canonical addresses checked live against
   mainnet, next to the registries that actually work.
 

@@ -1,5 +1,8 @@
+import { CircleSlash, KeyRound, Radio, ShieldCheck, TriangleAlert } from "lucide-react";
 import { DEFAULT_CHAIN_ID, addressUrl, chainInfo, contracts } from "@/lib/chain";
 import { getErc8004Status } from "@/lib/indexer";
+import { Addr, Badge, KeyValue, Panel, SectionHeading } from "@/components/ui";
+import { CountUp, DrawRule, Reveal, SplitHeadline } from "@/components/motion";
 
 export const revalidate = 30;
 
@@ -18,86 +21,162 @@ export default async function Erc8004Page() {
 
   return (
     <>
-      <h2>ERC-8004 on BOT Chain</h2>
-      <p className="lede">
-        BOT Chain has publicly committed to ERC-8004 (Trustless Agents), and the standard&apos;s
-        canonical vanity addresses were reserved here alongside two dozen other chains. On mainnet
-        those addresses hold placeholder proxies: <code>name()</code> reverts, no agent can be
-        registered, and the upgrade key belongs to the ERC-8004 deployer, so nobody else can fill
-        them in. The checks below run live against {info.rpc} every time this page loads.
-      </p>
+      <section className="pt-14 pb-12">
+        <Reveal y={8}>
+          <Badge tone="warn">
+            <Radio className="size-3" />
+            checked live, every page load
+          </Badge>
+        </Reveal>
 
-      {error && <div className="notice">Could not reach the RPC — {error}</div>}
+        <h1 className="mt-6 max-w-[26ch] text-3xl leading-[1.1] font-semibold tracking-tight text-parchment sm:text-5xl">
+          <SplitHeadline text="ERC-8004 is announced on BOT Chain, and not usable on it." />
+        </h1>
+
+        <Reveal delay={0.35} className="mt-6 max-w-[68ch]">
+          <p className="text-[16px] leading-relaxed text-parchment-dim">
+            BOT Chain has publicly committed to ERC-8004 (Trustless Agents), and the standard&apos;s
+            canonical vanity addresses were reserved here alongside roughly two dozen other chains.
+            On mainnet those addresses hold placeholder proxies: <code>name()</code> reverts, no agent
+            can be registered, and the upgrade key belongs to the ERC-8004 deployer — so nobody else
+            can fill them in.
+          </p>
+          <p className="mt-4 text-[16px] leading-relaxed text-parchment-dim">
+            The two checks below are not screenshots. They run against{" "}
+            <span className="font-mono text-[14.5px] text-parchment">rpc.botchain.ai</span> when this
+            page renders.
+          </p>
+        </Reveal>
+      </section>
+
+      {error && (
+        <Panel tone="seal" className="mb-10 flex items-start gap-2 p-4 text-[13px] text-seal">
+          <TriangleAlert className="mt-0.5 size-4 shrink-0" />
+          Could not reach the RPC — {error}
+        </Panel>
+      )}
 
       {status && (
         <>
-          <h2>The canonical addresses, on mainnet 677</h2>
-          <p className="small muted" style={{ marginTop: -4 }}>
-            Checked live against rpc.botchain.ai. A <code>placeholder</code> badge means the address
-            has code — an ERC1967 proxy — but <code>name()</code> reverts, so there is no ERC-721
-            registry behind it and no agent can be registered.
-          </p>
-          <div className="grid two">
-            <RegistryCard
-              title="Canonical IdentityRegistry"
-              chainId={677}
-              address={status.canonicalId.address}
-              deployed={status.canonicalId.deployed}
-              working={status.canonicalId.working}
-              note={status.canonicalId.note}
-            />
-            <RegistryCard
-              title="Canonical ReputationRegistry"
-              chainId={677}
-              address={status.canonicalRep.address}
-              deployed={status.canonicalRep.deployed}
-              working={status.canonicalRep.working}
-              note={status.canonicalRep.note}
-            />
-          </div>
+          <DrawRule />
 
-          <h2>What LETTER deployed, on {info.name.toLowerCase()}</h2>
-          <div className="grid two">
-            <RegistryCard
-              title="LETTER IdentityRegistry"
-              chainId={chainId}
-              address={c.IdentityRegistry}
-              deployed={status.ourId.deployed}
-              working={status.ourId.working}
-              note={status.ourId.note}
-            />
-            <div className="panel">
-              <h3>Agents actually registered</h3>
-              <div className="stat">
-                <div className="n" style={{ color: "var(--accent)" }}>
-                  {String(status.registered)}
-                </div>
-                <div className="l">
-                  live agents in LETTER&apos;s registry — the canonical one cannot hold any
-                </div>
-              </div>
+          <section className="py-14">
+            <SectionHeading
+              eyebrow="reserved, not shipped"
+              title="The canonical addresses, on mainnet 677"
+            >
+              A <span className="text-seal">placeholder</span> verdict means the address has code — an
+              ERC1967 proxy — but <code>name()</code> reverts, so there is no ERC-721 registry behind
+              it and no agent can ever be registered against it.
+            </SectionHeading>
+
+            <div className="mt-7 grid gap-4 md:grid-cols-2">
+              <Reveal delay={0}>
+                <RegistryCard
+                  title="Canonical IdentityRegistry"
+                  chainId={677}
+                  {...status.canonicalId}
+                />
+              </Reveal>
+              <Reveal delay={0.08}>
+                <RegistryCard
+                  title="Canonical ReputationRegistry"
+                  chainId={677}
+                  {...status.canonicalRep}
+                />
+              </Reveal>
             </div>
-          </div>
+          </section>
 
-          <h2>Why this matters</h2>
-          <div className="panel small">
-            <p style={{ marginTop: 0 }}>
-              These are ports of the ERC-8004 reference implementation with the external ABI
-              unchanged, so anything written against the canonical registries works against these.
-              LETTER itself touches nothing outside the ERC-8004 interface — no private helpers, no
-              extensions — which means the letter contract can be repointed at the canonical
-              addresses without a code change if they are ever filled in.
-            </p>
-            <p>
-              The integration is load-bearing, not decorative. The agent&apos;s acting key is
-              resolved from the Identity Registry on every single call, so an unbound agent can move
-              nothing. The Validation Registry <em>is</em> the documentary examination: no score over
-              the presented hash, no payment. And reputation is written by the letter contract as the
-              ERC-8004 client, only for letters that actually settled — which is why LETTER
-              deliberately does not hold blanket approval over the agents it settles for, since{" "}
-              <code>giveFeedback</code> rejects self-feedback from an approved operator.
-            </p>
-          </div>
+          <DrawRule />
+
+          <section className="py-14">
+            <SectionHeading
+              eyebrow="working, today"
+              title={`What LETTER deployed on ${info.name}`}
+            >
+              Ports of the ERC-8004 reference implementation with the external ABI unchanged — so
+              anything written against the canonical registries works against these.
+            </SectionHeading>
+
+            <div className="mt-7 grid gap-4 md:grid-cols-2">
+              <Reveal>
+                <RegistryCard
+                  title="LETTER IdentityRegistry"
+                  chainId={chainId}
+                  address={c.IdentityRegistry}
+                  deployed={status.ourId.deployed}
+                  working={status.ourId.working}
+                  note={status.ourId.note}
+                />
+              </Reveal>
+              <Reveal delay={0.08}>
+                <Panel tone="ledger" className="flex h-full flex-col justify-between p-6">
+                  <div className="flex items-start justify-between gap-3">
+                    <h3 className="text-[15px] font-semibold text-parchment">
+                      Agents actually registered
+                    </h3>
+                    <Badge tone="ok">
+                      <ShieldCheck className="size-3" />
+                      live
+                    </Badge>
+                  </div>
+                  <div className="mt-6">
+                    <div className="text-4xl font-semibold tracking-[-0.03em] text-ledger">
+                      <CountUp to={Number(status.registered)} />
+                    </div>
+                    <p className="mt-2 text-[13px] leading-relaxed text-parchment-dim">
+                      live agent identities in LETTER&apos;s registry. The canonical one cannot hold a
+                      single one.
+                    </p>
+                  </div>
+                </Panel>
+              </Reveal>
+            </div>
+          </section>
+
+          <DrawRule />
+
+          <section className="py-14">
+            <SectionHeading eyebrow="not decorative" title="Where the standard is load-bearing" />
+            <div className="mt-7 grid gap-4 md:grid-cols-3">
+              {[
+                {
+                  icon: KeyRound,
+                  title: "Identity gates every call",
+                  body: "The agent's acting key is resolved from the Identity Registry on each individual call, not pinned at issuance. An unbound agent can move nothing at all.",
+                },
+                {
+                  icon: ShieldCheck,
+                  title: "Validation is the examination",
+                  body: "The Validation Registry is not a badge — it is the documentary examination itself. No score over the presented hash, from the named examiner, at or above threshold: no payment.",
+                },
+                {
+                  icon: CircleSlash,
+                  title: "Reputation is payment-backed",
+                  body: "The letter contract writes feedback as the ERC-8004 client, only for letters that settled. It deliberately holds no blanket approval over agents, because giveFeedback rejects self-feedback from an approved operator.",
+                },
+              ].map(({ icon: Icon, title, body }, i) => (
+                <Reveal key={title} delay={i * 0.08}>
+                  <Panel className="h-full p-6">
+                    <Icon className="size-5 text-ledger" />
+                    <h3 className="mt-4 text-[15px] font-semibold text-parchment">{title}</h3>
+                    <p className="mt-2.5 text-[13.5px] leading-relaxed text-parchment-dim">{body}</p>
+                  </Panel>
+                </Reveal>
+              ))}
+            </div>
+
+            <Reveal delay={0.2} className="mt-6">
+              <Panel className="p-6">
+                <p className="text-[14px] leading-relaxed text-parchment-dim">
+                  Because LETTER touches nothing outside the ERC-8004 interface — no private helpers,
+                  no extensions — the letter contract can be repointed at the canonical addresses
+                  without a code change, the day someone fills them in.
+                </p>
+              </Panel>
+            </Reveal>
+          </section>
         </>
       )}
     </>
@@ -112,29 +191,23 @@ function RegistryCard(props: {
   working: boolean;
   note: string;
 }) {
+  const verdict = props.working ? "working" : props.deployed ? "placeholder" : "no code";
+  const tone = props.working ? "ok" : props.deployed ? "bad" : "warn";
+
   return (
-    <div className="panel">
-      <div className="head" style={{ display: "flex", justifyContent: "space-between", gap: 10 }}>
-        <h3>{props.title}</h3>
-        <span className={`badge ${props.working ? "ok" : props.deployed ? "bad" : "warn"}`}>
-          {props.working ? "working" : props.deployed ? "placeholder" : "no code"}
-        </span>
+    <Panel tone={props.working ? "ledger" : props.deployed ? "seal" : "default"} className="h-full p-6">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <h3 className="text-[15px] font-semibold text-parchment">{props.title}</h3>
+        <Badge tone={tone as "ok" | "bad" | "warn"}>{verdict}</Badge>
       </div>
-      <div className="kv">
-        <span>Address</span>
-        <a
-          className="mono link"
-          href={addressUrl(props.chainId, props.address)}
-          target="_blank"
-          rel="noreferrer"
-        >
-          {props.address}
-        </a>
+      <div className="mt-4">
+        <KeyValue label="Address" mono>
+          <Addr href={addressUrl(props.chainId, props.address)}>{props.address}</Addr>
+        </KeyValue>
+        <KeyValue label="Live check" mono>
+          {props.note}
+        </KeyValue>
       </div>
-      <div className="kv">
-        <span>Live check</span>
-        <span className="mono">{props.note}</span>
-      </div>
-    </div>
+    </Panel>
   );
 }

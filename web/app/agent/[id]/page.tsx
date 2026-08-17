@@ -1,86 +1,148 @@
-import { DEFAULT_CHAIN_ID, addressUrl, contracts } from "@/lib/chain";
+import Link from "next/link";
+import { ArrowLeft, BadgeCheck, Bot, KeyRound, Receipt } from "lucide-react";
+import { DEFAULT_CHAIN_ID, addressUrl, contracts, short } from "@/lib/chain";
 import { getAgent } from "@/lib/indexer";
+import { Addr, Badge, KeyValue, Panel, SectionHeading } from "@/components/ui";
+import { CountUp, DrawRule, Reveal } from "@/components/motion";
 
 export const revalidate = 15;
+
+const ZERO = "0x0000000000000000000000000000000000000000";
 
 export default async function AgentPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const chainId = DEFAULT_CHAIN_ID;
   const c = contracts(chainId);
   const agent = await getAgent(chainId, BigInt(id));
+  const bound = Boolean(agent.wallet && agent.wallet !== ZERO);
 
   return (
     <>
-      <h2>Agent #{id}</h2>
-      <p className="lede">
-        {agent.card?.description ??
-          "An ERC-8004 agent identity. The owner is the principal; the bound wallet is the key that acts."}
-      </p>
-
-      <div className="grid three" style={{ marginTop: 18 }}>
-        <div className="panel stat">
-          <div className="n" style={{ color: "var(--accent)" }}>
-            {agent.settledCount > 0n ? `${agent.averageScore}` : "—"}
-          </div>
-          <div className="l">average examined score</div>
-        </div>
-        <div className="panel stat">
-          <div className="n">{String(agent.settledCount)}</div>
-          <div className="l">settled letters</div>
-        </div>
-        <div className="panel stat">
-          <div className="n">{agent.wallet && agent.wallet !== ZERO ? "bound" : "unbound"}</div>
-          <div className="l">acting key</div>
-        </div>
-      </div>
-
-      <h2>Identity</h2>
-      <div className="panel">
-        <div className="kv">
-          <span>Name</span>
-          <span>{agent.card?.name ?? "—"}</span>
-        </div>
-        <div className="kv">
-          <span>Principal (owns the ERC-721)</span>
-          <span className="mono">{agent.owner ?? "—"}</span>
-        </div>
-        <div className="kv">
-          <span>Bound wallet (acts, custodies nothing)</span>
-          <span className="mono">{agent.wallet ?? "—"}</span>
-        </div>
-        <div className="kv">
-          <span>Identity Registry</span>
-          <a
-            className="mono link"
-            href={addressUrl(chainId, c.IdentityRegistry)}
-            target="_blank"
-            rel="noreferrer"
+      <section className="pt-14 pb-10">
+        <Reveal y={8}>
+          <Link
+            href="/"
+            className="group inline-flex items-center gap-1.5 text-[13px] text-parchment-faint transition-colors hover:text-parchment"
           >
-            {c.IdentityRegistry}
-          </a>
-        </div>
-      </div>
+            <ArrowLeft className="size-3.5 transition-transform group-hover:-translate-x-0.5" />
+            all letters
+          </Link>
+        </Reveal>
 
-      <h2>Why this score is hard to fake</h2>
-      <div className="panel small">
-        <p style={{ marginTop: 0 }}>
-          The only ERC-8004 client that has written feedback for this agent is the LetterOfCredit
-          contract at{" "}
-          <a className="mono link" href={addressUrl(chainId, c.LetterOfCredit)} target="_blank" rel="noreferrer">
-            {c.LetterOfCredit}
-          </a>
-          , and it can only do so for a letter that actually paid out. The score above is therefore
-          backed by settled payments rather than self-assertion — the summary is filtered to that one
-          client address, so reviews from anywhere else do not count towards it.
-        </p>
-        <p style={{ marginBottom: 0 }}>
-          It is not a claim that the agent is good. It is a claim that these letters settled, that a
-          named examiner scored each presentation, and that the applicant&apos;s money moved only
-          where the mandate allowed.
-        </p>
-      </div>
+        <Reveal delay={0.05} className="mt-5 flex flex-wrap items-center gap-4">
+          <div className="flex size-11 items-center justify-center rounded-xl border border-line bg-ink-800">
+            <Bot className="size-5 text-ledger" />
+          </div>
+          <h1 className="text-3xl font-semibold tracking-tight text-parchment sm:text-4xl">
+            Agent #{id}
+          </h1>
+          <Badge tone={bound ? "ok" : "warn"}>
+            <KeyRound className="size-3" />
+            {bound ? "key bound" : "unbound"}
+          </Badge>
+        </Reveal>
+
+        <Reveal delay={0.12} className="mt-5 max-w-[68ch]">
+          <p className="text-[15.5px] leading-relaxed text-parchment-dim">
+            {agent.card?.description ??
+              "An ERC-8004 agent identity. The owner is the principal; the bound wallet is the key that acts."}
+          </p>
+        </Reveal>
+
+        <div className="mt-9 grid gap-4 sm:grid-cols-3">
+          <Reveal delay={0.18}>
+            <Panel tone={agent.settledCount > 0n ? "ledger" : "default"} className="p-6">
+              <BadgeCheck className="size-4 text-ledger" />
+              <div className="mt-3 text-3xl font-semibold tracking-tight text-ledger">
+                {agent.settledCount > 0n ? <CountUp to={Number(agent.averageScore)} /> : "—"}
+              </div>
+              <div className="mt-1.5 text-[13px] text-parchment-faint">average examined score</div>
+            </Panel>
+          </Reveal>
+          <Reveal delay={0.25}>
+            <Panel className="p-6">
+              <Receipt className="size-4 text-parchment-dim" />
+              <div className="mt-3 text-3xl font-semibold tracking-tight text-parchment">
+                <CountUp to={Number(agent.settledCount)} />
+              </div>
+              <div className="mt-1.5 text-[13px] text-parchment-faint">settled letters</div>
+            </Panel>
+          </Reveal>
+          <Reveal delay={0.32}>
+            <Panel className="p-6">
+              <KeyRound className="size-4 text-parchment-dim" />
+              <div className="mt-3 text-3xl font-semibold tracking-tight text-parchment">
+                {bound ? "bound" : "unbound"}
+              </div>
+              <div className="mt-1.5 text-[13px] text-parchment-faint">
+                acting key — custodies nothing
+              </div>
+            </Panel>
+          </Reveal>
+        </div>
+      </section>
+
+      <DrawRule />
+
+      <section className="py-14">
+        <SectionHeading eyebrow="erc-8004" title="Identity" />
+        <Reveal className="mt-6">
+          <Panel className="p-6">
+            <KeyValue label="Name">{agent.card?.name ?? "—"}</KeyValue>
+            <KeyValue label="Principal — owns the ERC-721" mono>
+              {agent.owner ? (
+                <Addr href={addressUrl(chainId, agent.owner)}>
+                  <span className="hidden sm:inline">{agent.owner}</span>
+                  <span className="sm:hidden">{short(agent.owner, 8, 6)}</span>
+                </Addr>
+              ) : (
+                "—"
+              )}
+            </KeyValue>
+            <KeyValue label="Bound wallet — acts, holds nothing" mono>
+              {agent.wallet ? (
+                <Addr href={addressUrl(chainId, agent.wallet)}>
+                  <span className="hidden sm:inline">{agent.wallet}</span>
+                  <span className="sm:hidden">{short(agent.wallet, 8, 6)}</span>
+                </Addr>
+              ) : (
+                "—"
+              )}
+            </KeyValue>
+            <KeyValue label="Identity Registry" mono>
+              <Addr href={addressUrl(chainId, c.IdentityRegistry)}>
+                <span className="hidden sm:inline">{c.IdentityRegistry}</span>
+                <span className="sm:hidden">{short(c.IdentityRegistry, 8, 6)}</span>
+              </Addr>
+            </KeyValue>
+          </Panel>
+        </Reveal>
+      </section>
+
+      <DrawRule />
+
+      <section className="py-14">
+        <SectionHeading eyebrow="structurally" title="Why this score is hard to fake" />
+        <Reveal className="mt-6">
+          <Panel className="p-6 sm:p-7">
+            <p className="text-[14.5px] leading-relaxed text-parchment-dim">
+              The only ERC-8004 client that has written feedback for this agent is the LetterOfCredit
+              contract at{" "}
+              <Addr href={addressUrl(chainId, c.LetterOfCredit)} className="text-[13.5px]">
+                {short(c.LetterOfCredit, 10, 8)}
+              </Addr>
+              , and it can only do so for a letter that actually paid out. The summary above is
+              filtered to that one client address, so reviews from anywhere else do not count towards
+              it.
+            </p>
+            <p className="mt-4 text-[14.5px] leading-relaxed text-parchment-dim">
+              It is not a claim that the agent is good. It is a claim that these letters settled, that
+              a named examiner scored each presentation, and that the applicant&apos;s money moved
+              only where the mandate allowed it to.
+            </p>
+          </Panel>
+        </Reveal>
+      </section>
     </>
   );
 }
-
-const ZERO = "0x0000000000000000000000000000000000000000";

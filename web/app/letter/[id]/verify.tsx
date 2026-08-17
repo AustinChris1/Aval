@@ -2,7 +2,10 @@
 
 import { useState } from "react";
 import { keccak256, hexToString, type Hex } from "viem";
+import { AnimatePresence, motion } from "motion/react";
+import { Check, Loader2, ShieldCheck, TriangleAlert, X } from "lucide-react";
 import type { ChainId } from "@/lib/chain";
+import { Badge, Panel } from "@/components/ui";
 
 type Result = {
   documents: Hex | null;
@@ -45,7 +48,7 @@ export function VerifyPanel(props: {
         out.push({
           label: "Document body hashes to the committed hash",
           ok: recomputed.toLowerCase() === data.storedDocHash.toLowerCase(),
-          detail: `keccak256(documents) = ${recomputed}`,
+          detail: recomputed,
         });
         try {
           setBody(JSON.stringify(JSON.parse(hexToString(data.documents)), null, 2));
@@ -56,7 +59,7 @@ export function VerifyPanel(props: {
         out.push({
           label: "Document body present on-chain",
           ok: false,
-          detail: "hash-only presentation; the body is held off-chain",
+          detail: "hash-only presentation; body held off-chain",
         });
       }
 
@@ -67,8 +70,8 @@ export function VerifyPanel(props: {
           data.validation.exists &&
           data.validation.validator.toLowerCase() === data.expectedValidator.toLowerCase(),
         detail: data.validation.exists
-          ? `${data.validation.validator}`
-          : "no examination has been opened over this hash",
+          ? data.validation.validator
+          : "no examination opened over this hash",
       });
 
       // 3. …of this letter's agent…
@@ -76,7 +79,7 @@ export function VerifyPanel(props: {
         label: "Examination is of this letter's agent",
         ok: data.validation.exists && data.validation.agentId === data.expectedAgentId,
         detail: data.validation.exists
-          ? `agent #${data.validation.agentId} (letter names #${data.expectedAgentId})`
+          ? `agent #${data.validation.agentId} · letter names #${data.expectedAgentId}`
           : "—",
       });
 
@@ -84,7 +87,7 @@ export function VerifyPanel(props: {
       out.push({
         label: "Score meets the letter's threshold",
         ok: data.validation.exists && data.validation.response >= data.minScore,
-        detail: `${data.validation.response}/100, threshold ${data.minScore}`,
+        detail: `${data.validation.response}/100 · threshold ${data.minScore}`,
       });
 
       setChecks(out);
@@ -98,75 +101,102 @@ export function VerifyPanel(props: {
   const allOk = checks?.every((c) => c.ok);
 
   return (
-    <div className="panel">
-      <p className="small muted" style={{ marginTop: 0 }}>
-        This fetches the document bytes as they were emitted and re-hashes them in your browser,
-        then reads the examiner&apos;s answer out of the ERC-8004 Validation Registry. Nothing is
-        taken on trust from this page.
-      </p>
-
+    <Panel className="p-6 sm:p-7">
       <button
         onClick={run}
         disabled={busy}
-        style={{
-          background: "var(--accent)",
-          color: "#0b0d10",
-          border: 0,
-          borderRadius: 7,
-          padding: "9px 16px",
-          fontWeight: 600,
-          cursor: busy ? "wait" : "pointer",
-          fontSize: 14,
-        }}
+        className="group inline-flex items-center gap-2 rounded-lg bg-ledger px-5 py-2.5 text-[14px] font-semibold text-ink-950 transition-all duration-200 hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-70"
       >
-        {busy ? "Checking…" : "Verify this presentation"}
+        {busy ? (
+          <Loader2 className="size-4 animate-spin" />
+        ) : (
+          <ShieldCheck className="size-4 transition-transform group-hover:scale-110" />
+        )}
+        {busy ? "Checking on-chain…" : "Verify this presentation"}
       </button>
 
-      {error && <div className="notice" style={{ marginTop: 14 }}>{error}</div>}
-
-      {checks && (
-        <>
-          <div style={{ marginTop: 16 }}>
-            {checks.map((c) => (
-              <div className="kv" key={c.label}>
-                <span>
-                  <span className={`badge ${c.ok ? "ok" : "bad"}`} style={{ marginRight: 8 }}>
-                    {c.ok ? "pass" : "fail"}
-                  </span>
-                  {c.label}
-                </span>
-                <span className="mono" style={{ textAlign: "right", wordBreak: "break-all" }}>
-                  {c.detail}
-                </span>
-              </div>
-            ))}
-          </div>
-          <div style={{ marginTop: 14 }}>
-            <span className={`badge ${allOk ? "ok" : "bad"}`}>
-              {allOk ? "compliant presentation" : "discrepancy"}
-            </span>
-          </div>
-        </>
-      )}
-
-      {body && (
-        <>
-          <h3 style={{ marginTop: 22 }}>The documents, as emitted on-chain</h3>
-          <pre
-            className="mono"
-            style={{
-              background: "var(--panel-2)",
-              border: "1px solid var(--line)",
-              borderRadius: 8,
-              padding: 14,
-              overflowX: "auto",
-              fontSize: 12.5,
-            }}
+      <AnimatePresence>
+        {error && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="mt-5 overflow-hidden"
           >
-            {body}
-          </pre>
-        </>
-      )}
-    </div>
+            <div className="flex items-start gap-2 rounded-lg border border-seal-deep bg-seal-bg/70 px-4 py-3 text-[13px] text-seal">
+              <TriangleAlert className="mt-0.5 size-4 shrink-0" />
+              {error}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {checks && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="mt-6">
+            <div className="space-y-2">
+              {checks.map((c, i) => (
+                <motion.div
+                  key={c.label}
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.12, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                  className={`flex flex-wrap items-start justify-between gap-x-5 gap-y-1.5 rounded-lg border px-4 py-3 ${
+                    c.ok ? "border-ledger-deep/60 bg-ink-750/40" : "border-seal-deep bg-seal-bg/50"
+                  }`}
+                >
+                  <span className="flex items-center gap-2.5 text-[13.5px] text-parchment">
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ delay: i * 0.12 + 0.15, type: "spring", stiffness: 320, damping: 18 }}
+                      className={`flex size-4 shrink-0 items-center justify-center rounded-full ${
+                        c.ok ? "bg-ledger text-ink-950" : "bg-seal text-ink-950"
+                      }`}
+                    >
+                      {c.ok ? <Check className="size-3" strokeWidth={3} /> : <X className="size-3" strokeWidth={3} />}
+                    </motion.span>
+                    {c.label}
+                  </span>
+                  <span className="ml-6 font-mono text-[11.5px] break-all text-parchment-faint sm:ml-0 sm:text-right">
+                    {c.detail}
+                  </span>
+                </motion.div>
+              ))}
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: checks.length * 0.12 + 0.1 }}
+              className="mt-5"
+            >
+              <Badge tone={allOk ? "ok" : "bad"}>
+                {allOk ? <Check className="size-3" /> : <X className="size-3" />}
+                {allOk ? "compliant presentation" : "discrepancy"}
+              </Badge>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {body && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="mt-7"
+          >
+            <h3 className="mb-3 font-mono text-[11px] tracking-[0.16em] text-parchment-faint uppercase">
+              the documents, as emitted on-chain
+            </h3>
+            <pre className="overflow-x-auto rounded-lg border border-line bg-ink-950/70 p-4 font-mono text-[12px] leading-relaxed text-parchment-dim">
+              {body}
+            </pre>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </Panel>
   );
 }
