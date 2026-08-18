@@ -1,28 +1,29 @@
 import { formatEther } from "viem";
 import Link from "next/link";
-import { ArrowRight, Ban, FileCheck2, Landmark, Lock, ShieldCheck } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { DEFAULT_CHAIN_ID, STATUS, addressUrl, chainInfo, contracts, short } from "@/lib/chain";
 import { getLetter, totalLetters } from "@/lib/indexer";
-import { Addr, Badge, KeyValue, Panel, SectionHeading } from "@/components/ui";
+import { Addr, Clause, ClauseBody, Entry, MarginNote, SealDot, Sheet, Stamp } from "@/components/ui";
 import { CountUp, DrawRule, Reveal, SplitHeadline } from "@/components/motion";
+import { Mark } from "@/components/mark";
 
 export const revalidate = 10;
 
 const PROPERTIES = [
   {
-    icon: Lock,
+    n: "i",
     title: "The agent never holds the money",
-    body: "The letter contract custodies it. The agent submits intents, and they execute only if the mandate permits — named recipients, named contract and method, a per-call cap, a total cap, an expiry.",
+    body: "The credit contract custodies it. The agent submits intents, and they execute only if the mandate permits — named recipients, a named contract and method, a per-call cap, a total cap, an expiry.",
   },
   {
-    icon: FileCheck2,
+    n: "ii",
     title: "Payment is against documents",
     body: "The fee is reserved out of the face value and is not spendable capital. It becomes drawable only once the examiner named at issuance has scored the exact document hash presented.",
   },
   {
-    icon: Landmark,
-    title: "The letter is itself a claim",
-    body: "It is an ERC-721. Whoever holds it receives the proceeds, so the credit can be assigned or sold — which is how documentary credits have always worked.",
+    n: "iii",
+    title: "The credit is itself a claim",
+    body: "It is an ERC-721. Whoever holds it receives the proceeds, so it can be assigned or sold — which is how documentary credits have always worked.",
   },
 ];
 
@@ -53,140 +54,217 @@ export default async function Home() {
   ).filter((l): l is NonNullable<typeof l> => l !== null);
 
   const settled = letters.filter((l) => l.letter.status === 4).length;
+  const open = letters.find((l) => l.letter.status === 1);
+  const moved = letters.reduce((acc, l) => acc + Number(formatEther(l.letter.spent)), 0);
+  const feature = open ?? letters[0];
 
   return (
     <>
-      {/* hero */}
-      <section className="pt-20 pb-16 sm:pt-28">
-        <Reveal y={10}>
-          <Badge tone="ok">
-            <ShieldCheck className="size-3" />
-            live on {info.name}
-          </Badge>
-        </Reveal>
+      {/* ── letterhead ──────────────────────────────────────────────── */}
+      <section className="pt-14 pb-16 sm:pt-20">
+        <div className="flex flex-wrap items-end justify-between gap-6 border-b border-rule pb-5">
+          <Mark className="size-14 shrink-0" />
+          <div className="text-right font-mono text-[10.5px] leading-relaxed tracking-[0.14em] text-ink-faint uppercase">
+            <div>Documentary credit · autonomous agents</div>
+            <div className="mt-1">
+              {info.name} · chain {chainId}
+            </div>
+          </div>
+        </div>
 
-        <h1 className="mt-6 max-w-[24ch] text-4xl leading-[1.05] font-semibold tracking-[-0.03em] text-parchment sm:text-6xl">
-          <SplitHeadline text="A letter of credit for AI agents." />
+        <h1 className="mt-12 max-w-[15ch] font-display text-[52px] leading-[0.98] tracking-[-0.02em] text-ink sm:text-[86px]">
+          <SplitHeadline text="Someone stands behind it." />
         </h1>
 
-        <Reveal delay={0.35} className="mt-7 max-w-[62ch]">
-          <p className="text-[16.5px] leading-relaxed text-parchment-dim">
-            Agents hold wallets now, and the industry&apos;s answer to{" "}
-            <em className="text-parchment not-italic">what if it goes wrong</em> is a log you read
-            afterwards. That is a flight recorder: it tells you how you crashed.
-          </p>
-          <p className="mt-4 text-[16.5px] leading-relaxed text-parchment-dim">
-            Commerce solved this in the fourteenth century. Lock funds against a job, an agent, a
-            rulebook and an examiner — and the counterparty never takes custody at all.
-          </p>
-        </Reveal>
+        <div className="mt-10 lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-16">
+          <Reveal delay={0.32}>
+            <p className="text-[17.5px] leading-[1.65] text-ink-soft">
+              Agents hold wallets now, and the industry&apos;s answer to{" "}
+              <em className="text-ink not-italic">what if it goes wrong</em> is a log you read
+              afterwards. That is a flight recorder: it tells you how you crashed.
+            </p>
+            <p className="mt-5 text-[17.5px] leading-[1.65] text-ink-soft">
+              Commerce solved this in the fourteenth century. An{" "}
+              <span className="text-brass-soft">aval</span> is a guarantee written onto a bill of
+              exchange — a third party standing behind an instrument. AVAL is that, for software with
+              a wallet: value is committed against a job, an agent, a rulebook and an examiner, and
+              the agent never takes custody of any of it.
+            </p>
 
-        <Reveal delay={0.5} className="mt-9 flex flex-wrap items-center gap-3">
-          {letters[0] && (
-            <Link
-              href={`/letter/${letters[0].id}`}
-              className="group inline-flex items-center gap-2 rounded-lg bg-ledger px-5 py-2.5 text-[14px] font-semibold text-ink-950 transition-transform duration-200 hover:-translate-y-0.5"
-            >
-              Replay a settled letter
-              <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
-            </Link>
-          )}
-          <Link
-            href="/erc8004"
-            className="inline-flex items-center gap-2 rounded-lg border border-line px-5 py-2.5 text-[14px] text-parchment transition-colors hover:border-line-bright hover:bg-ink-800"
-          >
-            The ERC-8004 gap
-          </Link>
-        </Reveal>
-      </section>
-
-      <DrawRule />
-
-      {/* the refusal, stated up front — it is the product */}
-      <section className="py-16">
-        <Reveal>
-          <Panel tone="seal" className="overflow-hidden p-7 sm:p-9">
-            <div className="flex items-start gap-4">
-              <Ban className="mt-0.5 size-5 shrink-0 animate-pulse-seal text-seal" />
-              <div>
-                <h2 className="text-lg font-semibold tracking-[-0.01em] text-parchment sm:text-xl">
-                  When the agent tried to pay itself, the chain refused
-                </h2>
-                <p className="mt-3 max-w-[66ch] text-[14.5px] leading-relaxed text-parchment-dim">
-                  Not a log claiming it was stopped — a transaction, in a block, that reverted with a
-                  decoded reason. Every refusal on this site is broadcast with gas supplied manually
-                  so it is <em className="text-seal not-italic">mined as reverted</em> rather than
-                  dying quietly in gas estimation. The applicant&apos;s money was never at risk, and
-                  there is a permanent record proving it.
-                </p>
-              </div>
+            <div className="mt-9 flex flex-wrap items-center gap-3">
+              {feature && (
+                <Link
+                  href={`/letter/${feature.id}`}
+                  className="group inline-flex items-center gap-2 border border-verd-deep bg-verd/10 px-5 py-2.5 font-mono text-[11px] tracking-[0.16em] text-verd uppercase transition-colors hover:bg-verd/20"
+                >
+                  {open ? "Act on the open credit" : "Replay a settled credit"}
+                  <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              )}
+              <Link
+                href="/issue"
+                className="inline-flex items-center gap-2 border border-brass-deep bg-brass/10 px-5 py-2.5 font-mono text-[11px] tracking-[0.16em] text-brass-soft uppercase transition-colors hover:bg-brass/20"
+              >
+                Issue your own
+              </Link>
             </div>
-          </Panel>
-        </Reveal>
-      </section>
+          </Reveal>
 
-      {/* the three properties */}
-      <section className="pb-16">
-        <SectionHeading eyebrow="how it holds" title="Three properties, each one a test in the repo" />
-        <div className="mt-7 grid gap-4 md:grid-cols-3">
-          {PROPERTIES.map(({ icon: Icon, title, body }, i) => (
-            <Reveal key={title} delay={i * 0.08}>
-              <Panel className="group h-full p-6 hover:border-line-bright">
-                <Icon className="size-5 text-ledger transition-transform duration-300 group-hover:-translate-y-0.5" />
-                <h3 className="mt-4 text-[15px] font-semibold text-parchment">{title}</h3>
-                <p className="mt-2.5 text-[13.5px] leading-relaxed text-parchment-dim">{body}</p>
-              </Panel>
+          {/* the specimen: a miniature of the instrument itself */}
+          {feature && (
+            <Reveal delay={0.45} className="mt-12 lg:mt-0">
+              <Sheet className="p-6">
+                <div className="hatch pointer-events-none absolute inset-0 opacity-50" />
+                <div className="relative">
+                  <div className="flex items-baseline justify-between border-b border-rule pb-3">
+                    <span className="font-mono text-[10px] tracking-[0.2em] text-ink-faint uppercase">
+                      Specimen
+                    </span>
+                    <span className="font-mono text-[11px] text-brass tabular-nums">
+                      No. {String(feature.id).padStart(4, "0")}
+                    </span>
+                  </div>
+                  <div className="mt-3 divide-y divide-rule/60">
+                    <Entry label="Status">
+                      <Stamp tone={feature.letter.status === 4 ? "ok" : "warn"}>
+                        {STATUS[feature.letter.status]}
+                      </Stamp>
+                    </Entry>
+                    <Entry label="Face value" emphasis>
+                      {formatEther(feature.letter.faceValue)}
+                    </Entry>
+                    <Entry label="Reserved fee">{formatEther(feature.letter.fee)}</Entry>
+                    <Entry label="Beneficiary">agent #{String(feature.letter.agentId)}</Entry>
+                    <Entry label="Examiner">{short(feature.letter.validator, 6, 4)}</Entry>
+                  </div>
+                  <div className="mt-4 flex items-center gap-3 border-t border-rule pt-4">
+                    <SealDot tone={feature.letter.status === 4 ? "verd" : "seal"} className="shrink-0" />
+                    <span className="text-[12px] leading-snug text-ink-dim">
+                      {feature.letter.status === 4
+                        ? "Sealed on a compliant presentation."
+                        : "Open. The seal is withheld until documents are examined."}
+                    </span>
+                  </div>
+                </div>
+              </Sheet>
             </Reveal>
-          ))}
+          )}
         </div>
       </section>
 
       <DrawRule />
 
-      {/* live figures */}
-      <section className="py-16">
-        <SectionHeading eyebrow="read from the chain" title="Live state" />
-        {error && (
-          <Panel tone="seal" className="mt-5 p-4 text-[13px] text-seal">
-            Could not reach {info.rpc} — {error}
-          </Panel>
-        )}
-        <div className="mt-7 grid gap-4 sm:grid-cols-3">
-          {[
-            { n: Number(total), label: "letters issued", tone: "text-parchment" },
-            { n: settled, label: "settled against documents", tone: "text-ledger" },
-            {
-              n: letters.reduce((acc, l) => acc + Number(formatEther(l.letter.spent)), 0),
-              label: "BOT moved under mandate",
-              tone: "text-parchment",
-              decimals: 2,
-            },
-          ].map((s, i) => (
-            <Reveal key={s.label} delay={i * 0.07}>
-              <Panel className="p-6">
-                <div className={`text-3xl font-semibold tracking-[-0.02em] ${s.tone}`}>
-                  <CountUp to={s.n} decimals={s.decimals ?? 0} />
+      {/* ── the refusal ─────────────────────────────────────────────── */}
+      <section className="py-20">
+        <Clause n="§ 01" eyebrow="the point" title="When the agent tried to pay itself, the chain refused">
+          Not a log claiming it was stopped — a transaction, in a block, that reverted with a decoded
+          reason. Every refusal here is broadcast with gas supplied by hand so it is{" "}
+          <em className="text-seal not-italic">mined as reverted</em> rather than dying quietly in
+          gas estimation. The applicant&apos;s money was never at risk, and there is a permanent
+          record proving it.
+        </Clause>
+
+        <ClauseBody className="mt-8">
+          <Sheet tone="seal" className="p-7">
+            <div className="pointer-events-none absolute inset-0 opacity-[0.06] [background:repeating-linear-gradient(-45deg,var(--color-seal)_0_1px,transparent_1px_9px)]" />
+            <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center">
+              <SealDot className="shrink-0" />
+              <div className="min-w-0 flex-1">
+                <div className="font-mono text-[11.5px] break-all text-seal">
+                  RecipientNotAllowed(0x02366e71864cda8b9246eEf1553868Fdf1C3c629)
                 </div>
-                <div className="mt-1.5 text-[13px] text-parchment-faint">{s.label}</div>
-              </Panel>
-            </Reveal>
-          ))}
-        </div>
+                <div className="mt-2 font-mono text-[10.5px] tracking-[0.14em] text-ink-faint uppercase">
+                  reverted · block 20279665 · testnet 968
+                </div>
+              </div>
+              {feature && (
+                <Link
+                  href={`/letter/${feature.id}#timeline`}
+                  className="group inline-flex shrink-0 items-center gap-2 font-mono text-[11px] tracking-[0.16em] text-seal uppercase"
+                >
+                  See it
+                  <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              )}
+            </div>
+          </Sheet>
+        </ClauseBody>
+
+        <MarginNote>
+          A safety property that lives in the agent is not a safety property. The runtime checks its
+          own intent before spending gas, and the demo submits a forbidden one anyway — because if
+          that check is buggy, compromised or skipped, the credit still refuses.
+        </MarginNote>
       </section>
 
-      {/* letters table */}
-      <section className="pb-16">
-        <SectionHeading eyebrow="the instruments" title="All letters" />
-        <Reveal className="mt-6">
-          <Panel className="overflow-hidden">
+      <DrawRule />
+
+      {/* ── the three properties ────────────────────────────────────── */}
+      <section className="py-20">
+        <Clause n="§ 02" eyebrow="how it holds" title="Three properties, each one a test in the repository" />
+        <ClauseBody className="mt-9">
+          <div className="divide-y divide-rule border-y border-rule">
+            {PROPERTIES.map(({ n, title, body }, i) => (
+              <Reveal key={title} delay={i * 0.07}>
+                <div className="grid gap-x-8 gap-y-2 py-7 sm:grid-cols-[40px_minmax(0,1fr)]">
+                  <span className="font-display text-[20px] leading-none text-brass/70">{n}</span>
+                  <div>
+                    <h3 className="font-display text-[21px] leading-tight text-ink">{title}</h3>
+                    <p className="mt-2.5 max-w-[62ch] text-[14.5px] leading-[1.7] text-ink-soft">
+                      {body}
+                    </p>
+                  </div>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </ClauseBody>
+      </section>
+
+      <DrawRule />
+
+      {/* ── the register ────────────────────────────────────────────── */}
+      <section className="py-20">
+        <Clause n="§ 03" eyebrow="read from the chain" title="The register">
+          Every figure is read when this page renders. Nothing is cached in a database and nothing is
+          asserted here that you cannot check on the explorer yourself.
+        </Clause>
+
+        {error && (
+          <ClauseBody className="mt-6">
+            <Sheet tone="seal" className="p-4 text-[13px] text-seal">
+              Could not reach {info.rpc} — {error}
+            </Sheet>
+          </ClauseBody>
+        )}
+
+        <ClauseBody className="mt-9">
+          <div className="grid gap-x-10 gap-y-8 border-y border-rule py-8 sm:grid-cols-3">
+            {[
+              { n: Number(total), label: "credits issued", tone: "text-ink", d: 0 },
+              { n: settled, label: "settled against documents", tone: "text-verd", d: 0 },
+              { n: moved, label: `${info.symbol} moved under mandate`, tone: "text-brass", d: 3 },
+            ].map((s, i) => (
+              <Reveal key={s.label} delay={i * 0.07}>
+                <div className={`font-display text-[46px] leading-none tabular-nums ${s.tone}`}>
+                  <CountUp to={s.n} decimals={s.d} />
+                </div>
+                <div className="mt-3 font-mono text-[10.5px] tracking-[0.14em] text-ink-faint uppercase">
+                  {s.label}
+                </div>
+              </Reveal>
+            ))}
+          </div>
+
+          <Reveal className="mt-10">
             <div className="overflow-x-auto">
-              <table className="w-full text-[14px]">
+              <table className="w-full">
                 <thead>
-                  <tr className="border-b border-line">
-                    {["#", "Status", "Face value", "Fee", "Spent", "Agent", ""].map((h) => (
+                  <tr className="border-b border-rule">
+                    {["No.", "Status", "Face", "Fee", "Spent", "Agent", ""].map((h) => (
                       <th
                         key={h}
-                        className="px-4 py-3 text-left text-[11px] font-medium tracking-[0.08em] text-parchment-faint uppercase"
+                        className="px-3 py-2.5 text-left font-mono text-[10px] font-normal tracking-[0.16em] text-ink-faint uppercase"
                       >
                         {h}
                       </th>
@@ -199,40 +277,42 @@ export default async function Home() {
                     return (
                       <tr
                         key={String(row.id)}
-                        className="group border-b border-line/60 transition-colors last:border-0 hover:bg-ink-750/60"
+                        className="group border-b border-rule/50 transition-colors hover:bg-stock-800/60"
                       >
-                        <td className="px-4 py-3.5 font-mono text-parchment-dim">{String(row.id)}</td>
-                        <td className="px-4 py-3.5">
-                          <Badge
+                        <td className="px-3 py-3.5 font-mono text-[13px] text-brass tabular-nums">
+                          {String(row.id).padStart(4, "0")}
+                        </td>
+                        <td className="px-3 py-3.5">
+                          <Stamp
                             tone={status === "Settled" ? "ok" : status === "Open" ? "warn" : "neutral"}
                           >
                             {status}
-                          </Badge>
+                          </Stamp>
                         </td>
-                        <td className="px-4 py-3.5 font-mono text-parchment">
+                        <td className="px-3 py-3.5 font-mono text-[13px] text-ink tabular-nums">
                           {formatEther(row.letter.faceValue)}
                         </td>
-                        <td className="px-4 py-3.5 font-mono text-parchment-dim">
+                        <td className="px-3 py-3.5 font-mono text-[13px] text-ink-soft tabular-nums">
                           {formatEther(row.letter.fee)}
                         </td>
-                        <td className="px-4 py-3.5 font-mono text-parchment-dim">
+                        <td className="px-3 py-3.5 font-mono text-[13px] text-ink-soft tabular-nums">
                           {formatEther(row.letter.spent)}
                         </td>
-                        <td className="px-4 py-3.5 font-mono">
+                        <td className="px-3 py-3.5 font-mono text-[13px]">
                           <Link
                             href={`/agent/${row.letter.agentId}`}
-                            className="text-parchment-dim underline-offset-4 hover:text-ledger hover:underline"
+                            className="text-ink-soft underline-offset-4 hover:text-verd hover:underline"
                           >
                             #{String(row.letter.agentId)}
                           </Link>
                         </td>
-                        <td className="px-4 py-3.5">
+                        <td className="px-3 py-3.5 text-right">
                           <Link
                             href={`/letter/${row.id}`}
-                            className="inline-flex items-center gap-1 text-[13px] text-ledger opacity-70 transition-opacity group-hover:opacity-100"
+                            className="inline-flex items-center gap-1 font-mono text-[10.5px] tracking-[0.14em] text-verd uppercase opacity-60 transition-opacity group-hover:opacity-100"
                           >
-                            replay
-                            <ArrowRight className="size-3.5" />
+                            open
+                            <ArrowRight className="size-3" />
                           </Link>
                         </td>
                       </tr>
@@ -240,43 +320,42 @@ export default async function Home() {
                   })}
                   {letters.length === 0 && (
                     <tr>
-                      <td colSpan={7} className="px-5 py-8 text-[13.5px] text-parchment-faint">
-                        No letters yet. Run{" "}
-                        <code className="rounded bg-ink-750 px-1.5 py-0.5 font-mono text-[12.5px]">
-                          npx hardhat run scripts/demo.ts --network botTestnet
-                        </code>
+                      <td colSpan={7} className="px-3 py-8 text-[13.5px] text-ink-faint">
+                        Nothing issued yet —{" "}
+                        <Link href="/issue" className="text-verd underline underline-offset-4">
+                          issue the first credit
+                        </Link>
+                        .
                       </td>
                     </tr>
                   )}
                 </tbody>
               </table>
             </div>
-          </Panel>
-        </Reveal>
+          </Reveal>
+        </ClauseBody>
       </section>
 
-      {/* deployment */}
-      <section className="pb-8">
-        <SectionHeading
-          eyebrow="verified source"
-          title="Deployment"
-          id="deployment"
-        >
+      <DrawRule />
+
+      {/* ── deployment ──────────────────────────────────────────────── */}
+      <section className="py-20">
+        <Clause n="§ 04" eyebrow="verified source" title="Deployment" id="deployment">
           All five contracts are verified on {info.name}&apos;s Blockscout instance, so the mandate
-          logic running on-chain is readable against the repo.
-        </SectionHeading>
-        <Reveal className="mt-6">
-          <Panel className="p-6">
+          logic running on-chain is readable against the repository.
+        </Clause>
+        <ClauseBody className="mt-8">
+          <div className="divide-y divide-rule/60 border-y border-rule">
             {Object.entries(c).map(([name, address]) => (
-              <KeyValue key={name} label={name} mono>
+              <Entry key={name} label={name}>
                 <Addr href={addressUrl(chainId, address)}>
                   <span className="hidden sm:inline">{address}</span>
                   <span className="sm:hidden">{short(address, 8, 6)}</span>
                 </Addr>
-              </KeyValue>
+              </Entry>
             ))}
-          </Panel>
-        </Reveal>
+          </div>
+        </ClauseBody>
       </section>
     </>
   );

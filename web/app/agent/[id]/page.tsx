@@ -22,18 +22,18 @@ export default async function AgentPage({ params }: { params: Promise<{ id: stri
         <Reveal y={8}>
           <Link
             href="/"
-            className="group inline-flex items-center gap-1.5 text-[13px] text-parchment-faint transition-colors hover:text-parchment"
+            className="group inline-flex items-center gap-1.5 text-[13px] text-ink-faint transition-colors hover:text-ink"
           >
             <ArrowLeft className="size-3.5 transition-transform group-hover:-translate-x-0.5" />
-            all letters
+            the register
           </Link>
         </Reveal>
 
         <Reveal delay={0.05} className="mt-5 flex flex-wrap items-center gap-4">
-          <div className="flex size-11 items-center justify-center rounded-xl border border-line bg-ink-800">
-            <Bot className="size-5 text-ledger" />
+          <div className="flex size-11 items-center justify-center rounded-xl border border-rule bg-stock-800">
+            <Bot className="size-5 text-verd" />
           </div>
-          <h1 className="text-3xl font-semibold tracking-tight text-parchment sm:text-4xl">
+          <h1 className="font-display text-[40px] leading-none tracking-[-0.015em] text-ink sm:text-[52px]">
             Agent #{id}
           </h1>
           <Badge tone={bound ? "ok" : "warn"}>
@@ -43,7 +43,7 @@ export default async function AgentPage({ params }: { params: Promise<{ id: stri
         </Reveal>
 
         <Reveal delay={0.12} className="mt-5 max-w-[68ch]">
-          <p className="text-[15.5px] leading-relaxed text-parchment-dim">
+          <p className="text-[15.5px] leading-relaxed text-ink-soft">
             {agent.card?.description ??
               "An ERC-8004 agent identity. The owner is the principal; the bound wallet is the key that acts."}
           </p>
@@ -51,30 +51,30 @@ export default async function AgentPage({ params }: { params: Promise<{ id: stri
 
         <div className="mt-9 grid gap-4 sm:grid-cols-3">
           <Reveal delay={0.18}>
-            <Panel tone={agent.settledCount > 0n ? "ledger" : "default"} className="p-6">
-              <BadgeCheck className="size-4 text-ledger" />
-              <div className="mt-3 text-3xl font-semibold tracking-tight text-ledger">
+            <Panel tone={agent.settledCount > 0n ? "verd" : "default"} className="p-6">
+              <BadgeCheck className="size-4 text-verd" />
+              <div className="mt-3 font-display text-[38px] leading-none text-verd">
                 {agent.settledCount > 0n ? <CountUp to={Number(agent.averageScore)} /> : "—"}
               </div>
-              <div className="mt-1.5 text-[13px] text-parchment-faint">average examined score</div>
+              <div className="mt-1.5 text-[13px] text-ink-faint">average examined score</div>
             </Panel>
           </Reveal>
           <Reveal delay={0.25}>
             <Panel className="p-6">
-              <Receipt className="size-4 text-parchment-dim" />
-              <div className="mt-3 text-3xl font-semibold tracking-tight text-parchment">
+              <Receipt className="size-4 text-ink-soft" />
+              <div className="mt-3 font-display text-[38px] leading-none text-ink">
                 <CountUp to={Number(agent.settledCount)} />
               </div>
-              <div className="mt-1.5 text-[13px] text-parchment-faint">settled letters</div>
+              <div className="mt-1.5 text-[13px] text-ink-faint">settled letters</div>
             </Panel>
           </Reveal>
           <Reveal delay={0.32}>
             <Panel className="p-6">
-              <KeyRound className="size-4 text-parchment-dim" />
-              <div className="mt-3 text-3xl font-semibold tracking-tight text-parchment">
+              <KeyRound className="size-4 text-ink-soft" />
+              <div className="mt-3 font-display text-[38px] leading-none text-ink">
                 {bound ? "bound" : "unbound"}
               </div>
-              <div className="mt-1.5 text-[13px] text-parchment-faint">
+              <div className="mt-1.5 text-[13px] text-ink-faint">
                 acting key — custodies nothing
               </div>
             </Panel>
@@ -85,7 +85,7 @@ export default async function AgentPage({ params }: { params: Promise<{ id: stri
       <DrawRule />
 
       <section className="py-14">
-        <SectionHeading eyebrow="erc-8004" title="Identity" />
+        <SectionHeading n="§ 01" eyebrow="erc-8004" title="Identity" />
         <Reveal className="mt-6">
           <Panel className="p-6">
             <KeyValue label="Name">{agent.card?.name ?? "—"}</KeyValue>
@@ -122,10 +122,10 @@ export default async function AgentPage({ params }: { params: Promise<{ id: stri
       <DrawRule />
 
       <section className="py-14">
-        <SectionHeading eyebrow="structurally" title="Why this score is hard to fake" />
+        <SectionHeading n="§ 02" eyebrow="structurally" title="Why this score is hard to fake" />
         <Reveal className="mt-6">
           <Panel className="p-6 sm:p-7">
-            <p className="text-[14.5px] leading-relaxed text-parchment-dim">
+            <p className="text-[14.5px] leading-relaxed text-ink-soft">
               The only ERC-8004 client that has written feedback for this agent is the LetterOfCredit
               contract at{" "}
               <Addr href={addressUrl(chainId, c.LetterOfCredit)} className="text-[13.5px]">
@@ -135,7 +135,7 @@ export default async function AgentPage({ params }: { params: Promise<{ id: stri
               filtered to that one client address, so reviews from anywhere else do not count towards
               it.
             </p>
-            <p className="mt-4 text-[14.5px] leading-relaxed text-parchment-dim">
+            <p className="mt-4 text-[14.5px] leading-relaxed text-ink-soft">
               It is not a claim that the agent is good. It is a claim that these letters settled, that
               a named examiner scored each presentation, and that the applicant&apos;s money moved
               only where the mandate allowed it to.

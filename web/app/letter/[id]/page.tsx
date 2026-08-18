@@ -1,20 +1,27 @@
-import { formatEther } from "viem";
+import { formatEther, toFunctionSelector, encodeFunctionData, keccak256, stringToHex } from "viem";
 import Link from "next/link";
 import { ArrowLeft, Ban, Coins, Lock } from "lucide-react";
-import { DEFAULT_CHAIN_ID, STATUS, addressUrl, chainInfo, short } from "@/lib/chain";
+import { DEFAULT_CHAIN_ID, STATUS, addressUrl, chainInfo, contracts, short, abis } from "@/lib/chain";
 import { getLetter, getTimeline } from "@/lib/indexer";
+import { actionById } from "@/lib/actions";
+import { demoAvailable } from "@/lib/demo";
 import { Addr, Badge, KeyValue, Panel, SectionHeading } from "@/components/ui";
 import { CountUp, DrawRule, Reveal } from "@/components/motion";
 import { Timeline } from "@/components/timeline";
+import { ActionForm } from "@/components/action-form";
 import { VerifyPanel } from "./verify";
 
 export const revalidate = 10;
+
+const ZERO_HASH = `0x${"0".repeat(64)}`;
 
 export default async function LetterPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const chainId = DEFAULT_CHAIN_ID;
   const letterId = BigInt(id);
   const info = chainInfo(chainId);
+  const c = contracts(chainId);
+  const demo = demoAvailable();
 
   const [state, timeline] = await Promise.all([
     getLetter(chainId, letterId),
@@ -35,30 +42,140 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
     error: r.error,
   }));
 
+  // Sensible starting values, derived from this letter, so nobody has to hand-copy
+  // an address out of the page and into a form.
+  const firstTarget = mandate.targets[0] ?? c.ServiceVendor;
+  const invoiceCalldata = encodeFunctionData({
+    abi: abis.ServiceVendor,
+    functionName: "invoice",
+    args: [keccak256(stringToHex(`invoice-${id}`))],
+  });
+  const perCall = formatEther(mandate.perCallCap);
+  const documents = JSON.stringify(
+    {
+      job: "Settle approved supplier invoice",
+      letterId: id,
+      paidTo: firstTarget,
+      amount: mandate.perCallCap.toString(),
+    },
+    null,
+    2,
+  );
+
+  const AGENT_ACTIONS = ["payToBlocked", "payTo", "execute", "presentDocuments"] as const;
+  const SETTLE_ACTIONS = ["validationRequest", "validationResponse", "draw"] as const;
+  const CLOSE_ACTIONS = ["dispute", "resolveDispute", "refundExpired", "cancel"] as const;
+
+  const defaultsFor = (actionId: string): Record<string, string> => {
+    switch (actionId) {
+      case "payToBlocked":
+        return { letterId: id, recipient: "", amount: perCall };
+      case "payTo":
+        return { letterId: id, recipient: mandate.recipients[0] ?? "", amount: perCall };
+      case "execute":
+        return { letterId: id, target: firstTarget, value: perCall, data: invoiceCalldata };
+      case "presentDocuments":
+        return { letterId: id, documentURI: "", documents };
+      case "validationRequest":
+        return {
+          validatorAddress: letter.validator,
+          agentId: String(letter.agentId),
+          requestURI: "",
+          requestHash: letter.docHash,
+        };
+      case "validationResponse":
+        return {
+          requestHash: letter.docHash,
+          response: String(Math.max(letter.minScore, 100)),
+          responseURI: "",
+          responseHash: "",
+          tag: "letter",
+        };
+      case "resolveDispute":
+        return { letterId: id, favourBeneficiary: "true", resolutionURI: "" };
+      default:
+        return { letterId: id, reasonURI: "" };
+    }
+  };
+
+  /**
+   * Why an action cannot apply right now. The forms stay enabled regardless —
+   * being refused by the contract is the point of the product — but a visitor
+   * should not mistake a status refusal for a mandate refusal.
+   */
+  const noteFor = (actionId: string): string | undefined => {
+    const st = letter.status;
+    const needsOpen = ["payToBlocked", "payTo", "execute", "presentDocuments"];
+    if (needsOpen.includes(actionId) && st !== 1) {
+      return `This letter is ${status}, and the agent may only act while a letter is Open, so this will be refused with BadStatus rather than by the mandate.`;
+    }
+    if (actionId === "draw" && st !== 2) {
+      return `Drawing requires documents to have been presented; this letter is ${status}.`;
+    }
+    if (actionId === "dispute" && st !== 2) {
+      return `A dispute can only be raised against a presentation; this letter is ${status}.`;
+    }
+    if (actionId === "resolveDispute" && st !== 3) {
+      return `There is no open dispute on this letter; it is ${status}.`;
+    }
+    if (actionId === "cancel" && (st !== 1 || letter.spent > 0n)) {
+      return letter.spent > 0n
+        ? "Capital has already been spent, so this letter can no longer be cancelled."
+        : `Only an Open letter can be cancelled; this one is ${status}.`;
+    }
+    if (actionId === "refundExpired" && BigInt(Math.floor(Date.now() / 1000)) <= letter.expiry) {
+      return "This letter has not expired yet, so nothing can be reclaimed.";
+    }
+    if (actionId === "validationRequest" && letter.docHash === ZERO_HASH) {
+      return "No documents have been presented yet, so there is no hash to examine.";
+    }
+    if (actionId === "validationResponse" && letter.docHash === ZERO_HASH) {
+      return "No documents have been presented yet, so there is nothing to score.";
+    }
+    return undefined;
+  };
+
+  const renderActions = (ids: readonly string[]) =>
+    ids.map((actionId, i) => {
+      const action = actionById(actionId);
+      if (!action) return null;
+      return (
+        <Reveal key={actionId} delay={i * 0.05}>
+          <ActionForm
+            action={action}
+            chainId={chainId}
+            demoAvailable={demo}
+            defaults={defaultsFor(actionId)}
+            note={noteFor(actionId)}
+          />
+        </Reveal>
+      );
+    });
+
   return (
     <>
       <section className="pt-14 pb-10">
         <Reveal y={8}>
           <Link
             href="/"
-            className="group inline-flex items-center gap-1.5 text-[13px] text-parchment-faint transition-colors hover:text-parchment"
+            className="group inline-flex items-center gap-1.5 text-[13px] text-ink-faint transition-colors hover:text-ink"
           >
             <ArrowLeft className="size-3.5 transition-transform group-hover:-translate-x-0.5" />
-            all letters
+            the register
           </Link>
         </Reveal>
 
         <Reveal delay={0.05} className="mt-5 flex flex-wrap items-center gap-4">
-          <h1 className="text-3xl font-semibold tracking-[-0.02em] text-parchment sm:text-4xl">
-            Letter #{id}
+          <h1 className="font-display text-[40px] leading-none tracking-[-0.015em] text-ink sm:text-[54px]">
+            Credit №{String(id).padStart(4, "0")}
           </h1>
           <Badge tone={status === "Settled" ? "ok" : "warn"}>{status}</Badge>
         </Reveal>
 
-        <Reveal delay={0.12} className="mt-5 max-w-[68ch]">
-          <p className="text-[15.5px] leading-relaxed text-parchment-dim">
+        <Reveal delay={0.12} className="mt-6 max-w-[68ch]">
+          <p className="text-[15.5px] leading-relaxed text-ink-soft">
             Every row below was read from the chain. The refusals are mined transactions — the agent
-            asked, and the letter said no. Nothing here is a log the agent wrote about itself.
+            asked, and the credit said no. Nothing here is a log the agent wrote about itself.
           </p>
         </Reveal>
 
@@ -67,16 +184,18 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
             {
               icon: Lock,
               value: Number(formatEther(letter.faceValue)),
-              decimals: 2,
+              decimals: 3,
               label: "face value locked",
-              tone: "text-parchment",
+              tone: "text-ink",
+              panel: "default" as const,
             },
             {
               icon: Coins,
               value: Number(formatEther(letter.fee)),
-              decimals: 2,
+              decimals: 3,
               label: "fee reserved — not spendable",
-              tone: "text-ledger",
+              tone: "text-verd",
+              panel: "verd" as const,
             },
             {
               icon: Ban,
@@ -84,15 +203,16 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
               decimals: 0,
               label: "refusals recorded on-chain",
               tone: "text-seal",
+              panel: (refusals > 0 ? "seal" : "default") as "seal" | "default",
             },
           ].map((s, i) => (
             <Reveal key={s.label} delay={0.18 + i * 0.07}>
-              <Panel tone={s.tone === "text-seal" && refusals > 0 ? "seal" : "default"} className="p-6">
+              <Panel tone={s.panel} className="p-6">
                 <s.icon className={`size-4 ${s.tone}`} />
-                <div className={`mt-3 text-3xl font-semibold tracking-[-0.02em] ${s.tone}`}>
+                <div className={`mt-3 font-display text-[38px] leading-none ${s.tone}`}>
                   <CountUp to={s.value} decimals={s.decimals} />
                 </div>
-                <div className="mt-1.5 text-[13px] text-parchment-faint">{s.label}</div>
+                <div className="mt-2 text-[13px] text-ink-faint">{s.label}</div>
               </Panel>
             </Reveal>
           ))}
@@ -102,11 +222,11 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
       <DrawRule />
 
       <section className="py-14">
-        <SectionHeading eyebrow="issuance to settlement" title="Timeline" id="timeline" />
+        <SectionHeading n="§ 01" eyebrow="issuance to settlement" title="Timeline" id="timeline" />
 
         {!timeline.explorerAvailable && (
           <Reveal className="mt-5">
-            <Panel tone="default" className="border-brass-deep p-4">
+            <Panel tone="brass" className="p-4">
               <p className="text-[13px] leading-relaxed text-brass">
                 The explorer&apos;s transaction index is unreachable, so refused attempts cannot be
                 listed right now. The successful steps come from <code>eth_getLogs</code> and are
@@ -120,21 +240,46 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
         {rows.length > 0 ? (
           <Timeline rows={rows} txBase={info.explorer} />
         ) : (
-          <Panel className="mt-6 p-6 text-[13.5px] text-parchment-faint">No activity found.</Panel>
+          <Panel className="mt-6 p-6 text-[13.5px] text-ink-faint">No activity found.</Panel>
         )}
       </section>
 
       <DrawRule />
 
+      {/* --- the interactive half ------------------------------------------ */}
+
       <section className="py-14">
-        <SectionHeading
-          eyebrow="the rulebook"
-          title="The mandate"
-        >
-          Written at issuance and immutable afterwards. This is what the agent could and could not
-          do — and the reason the refusals above exist.
+        <SectionHeading n="§ 02" eyebrow="drive it yourself" title="Act as the agent">
+          The letter resolves the acting key from the ERC-8004 Identity Registry on every call, so
+          only the bound wallet gets through. Send one of these from your own wallet and the chain
+          will tell you exactly that — <span className="font-mono text-seal">NotAgentWallet</span> is
+          itself a demonstration of the model.
         </SectionHeading>
-        <Reveal className="mt-6">
+        <div className="mt-7 space-y-3">{renderActions(AGENT_ACTIONS)}</div>
+      </section>
+
+      <section className="pb-14">
+        <SectionHeading n="§ 03" eyebrow="examination and payment" title="Examine, then settle">
+          The examination is read from the ERC-8004 Validation Registry at settlement. Score below the
+          letter&apos;s threshold and the fee is simply not payable — try it and watch{" "}
+          <span className="font-mono text-seal">ScoreBelowThreshold</span> come back.
+        </SectionHeading>
+        <div className="mt-7 space-y-3">{renderActions(SETTLE_ACTIONS)}</div>
+      </section>
+
+      <section className="pb-14">
+        <SectionHeading n="§ 04" eyebrow="if it goes wrong" title="Dispute, refund, cancel" />
+        <div className="mt-7 space-y-3">{renderActions(CLOSE_ACTIONS)}</div>
+      </section>
+
+      <DrawRule />
+
+      <section className="py-14">
+        <SectionHeading n="§ 05" eyebrow="the rulebook" title="The mandate">
+          Written at issuance and immutable afterwards. This is what the agent could and could not do
+          — and the reason the refusals above exist.
+        </SectionHeading>
+        <Reveal className="mt-7">
           <Panel className="p-6">
             <KeyValue label="Per-call cap" mono>
               {formatEther(mandate.perCallCap)}
@@ -165,8 +310,8 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
       </section>
 
       <section className="pb-14">
-        <SectionHeading eyebrow="who is who" title="Parties" />
-        <Reveal className="mt-6">
+        <SectionHeading n="§ 06" eyebrow="who is who" title="Parties" />
+        <Reveal className="mt-7">
           <Panel className="p-6">
             <KeyValue label="Applicant — locked the funds" mono>
               <Addr href={addressUrl(chainId, letter.applicant)}>
@@ -177,7 +322,7 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
             <KeyValue label="Beneficiary agent">
               <Link
                 href={`/agent/${letter.agentId}`}
-                className="font-mono text-parchment-dim underline-offset-4 hover:text-ledger hover:underline"
+                className="font-mono text-ink-soft underline-offset-4 hover:text-verd hover:underline"
               >
                 #{String(letter.agentId)}
               </Link>
@@ -201,14 +346,11 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
       <DrawRule />
 
       <section className="py-14">
-        <SectionHeading
-          eyebrow="do not trust this page"
-          title="Verify the presentation yourself"
-        >
+        <SectionHeading n="§ 07" eyebrow="do not trust this page" title="Verify the presentation yourself">
           This fetches the document bytes exactly as they were emitted, re-hashes them in your own
           browser, and reads the examiner&apos;s answer out of the ERC-8004 Validation Registry.
         </SectionHeading>
-        <Reveal className="mt-6">
+        <Reveal className="mt-7">
           <VerifyPanel
             chainId={chainId}
             letterId={id}

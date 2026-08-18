@@ -105,7 +105,7 @@ export function VerifyPanel(props: {
       <button
         onClick={run}
         disabled={busy}
-        className="group inline-flex items-center gap-2 rounded-lg bg-ledger px-5 py-2.5 text-[14px] font-semibold text-ink-950 transition-all duration-200 hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-70"
+        className="group inline-flex items-center gap-2 rounded-lg bg-verd px-5 py-2.5 text-[14px] font-semibold text-stock-950 transition-all duration-200 hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-70"
       >
         {busy ? (
           <Loader2 className="size-4 animate-spin" />
@@ -142,23 +142,23 @@ export function VerifyPanel(props: {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.12, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                   className={`flex flex-wrap items-start justify-between gap-x-5 gap-y-1.5 rounded-lg border px-4 py-3 ${
-                    c.ok ? "border-ledger-deep/60 bg-ink-750/40" : "border-seal-deep bg-seal-bg/50"
+                    c.ok ? "border-verd-deep/60 bg-stock-750/40" : "border-seal-deep bg-seal-bg/50"
                   }`}
                 >
-                  <span className="flex items-center gap-2.5 text-[13.5px] text-parchment">
+                  <span className="flex items-center gap-2.5 text-[13.5px] text-ink">
                     <motion.span
                       initial={{ scale: 0 }}
                       animate={{ scale: 1 }}
                       transition={{ delay: i * 0.12 + 0.15, type: "spring", stiffness: 320, damping: 18 }}
                       className={`flex size-4 shrink-0 items-center justify-center rounded-full ${
-                        c.ok ? "bg-ledger text-ink-950" : "bg-seal text-ink-950"
+                        c.ok ? "bg-verd text-stock-950" : "bg-seal text-stock-950"
                       }`}
                     >
                       {c.ok ? <Check className="size-3" strokeWidth={3} /> : <X className="size-3" strokeWidth={3} />}
                     </motion.span>
                     {c.label}
                   </span>
-                  <span className="ml-6 font-mono text-[11.5px] break-all text-parchment-faint sm:ml-0 sm:text-right">
+                  <span className="ml-6 font-mono text-[11.5px] break-all text-ink-faint sm:ml-0 sm:text-right">
                     {c.detail}
                   </span>
                 </motion.div>
@@ -188,10 +188,10 @@ export function VerifyPanel(props: {
             transition={{ delay: 0.5 }}
             className="mt-7"
           >
-            <h3 className="mb-3 font-mono text-[11px] tracking-[0.16em] text-parchment-faint uppercase">
+            <h3 className="mb-3 font-mono text-[11px] tracking-[0.16em] text-ink-faint uppercase">
               the documents, as emitted on-chain
             </h3>
-            <pre className="overflow-x-auto rounded-lg border border-line bg-ink-950/70 p-4 font-mono text-[12px] leading-relaxed text-parchment-dim">
+            <pre className="overflow-x-auto rounded-lg border border-rule bg-stock-950/70 p-4 font-mono text-[12px] leading-relaxed text-ink-soft">
               {body}
             </pre>
           </motion.div>

@@ -1,6 +1,6 @@
-# LETTER — dashboard
+# AVAL — dashboard
 
-The web surface for [LETTER](../README.md). Four screens over live BOT Chain
+The web surface for [AVAL](../README.md). Four screens over live BOT Chain
 state: every letter, a replay of one letter from issuance to settlement, an agent
 profile, and a live comparison of ERC-8004's canonical registries against the
 ones that actually work.
