@@ -32,7 +32,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const info = chainInfo(DEFAULT_CHAIN_ID);
 
   return (
-    <html lang="en" className={`${display.variable} ${sans.variable} ${mono.variable}`}>
+    <html lang="en" className={`${display.variable} ${sans.variable} ${mono.variable}`} suppressHydrationWarning>
+      <head>
+        {/* Applies the stored theme before first paint so neither theme flashes. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem("aval-theme");if(t==="light"||t==="dark"){document.documentElement.dataset.theme=t}else if(matchMedia("(prefers-color-scheme: light)").matches){document.documentElement.dataset.theme="light"}}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="min-h-screen antialiased">
         <WalletProvider>
           <SmoothScroll />
@@ -42,12 +50,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <footer className="mx-auto max-w-6xl px-6 pb-16">
             <div className="rule mb-7" />
             <div className="flex flex-wrap items-start justify-between gap-8">
-              <p className="max-w-[62ch] text-[13px] leading-relaxed text-ink-faint">
-                AVAL is a documentary credit for autonomous agents, built for the BOT Chain Builder
-                Challenge #2. An aval is a guarantee endorsed onto a bill of exchange — a third
-                party standing behind the instrument. Identity, examination and reputation use ERC-8004. Every figure on this
-                site is read from the chain when the page renders — nothing is cached in a database,
-                and nothing is asserted by this page that you cannot check yourself.
+              <p className="max-w-[52ch] text-[13px] leading-relaxed text-ink-faint">
+                A documentary credit for autonomous agents. Every figure on this site is read from
+                the chain when the page renders.
               </p>
               <div className="font-mono text-[11px] tracking-[0.14em] text-ink-faint uppercase">
                 {info.name} · chain {DEFAULT_CHAIN_ID}

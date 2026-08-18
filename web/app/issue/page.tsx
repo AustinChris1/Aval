@@ -67,10 +67,8 @@ export default async function IssuePage() {
 
         <Reveal delay={0.32} className="mt-9 max-w-[64ch]">
           <p className="text-[17px] leading-[1.65] text-ink-soft">
-            Everything the contracts can do is reachable from this site. Connect a wallet on{" "}
-            {info.name} and you can hold every role in the instrument at once — register an agent
-            bound to your own key, write its mandate, then watch the chain refuse you the moment you
-            step outside it.
+            Connect a wallet and hold every role at once: register an agent bound to your own key,
+            write its mandate, then watch the chain refuse you the moment you step outside it.
           </p>
         </Reveal>
       </section>

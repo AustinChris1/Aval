@@ -174,8 +174,8 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
 
         <Reveal delay={0.12} className="mt-6 max-w-[68ch]">
           <p className="text-[15.5px] leading-relaxed text-ink-soft">
-            Every row below was read from the chain. The refusals are mined transactions — the agent
-            asked, and the credit said no. Nothing here is a log the agent wrote about itself.
+            Every row was read from the chain. The refusals are mined transactions, not logs the
+            agent wrote about itself.
           </p>
         </Reveal>
 
@@ -250,19 +250,16 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
 
       <section className="py-14">
         <SectionHeading n="§ 02" eyebrow="drive it yourself" title="Act as the agent">
-          The letter resolves the acting key from the ERC-8004 Identity Registry on every call, so
-          only the bound wallet gets through. Send one of these from your own wallet and the chain
-          will tell you exactly that — <span className="font-mono text-seal">NotAgentWallet</span> is
-          itself a demonstration of the model.
+          Only the ERC-8004-bound wallet gets through. Try it from your own —{" "}
+          <span className="font-mono text-seal">NotAgentWallet</span> is itself the demonstration.
         </SectionHeading>
         <div className="mt-7 space-y-3">{renderActions(AGENT_ACTIONS)}</div>
       </section>
 
       <section className="pb-14">
         <SectionHeading n="§ 03" eyebrow="examination and payment" title="Examine, then settle">
-          The examination is read from the ERC-8004 Validation Registry at settlement. Score below the
-          letter&apos;s threshold and the fee is simply not payable — try it and watch{" "}
-          <span className="font-mono text-seal">ScoreBelowThreshold</span> come back.
+          Score below the threshold and the fee is not payable —{" "}
+          <span className="font-mono text-seal">ScoreBelowThreshold</span>.
         </SectionHeading>
         <div className="mt-7 space-y-3">{renderActions(SETTLE_ACTIONS)}</div>
       </section>
@@ -347,8 +344,7 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
 
       <section className="py-14">
         <SectionHeading n="§ 07" eyebrow="do not trust this page" title="Verify the presentation yourself">
-          This fetches the document bytes exactly as they were emitted, re-hashes them in your own
-          browser, and reads the examiner&apos;s answer out of the ERC-8004 Validation Registry.
+          The bytes are re-hashed in your browser. Nothing is taken on trust from this page.
         </SectionHeading>
         <Reveal className="mt-7">
           <VerifyPanel

@@ -1,30 +1,18 @@
 import { formatEther } from "viem";
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { DEFAULT_CHAIN_ID, STATUS, addressUrl, chainInfo, contracts, short } from "@/lib/chain";
-import { getLetter, totalLetters } from "@/lib/indexer";
-import { Addr, Clause, ClauseBody, Entry, MarginNote, SealDot, Sheet, Stamp } from "@/components/ui";
+import { ArrowRight, CircleCheck } from "lucide-react";
+import { DEFAULT_CHAIN_ID, STATUS, addressUrl, chainInfo, contracts, short, txUrl } from "@/lib/chain";
+import { getLetter, getTimeline, totalLetters } from "@/lib/indexer";
+import { Addr, Clause, ClauseBody, Entry, SealDot, Sheet, Stamp } from "@/components/ui";
 import { CountUp, DrawRule, Reveal, SplitHeadline } from "@/components/motion";
-import { Mark } from "@/components/mark";
+import { HeroSpecimen } from "@/components/hero-specimen";
 
 export const revalidate = 10;
 
-const PROPERTIES = [
-  {
-    n: "i",
-    title: "The agent never holds the money",
-    body: "The credit contract custodies it. The agent submits intents, and they execute only if the mandate permits — named recipients, a named contract and method, a per-call cap, a total cap, an expiry.",
-  },
-  {
-    n: "ii",
-    title: "Payment is against documents",
-    body: "The fee is reserved out of the face value and is not spendable capital. It becomes drawable only once the examiner named at issuance has scored the exact document hash presented.",
-  },
-  {
-    n: "iii",
-    title: "The credit is itself a claim",
-    body: "It is an ERC-721. Whoever holds it receives the proceeds, so it can be assigned or sold — which is how documentary credits have always worked.",
-  },
+const TERMS = [
+  { n: "01", title: "Locked, not handed over", body: "The credit holds the money. The agent only proposes." },
+  { n: "02", title: "Paid against documents", body: "No examined presentation, no fee. Ever." },
+  { n: "03", title: "A transferable claim", body: "The credit is an ERC-721. Whoever holds it collects." },
 ];
 
 export default async function Home() {
@@ -58,47 +46,86 @@ export default async function Home() {
   const moved = letters.reduce((acc, l) => acc + Number(formatEther(l.letter.spent)), 0);
   const feature = open ?? letters[0];
 
+  // The latest refusal becomes the hero's crimson tag — a live link to a mined
+  // revert, not an illustration of one.
+  let refusalTag: { value: string; href: string } | null = null;
+  if (feature) {
+    try {
+      const t = await getTimeline(chainId, feature.id);
+      const r = [...t.rows].reverse().find((row) => row.refused);
+      if (r) refusalTag = { value: r.error?.split("(")[0] ?? "refused", href: txUrl(chainId, r.hash) };
+    } catch {
+      refusalTag = null;
+    }
+  }
+
+  const tags = feature
+    ? [
+        {
+          label: "face value",
+          value: `${formatEther(feature.letter.faceValue)} ${info.symbol} locked`,
+          x: "4%",
+          y: "-7%",
+        },
+        {
+          label: "beneficiary",
+          value: `agent #${String(feature.letter.agentId)}`,
+          x: "66%",
+          y: "16%",
+        },
+        {
+          label: "examiner",
+          value: short(feature.letter.validator, 5, 4),
+          x: "10%",
+          y: "72%",
+        },
+        ...(refusalTag
+          ? [
+              {
+                label: "mined · reverted",
+                value: refusalTag.value,
+                tone: "seal" as const,
+                href: refusalTag.href,
+                x: "42%",
+                y: "40%",
+              },
+            ]
+          : []),
+      ]
+    : [];
+
   return (
     <>
-      {/* ── letterhead ──────────────────────────────────────────────── */}
-      <section className="pt-14 pb-16 sm:pt-20">
-        <div className="flex flex-wrap items-end justify-between gap-6 border-b border-rule pb-5">
-          <Mark className="size-14 shrink-0" />
-          <div className="text-right font-mono text-[10.5px] leading-relaxed tracking-[0.14em] text-ink-faint uppercase">
-            <div>Documentary credit · autonomous agents</div>
-            <div className="mt-1">
-              {info.name} · chain {chainId}
-            </div>
-          </div>
-        </div>
+      {/* ── hero ────────────────────────────────────────────────────── */}
+      <section className="pt-16 pb-20 sm:pt-24">
+        <div className="grid items-center gap-14 lg:grid-cols-[minmax(0,46fr)_minmax(0,54fr)]">
+          <div>
+            <Reveal y={8}>
+              <div className="font-mono text-[10.5px] tracking-[0.22em] text-brass uppercase">
+                documentary credit · autonomous agents
+              </div>
+            </Reveal>
 
-        <h1 className="mt-12 max-w-[15ch] font-display text-[52px] leading-[0.98] tracking-[-0.02em] text-ink sm:text-[86px]">
-          <SplitHeadline text="Someone stands" />{" "}
-          <span className="brass-text">behind it.</span>
-        </h1>
+            <h1 className="mt-6 font-display text-[54px] leading-[0.98] tracking-[-0.02em] text-ink sm:text-[76px]">
+              <SplitHeadline text="The agent never" />
+              <br />
+              <span className="brass-text">holds the money.</span>
+            </h1>
 
-        <div className="mt-10 lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-16">
-          <Reveal delay={0.32}>
-            <p className="text-[17.5px] leading-[1.65] text-ink-soft">
-              Agents hold wallets now, and the industry&apos;s answer to{" "}
-              <em className="text-ink not-italic">what if it goes wrong</em> is a log you read
-              afterwards. That is a flight recorder: it tells you how you crashed.
-            </p>
-            <p className="mt-5 text-[17.5px] leading-[1.65] text-ink-soft">
-              Commerce solved this in the fourteenth century. An{" "}
-              <span className="text-brass-soft">aval</span> is a guarantee written onto a bill of
-              exchange — a third party standing behind an instrument. AVAL is that, for software with
-              a wallet: value is committed against a job, an agent, a rulebook and an examiner, and
-              the agent never takes custody of any of it.
-            </p>
+            <Reveal delay={0.35} className="mt-7 max-w-[46ch]">
+              <p className="text-[16.5px] leading-[1.6] text-ink-soft">
+                Lock value to a job, a rulebook and an examiner. Off-mandate payments revert,
+                on-chain — and the fee moves only against examined documents.
+              </p>
+            </Reveal>
 
-            <div className="mt-9 flex flex-wrap items-center gap-3">
+            <Reveal delay={0.45} className="mt-9 flex flex-wrap items-center gap-3">
               {feature && (
                 <Link
                   href={`/letter/${feature.id}`}
                   className="btn-verd group inline-flex items-center gap-2 rounded-sm px-6 py-3 font-mono text-[12px] font-bold tracking-[0.16em] uppercase transition-transform duration-200 hover:-translate-y-0.5"
                 >
-                  {open ? "Act on the open credit" : "Replay a settled credit"}
+                  {open ? "Act on credit №" + String(feature.id).padStart(4, "0") : "Replay a credit"}
                   <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
                 </Link>
               )}
@@ -108,157 +135,42 @@ export default async function Home() {
               >
                 Issue your own
               </Link>
-            </div>
-          </Reveal>
-
-          {/* the specimen: a miniature of the instrument itself */}
-          {feature && (
-            <Reveal delay={0.45} className="mt-12 lg:mt-0">
-              <Sheet className="p-6">
-                <div className="hatch pointer-events-none absolute inset-0 opacity-50" />
-                <div className="relative">
-                  <div className="flex items-baseline justify-between border-b border-rule pb-3">
-                    <span className="font-mono text-[10px] tracking-[0.2em] text-ink-faint uppercase">
-                      Specimen
-                    </span>
-                    <span className="font-mono text-[11px] text-brass tabular-nums">
-                      No. {String(feature.id).padStart(4, "0")}
-                    </span>
-                  </div>
-                  <div className="mt-3 divide-y divide-rule/60">
-                    <Entry label="Status">
-                      <Stamp tone={feature.letter.status === 4 ? "ok" : "warn"}>
-                        {STATUS[feature.letter.status]}
-                      </Stamp>
-                    </Entry>
-                    <Entry label="Face value" emphasis>
-                      {formatEther(feature.letter.faceValue)}
-                    </Entry>
-                    <Entry label="Reserved fee">{formatEther(feature.letter.fee)}</Entry>
-                    <Entry label="Beneficiary">agent #{String(feature.letter.agentId)}</Entry>
-                    <Entry label="Examiner">{short(feature.letter.validator, 6, 4)}</Entry>
-                  </div>
-                  <div className="mt-4 flex items-center gap-3 border-t border-rule pt-4">
-                    <SealDot tone={feature.letter.status === 4 ? "verd" : "seal"} className="shrink-0" />
-                    <span className="text-[12px] leading-snug text-ink-dim">
-                      {feature.letter.status === 4
-                        ? "Sealed on a compliant presentation."
-                        : "Open. The seal is withheld until documents are examined."}
-                    </span>
-                  </div>
-                </div>
-              </Sheet>
             </Reveal>
-          )}
+
+            <Reveal delay={0.55} className="mt-8">
+              <div className="inline-flex items-center gap-2 font-mono text-[10.5px] tracking-[0.12em] text-ink-faint uppercase">
+                <CircleCheck className="size-3.5 text-verd" />
+                every refusal is a mined transaction — open one
+              </div>
+            </Reveal>
+          </div>
+
+          <HeroSpecimen tags={tags} />
         </div>
       </section>
 
-      {/* ── the lineage: a real instrument, 1854 ─────────────────────── */}
-      <section className="pb-4">
-        <Reveal>
-          <figure className="group relative overflow-hidden border border-rule">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="/wechsel-1854.jpg"
-              alt="A bill of exchange drawn in Vienna in 1854, with an engraved ornamental border and copperplate script"
-              className="w-full transition-transform duration-[2.5s] ease-out [filter:sepia(0.22)_brightness(0.9)_contrast(1.03)] group-hover:scale-[1.015]"
-            />
-            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-stock-950/90 via-stock-950/10 to-stock-950/35" />
-            <div className="hatch pointer-events-none absolute inset-0 opacity-30" />
-            <figcaption className="absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-x-8 gap-y-2 p-5 sm:p-7">
-              <span className="max-w-[58ch] text-[13px] leading-relaxed text-ink sm:text-[14px]">
-                <span className="font-display text-[17px] text-brass-soft sm:text-[19px]">
-                  Vienna, 30 October 1854.
-                </span>{" "}
-                A bill of exchange for one thousand gulden. The drawer names who pays, who is paid,
-                how much, and by when — the same four terms an AVAL mandate writes into the chain.
-              </span>
-              <span className="font-mono text-[9.5px] tracking-[0.14em] text-ink-faint uppercase">
-                public domain · wikimedia commons
-              </span>
-            </figcaption>
-          </figure>
-        </Reveal>
-      </section>
-
+      {/* ── the three terms, ATLAS-style strip ──────────────────────── */}
       <DrawRule />
-
-      {/* ── the refusal ─────────────────────────────────────────────── */}
-      <section className="py-20">
-        <Clause n="§ 01" eyebrow="the point" title="When the agent tried to pay itself, the chain refused">
-          Not a log claiming it was stopped — a transaction, in a block, that reverted with a decoded
-          reason. Every refusal here is broadcast with gas supplied by hand so it is{" "}
-          <em className="text-seal not-italic">mined as reverted</em> rather than dying quietly in
-          gas estimation. The applicant&apos;s money was never at risk, and there is a permanent
-          record proving it.
-        </Clause>
-
-        <ClauseBody className="mt-8">
-          <Sheet tone="seal" className="p-7">
-            <div className="pointer-events-none absolute inset-0 opacity-[0.06] [background:repeating-linear-gradient(-45deg,var(--color-seal)_0_1px,transparent_1px_9px)]" />
-            <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center">
-              <SealDot className="shrink-0" />
-              <div className="min-w-0 flex-1">
-                <div className="font-mono text-[11.5px] break-all text-seal">
-                  RecipientNotAllowed(0x02366e71864cda8b9246eEf1553868Fdf1C3c629)
-                </div>
-                <div className="mt-2 font-mono text-[10.5px] tracking-[0.14em] text-ink-faint uppercase">
-                  reverted · block 20279665 · testnet 968
+      <section className="py-10">
+        <div className="grid gap-x-10 gap-y-6 sm:grid-cols-3">
+          {TERMS.map(({ n, title, body }, i) => (
+            <Reveal key={n} delay={i * 0.07}>
+              <div className="flex gap-4">
+                <span className="font-display text-[22px] leading-none text-seal">{n}</span>
+                <div>
+                  <div className="text-[13.5px] font-semibold text-ink">{title}</div>
+                  <div className="mt-1 text-[12.5px] leading-relaxed text-ink-dim">{body}</div>
                 </div>
               </div>
-              {feature && (
-                <Link
-                  href={`/letter/${feature.id}#timeline`}
-                  className="group inline-flex shrink-0 items-center gap-2 font-mono text-[11px] tracking-[0.16em] text-seal uppercase"
-                >
-                  See it
-                  <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
-                </Link>
-              )}
-            </div>
-          </Sheet>
-        </ClauseBody>
-
-        <MarginNote>
-          A safety property that lives in the agent is not a safety property. The runtime checks its
-          own intent before spending gas, and the demo submits a forbidden one anyway — because if
-          that check is buggy, compromised or skipped, the credit still refuses.
-        </MarginNote>
+            </Reveal>
+          ))}
+        </div>
       </section>
-
-      <DrawRule />
-
-      {/* ── the three properties ────────────────────────────────────── */}
-      <section className="py-20">
-        <Clause n="§ 02" eyebrow="how it holds" title="Three properties, each one a test in the repository" />
-        <ClauseBody className="mt-9">
-          <div className="divide-y divide-rule border-y border-rule">
-            {PROPERTIES.map(({ n, title, body }, i) => (
-              <Reveal key={title} delay={i * 0.07}>
-                <div className="grid gap-x-8 gap-y-2 py-7 sm:grid-cols-[40px_minmax(0,1fr)]">
-                  <span className="font-display text-[20px] leading-none text-brass/70">{n}</span>
-                  <div>
-                    <h3 className="font-display text-[21px] leading-tight text-ink">{title}</h3>
-                    <p className="mt-2.5 max-w-[62ch] text-[14.5px] leading-[1.7] text-ink-soft">
-                      {body}
-                    </p>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </ClauseBody>
-      </section>
-
       <DrawRule />
 
       {/* ── the register ────────────────────────────────────────────── */}
       <section className="py-20">
-        <Clause n="§ 03" eyebrow="read from the chain" title="The register">
-          Every figure is read when this page renders. Nothing is cached in a database and nothing is
-          asserted here that you cannot check on the explorer yourself.
-        </Clause>
-
+        <Clause n="§ 01" eyebrow="read from the chain" title="The register" />
         {error && (
           <ClauseBody className="mt-6">
             <Sheet tone="seal" className="p-4 text-[13px] text-seal">
@@ -270,9 +182,9 @@ export default async function Home() {
         <ClauseBody className="mt-9">
           <div className="grid gap-x-10 gap-y-8 border-y border-rule py-8 sm:grid-cols-3">
             {[
-              { n: Number(total), label: "credits issued", tone: "text-ink", d: 0 },
-              { n: settled, label: "settled against documents", tone: "text-verd", d: 0 },
-              { n: moved, label: `${info.symbol} moved under mandate`, tone: "text-brass", d: 3 },
+              { n: Number(total), label: "credits issued", tone: "figure-ink", d: 0 },
+              { n: settled, label: "settled against documents", tone: "figure-verd", d: 0 },
+              { n: moved, label: `${info.symbol} moved under mandate`, tone: "figure-brass", d: 3 },
             ].map((s, i) => (
               <Reveal key={s.label} delay={i * 0.07}>
                 <div className={`font-display text-[46px] leading-none tabular-nums ${s.tone}`}>
@@ -367,12 +279,40 @@ export default async function Home() {
 
       <DrawRule />
 
+      {/* ── the refusal, compressed ─────────────────────────────────── */}
+      <section className="py-20">
+        <Clause n="§ 02" eyebrow="the point" title="Refusals are mined, not logged." />
+        <ClauseBody className="mt-8">
+          <Sheet tone="seal" className="p-6 sm:p-7">
+            <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
+              <SealDot className="shrink-0" />
+              <div className="min-w-0 flex-1">
+                <div className="font-mono text-[11.5px] break-all text-seal">
+                  RecipientNotAllowed(0x02366e…C3c629)
+                </div>
+                <div className="mt-1.5 font-mono text-[10px] tracking-[0.14em] text-ink-faint uppercase">
+                  block 20279665 · a payment the mandate did not name
+                </div>
+              </div>
+              {feature && (
+                <Link
+                  href={`/letter/${feature.id}#timeline`}
+                  className="group inline-flex shrink-0 items-center gap-2 font-mono text-[11px] tracking-[0.16em] text-seal uppercase"
+                >
+                  See it on-chain
+                  <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+                </Link>
+              )}
+            </div>
+          </Sheet>
+        </ClauseBody>
+      </section>
+
+      <DrawRule />
+
       {/* ── deployment ──────────────────────────────────────────────── */}
       <section className="py-20">
-        <Clause n="§ 04" eyebrow="verified source" title="Deployment" id="deployment">
-          All five contracts are verified on {info.name}&apos;s Blockscout instance, so the mandate
-          logic running on-chain is readable against the repository.
-        </Clause>
+        <Clause n="§ 03" eyebrow="verified source" title="Deployment" id="deployment" />
         <ClauseBody className="mt-8">
           <div className="divide-y divide-rule/60 border-y border-rule">
             {Object.entries(c).map(([name, address]) => (

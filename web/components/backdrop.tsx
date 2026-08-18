@@ -189,7 +189,7 @@ function LedgerField() {
     };
   }, []);
 
-  return <canvas ref={ref} className="absolute inset-0 h-full w-full" />;
+  return <canvas ref={ref} className="plate-only absolute inset-0 h-full w-full" />;
 }
 
 export function Backdrop() {
@@ -206,19 +206,19 @@ export function Backdrop() {
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden>
       {/* the page's own ambient gradients — body is transparent by design */}
-      <div className="absolute inset-0 bg-[radial-gradient(1400px_700px_at_50%_-12%,rgba(232,201,153,0.10),transparent_60%),radial-gradient(1000px_600px_at_8%_18%,rgba(142,22,22,0.06),transparent_60%)]" />
+      <div className="plate-only absolute inset-0 bg-[radial-gradient(1400px_700px_at_50%_-12%,rgba(232,201,153,0.10),transparent_60%),radial-gradient(1000px_600px_at_8%_18%,rgba(142,22,22,0.06),transparent_60%)]" />
       <motion.div style={reduced ? { opacity: 0.45 } : { opacity: dimmed }} className="absolute inset-0">
-      <div className="absolute -top-1/3 left-1/2 h-[95vh] w-[130vw] -translate-x-1/2 animate-drift rounded-full bg-[radial-gradient(closest-side,rgba(232,201,153,0.18),transparent_70%)] blur-3xl" />
-      <div className="absolute top-1/3 -right-1/4 h-[75vh] w-[75vw] animate-drift rounded-full bg-[radial-gradient(closest-side,rgba(232,201,153,0.16),transparent_70%)] blur-3xl [animation-delay:-16s]" />
-      <div className="absolute bottom-0 -left-1/4 h-[60vh] w-[70vw] animate-drift rounded-full bg-[radial-gradient(closest-side,rgba(142,22,22,0.16),transparent_70%)] blur-3xl [animation-delay:-28s]" />
-      <div className="absolute inset-0 opacity-90">
+      <div className="plate-only absolute -top-1/3 left-1/2 h-[95vh] w-[130vw] -translate-x-1/2 animate-drift rounded-full bg-[radial-gradient(closest-side,rgba(232,201,153,0.18),transparent_70%)] blur-3xl" />
+      <div className="plate-only absolute top-1/3 -right-1/4 h-[75vh] w-[75vw] animate-drift rounded-full bg-[radial-gradient(closest-side,rgba(232,201,153,0.16),transparent_70%)] blur-3xl [animation-delay:-16s]" />
+      <div className="plate-only absolute bottom-0 -left-1/4 h-[60vh] w-[70vw] animate-drift rounded-full bg-[radial-gradient(closest-side,rgba(142,22,22,0.16),transparent_70%)] blur-3xl [animation-delay:-28s]" />
+      <div className="guilloche-layer absolute inset-0 opacity-90">
         <Guilloche />
       </div>
       <LedgerField />
       <div className="hatch absolute inset-0 opacity-40" />
       <div className="grain absolute inset-0 opacity-30" />
       </motion.div>
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_55%,rgba(10,8,7,0.72)_100%)]" />
+      <div className="backdrop-scrim absolute inset-0 bg-[linear-gradient(180deg,transparent_55%,rgba(10,8,7,0.72)_100%)]" />
     </div>
   );
 }

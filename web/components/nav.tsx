@@ -4,6 +4,7 @@ import { motion, useScroll, useSpring, useTransform } from "motion/react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { ConnectButton } from "./wallet";
+import { ThemeToggle } from "./theme-toggle";
 import { Mark } from "./mark";
 import type { ChainId } from "@/lib/chain";
 
@@ -19,20 +20,17 @@ export function Nav({ chainId, chainLabel }: { chainId: ChainId; chainLabel: str
   const { scrollY, scrollYProgress } = useScroll();
   // Reading progress, sprung so it glides — a document you are working through.
   const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 28, mass: 0.4 });
-  const blur = useTransform(scrollY, [0, 120], [0, 16]);
-  const border = useTransform(scrollY, [0, 120], ["rgba(43,35,27,0)", "rgba(43,35,27,1)"]);
-  const bg = useTransform(scrollY, [0, 120], ["rgba(10,8,7,0)", "rgba(10,8,7,0.88)"]);
+  // Opacity-only animation so the glass itself is painted with theme tokens —
+  // a hardcoded rgba here left a dark band across the paper theme.
+  const solidity = useTransform(scrollY, [0, 120], [0, 1]);
 
   return (
-    <motion.header
-      style={{
-        backdropFilter: useTransform(blur, (b) => `blur(${b}px)`),
-        borderColor: border,
-        background: bg,
-      }}
-      className="sticky top-0 z-50 border-b"
-    >
-      <div className="mx-auto flex max-w-[1180px] flex-wrap items-center gap-x-8 gap-y-3 px-6 py-3">
+    <header className="sticky top-0 z-50">
+      <motion.div
+        style={{ opacity: solidity }}
+        className="absolute inset-0 border-b border-rule bg-stock-900/85 backdrop-blur-xl"
+      />
+      <div className="relative mx-auto flex max-w-[1180px] flex-wrap items-center gap-x-8 gap-y-3 px-6 py-3">
         <Link href="/" className="group flex items-center gap-2.5">
           <Mark className="size-[22px] shrink-0 transition-transform duration-500 group-hover:rotate-180" />
           <span className="font-display text-[19px] leading-none tracking-[0.26em] text-ink">
@@ -75,6 +73,7 @@ export function Nav({ chainId, chainLabel }: { chainId: ChainId; chainLabel: str
               {chainLabel}
             </span>
           </span>
+          <ThemeToggle />
           <ConnectButton chainId={chainId} />
         </div>
       </div>
@@ -82,6 +81,6 @@ export function Nav({ chainId, chainLabel }: { chainId: ChainId; chainLabel: str
         style={{ scaleX: progress }}
         className="absolute bottom-0 left-0 h-[2px] w-full origin-left bg-gradient-to-r from-brass-deep via-brass to-brass-soft"
       />
-    </motion.header>
+    </header>
   );
 }

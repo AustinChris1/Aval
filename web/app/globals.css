@@ -12,39 +12,34 @@
  * colour, not an error colour. It is the most saturated thing on the page, which
  * is why the eye lands exactly where the argument is.
  */
-@theme {
-  /* stock — warm near-black, like aged printing ink */
-  --color-stock-950: #050403;
-  --color-stock-900: #0a0807;
-  --color-stock-850: #0f0c0a;
-  --color-stock-800: #151110;
-  --color-stock-750: #1d1815;
-  --color-stock-700: #27201b;
+@theme inline {
+  --color-stock-950: var(--tk-stock-950);
+  --color-stock-900: var(--tk-stock-900);
+  --color-stock-850: var(--tk-stock-850);
+  --color-stock-800: var(--tk-stock-800);
+  --color-stock-750: var(--tk-stock-750);
+  --color-stock-700: var(--tk-stock-700);
 
-  --color-rule: #2b231b;
-  --color-rule-bright: #3e3327;
+  --color-rule: var(--tk-rule);
+  --color-rule-bright: var(--tk-rule-bright);
 
-  /* ink — cream, straight from the palette's lightest stop */
-  --color-ink: #f8eedf;
-  --color-ink-soft: #d9cdba;
-  --color-ink-dim: #9c907c;
-  --color-ink-faint: #6e6452;
+  --color-ink: var(--tk-ink);
+  --color-ink-soft: var(--tk-ink-soft);
+  --color-ink-dim: var(--tk-ink-dim);
+  --color-ink-faint: var(--tk-ink-faint);
 
-  /* the granted seal — bright cream-gold for success and primary actions */
-  --color-verd: #e8c999;
-  --color-verd-deep: #6e5632;
-  --color-verd-glow: #f8eedf;
+  --color-verd: var(--tk-verd);
+  --color-verd-deep: var(--tk-verd-deep);
+  --color-verd-glow: var(--tk-verd-glow);
 
-  /* the refused seal — the palette's crimson, #8E1616 at its core */
-  --color-seal: #d24837;
-  --color-seal-bright: #ea6c55;
-  --color-seal-deep: #8e1616;
-  --color-seal-bg: #1e0a07;
+  --color-seal: var(--tk-seal);
+  --color-seal-bright: var(--tk-seal-bright);
+  --color-seal-deep: var(--tk-seal-deep);
+  --color-seal-bg: var(--tk-seal-bg);
 
-  /* sand — ornament, rules, the engraver's line */
-  --color-brass: #e8c999;
-  --color-brass-deep: #7a5f36;
-  --color-brass-soft: #f4dfc0;
+  --color-brass: var(--tk-brass);
+  --color-brass-deep: var(--tk-brass-deep);
+  --color-brass-soft: var(--tk-brass-soft);
 
   --font-display: var(--font-instrument), ui-serif, Georgia, serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
@@ -54,6 +49,65 @@
   --animate-seal: seal 3s ease-in-out infinite;
   --animate-scan: scan 8s linear infinite;
   --animate-shimmer: shimmer 2.4s linear infinite;
+}
+
+/*
+ * Runtime themes. @theme inline maps every Tailwind utility onto the --tk-*
+ * custom properties, so switching theme is switching variable values on <html>
+ * and every component follows without a class change. Dark is the engraving
+ * plate; light is the paper the instrument was printed on — the same four
+ * palette anchors with their roles inverted.
+ */
+:root {
+  --tk-stock-950: #050403;
+  --tk-stock-900: #0a0807;
+  --tk-stock-850: #0f0c0a;
+  --tk-stock-800: #151110;
+  --tk-stock-750: #1d1815;
+  --tk-stock-700: #27201b;
+  --tk-rule: #2b231b;
+  --tk-rule-bright: #3e3327;
+  --tk-ink: #f8eedf;
+  --tk-ink-soft: #d9cdba;
+  --tk-ink-dim: #9c907c;
+  --tk-ink-faint: #6e6452;
+  --tk-verd: #e8c999;
+  --tk-verd-deep: #6e5632;
+  --tk-verd-glow: #f8eedf;
+  --tk-seal: #d24837;
+  --tk-seal-bright: #ea6c55;
+  --tk-seal-deep: #8e1616;
+  --tk-seal-bg: #1e0a07;
+  --tk-brass: #e8c999;
+  --tk-brass-deep: #7a5f36;
+  --tk-brass-soft: #f4dfc0;
+  color-scheme: dark;
+}
+
+html[data-theme="light"] {
+  --tk-stock-950: #fffdf8;
+  --tk-stock-900: #f8eedf;
+  --tk-stock-850: #f3e6d1;
+  --tk-stock-800: #eddcc0;
+  --tk-stock-750: #e5d1ae;
+  --tk-stock-700: #d9c199;
+  --tk-rule: #d8c8ab;
+  --tk-rule-bright: #c2ad87;
+  --tk-ink: #171310;
+  --tk-ink-soft: #3f372e;
+  --tk-ink-dim: #6e6452;
+  --tk-ink-faint: #97896f;
+  --tk-verd: #7a5f36;
+  --tk-verd-deep: #b99c66;
+  --tk-verd-glow: #58421f;
+  --tk-seal: #8e1616;
+  --tk-seal-bright: #a82b1d;
+  --tk-seal-deep: #c78a7a;
+  --tk-seal-bg: #f3ded4;
+  --tk-brass: #8a6a33;
+  --tk-brass-deep: #c2a878;
+  --tk-brass-soft: #6e5427;
+  color-scheme: light;
 }
 
 @keyframes drift {
@@ -93,7 +147,8 @@
 }
 
 html {
-  background: var(--color-stock-900);
+  background: var(--tk-stock-900);
+  transition: background 0.4s ease;
   scroll-behavior: auto;
 }
 
@@ -305,6 +360,58 @@ html.lenis body {
   box-shadow:
     0 1px 0 0 rgba(255, 255, 255, 0.06) inset,
     0 24px 48px -24px rgba(0, 0, 0, 0.75);
+}
+html[data-theme="light"] .sheet-depth {
+  background: linear-gradient(180deg, #fffdf8, #faf2e2);
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.8) inset,
+    0 18px 40px -22px rgba(64, 48, 24, 0.35);
+}
+
+/* On paper the primary action is set in ink, the way a stamp is. */
+html[data-theme="light"] .btn-verd {
+  background: linear-gradient(180deg, #2a231c, #171310);
+  color: #f8eedf;
+  box-shadow: 0 10px 26px -12px rgba(23, 19, 16, 0.6);
+}
+html[data-theme="light"] .btn-brass {
+  background: linear-gradient(180deg, #a82b1d, #8e1616);
+  color: #f8eedf;
+  box-shadow: 0 10px 26px -12px rgba(142, 22, 22, 0.55);
+}
+html[data-theme="light"] .figure-ink {
+  background: linear-gradient(180deg, #171310, #3f372e);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+html[data-theme="light"] .figure-verd,
+html[data-theme="light"] .figure-brass {
+  background: linear-gradient(180deg, #58421f, #8a6a33);
+  -webkit-background-clip: text;
+  background-clip: text;
+}
+html[data-theme="light"] .glow-verd,
+html[data-theme="light"] .glow-seal,
+html[data-theme="light"] .glow-brass {
+  box-shadow: 0 14px 34px -20px rgba(64, 48, 24, 0.4);
+}
+html[data-theme="light"] .brass-text {
+  background: linear-gradient(100deg, #58421f 0%, #a1793a 40%, #8e1616 60%, #58421f 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* The atmosphere belongs to the plate; the paper stays quiet. */
+html[data-theme="light"] .plate-only {
+  display: none;
+}
+html[data-theme="light"] .guilloche-layer {
+  opacity: 0.55 !important;
+}
+html[data-theme="light"] .backdrop-scrim {
+  background: linear-gradient(180deg, transparent 55%, rgba(248, 238, 223, 0.85) 100%) !important;
 }
 
 .glow-verd {
