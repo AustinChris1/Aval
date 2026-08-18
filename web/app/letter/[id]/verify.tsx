@@ -6,6 +6,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { Check, Loader2, ShieldCheck, TriangleAlert, X } from "lucide-react";
 import type { ChainId } from "@/lib/chain";
 import { Badge, Panel } from "@/components/ui";
+import { useToast } from "@/components/toast";
 
 type Result = {
   documents: Hex | null;
@@ -31,6 +32,7 @@ export function VerifyPanel(props: {
   const [body, setBody] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   async function run() {
     setBusy(true);
@@ -91,8 +93,15 @@ export function VerifyPanel(props: {
       });
 
       setChecks(out);
+      const passed = out.filter((c) => c.ok).length;
+      if (passed === out.length) {
+        toast({ tone: "sealed", title: "Compliant presentation", detail: `${passed}/${out.length} checks passed, verified in your browser.` });
+      } else {
+        toast({ tone: "refused", title: "Discrepancy", detail: `${passed}/${out.length} checks passed.` });
+      }
     } catch (e) {
       setError((e as Error).message);
+      toast({ tone: "refused", title: "Verification failed", detail: (e as Error).message });
     } finally {
       setBusy(false);
     }

@@ -5,6 +5,7 @@ import { SmoothScroll } from "@/components/smooth-scroll";
 import { Backdrop } from "@/components/backdrop";
 import { Nav } from "@/components/nav";
 import { WalletProvider } from "@/components/wallet";
+import { ToastProvider } from "@/components/toast";
 import { DEFAULT_CHAIN_ID, chainInfo } from "@/lib/chain";
 
 const display = Instrument_Serif({
@@ -42,6 +43,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="min-h-screen antialiased">
+        <ToastProvider>
         <WalletProvider>
           <SmoothScroll />
           <Backdrop />
@@ -60,6 +62,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </div>
           </footer>
         </WalletProvider>
+        </ToastProvider>
       </body>
     </html>
   );

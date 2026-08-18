@@ -12,6 +12,8 @@ import {
 } from "@/lib/actions";
 import { abis, contracts, type ChainId, CHAINS } from "@/lib/chain";
 import { useWallet } from "./wallet";
+import { useToast } from "./toast";
+import { CHAINS as CHAIN_INFO } from "@/lib/chain";
 
 type Outcome = {
   ok: boolean;
@@ -47,6 +49,25 @@ export function ActionForm({
   const [busy, setBusy] = useState<null | "demo" | "wallet">(null);
   const [outcome, setOutcome] = useState<Outcome | null>(null);
   const { address, send } = useWallet();
+  const { toast } = useToast();
+
+  const announce = (o: Outcome) => {
+    const href = o.hash ? `${CHAIN_INFO[chainId].explorer}/tx/${o.hash}` : undefined;
+    if (!o.ok) {
+      toast({ tone: "refused", title: "Call failed", detail: o.message, href });
+    } else if (o.refusalRecorded) {
+      toast({
+        tone: "refused",
+        title: "Refused — recorded on-chain",
+        detail: `${action.label} was blocked by the mandate, as intended.`,
+        href,
+      });
+    } else if (o.status === "reverted") {
+      toast({ tone: "refused", title: "Transaction reverted", detail: action.label, href });
+    } else {
+      toast({ tone: "sealed", title: `${action.label} — sent`, href });
+    }
+  };
 
   const set = (name: string, v: string) => setValues((prev) => ({ ...prev, [name]: v }));
 
@@ -61,19 +82,21 @@ export function ActionForm({
         body: JSON.stringify({ action: action.id, values, chainId }),
       });
       const data = await res.json();
-      if (!res.ok) {
-        setOutcome({ ok: false, message: data.error, from: data.from });
-      } else {
-        setOutcome({
-          ok: true,
-          hash: data.hash,
-          status: data.status,
-          from: data.from,
-          refusalRecorded: data.refusalRecorded,
-        });
-      }
+      const next: Outcome = !res.ok
+        ? { ok: false, message: data.error, from: data.from }
+        : {
+            ok: true,
+            hash: data.hash,
+            status: data.status,
+            from: data.from,
+            refusalRecorded: data.refusalRecorded,
+          };
+      setOutcome(next);
+      announce(next);
     } catch (e) {
-      setOutcome({ ok: false, message: (e as Error).message });
+      const next: Outcome = { ok: false, message: (e as Error).message };
+      setOutcome(next);
+      announce(next);
     } finally {
       setBusy(null);
     }
@@ -95,14 +118,18 @@ export function ActionForm({
         gas: action.expectRevert ? 500_000n : undefined,
         chainId,
       });
-      setOutcome({ ok: true, hash, from: address ?? undefined });
+      const next: Outcome = { ok: true, hash, from: address ?? undefined };
+      setOutcome(next);
+      announce(next);
     } catch (e) {
       const err = e as { shortMessage?: string; message?: string; metaMessages?: string[] };
       const decoded = (err.metaMessages ?? []).find((m) => /^Error: \w+\(/.test(m.trim()));
-      setOutcome({
+      const next: Outcome = {
         ok: false,
         message: decoded?.trim().replace(/^Error:\s*/, "") ?? err.shortMessage ?? err.message,
-      });
+      };
+      setOutcome(next);
+      announce(next);
     } finally {
       setBusy(null);
     }

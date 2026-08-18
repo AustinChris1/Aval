@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useState } 
 import { createWalletClient, custom, type Address, type EIP1193Provider, type Hex } from "viem";
 import { Wallet, LogOut } from "lucide-react";
 import { CHAINS, viemChain, type ChainId } from "@/lib/chain";
+import { useToast } from "./toast";
 
 type Ctx = {
   address: Address | null;
@@ -173,6 +174,7 @@ export function useWallet() {
 
 export function ConnectButton({ chainId }: { chainId: ChainId }) {
   const { address, chainId: current, available, connect, disconnect, ensureChain } = useWallet();
+  const { toast } = useToast();
   const [busy, setBusy] = useState(false);
   const wrongChain = address && current !== null && current !== chainId;
 
@@ -190,7 +192,8 @@ export function ConnectButton({ chainId }: { chainId: ChainId }) {
         onClick={() => {
           setBusy(true);
           connect()
-            .catch(() => {})
+            .then(() => toast({ tone: "sealed", title: "Wallet connected" }))
+            .catch(() => toast({ tone: "note", title: "Connection declined" }))
             .finally(() => setBusy(false));
         }}
         disabled={busy}
@@ -209,7 +212,8 @@ export function ConnectButton({ chainId }: { chainId: ChainId }) {
           setBusy(true);
           // A rejection here is the user declining in the wallet — not an error.
           ensureChain(chainId)
-            .catch(() => {})
+            .then(() => toast({ tone: "sealed", title: `Switched to ${CHAINS[chainId].name}` }))
+            .catch(() => toast({ tone: "note", title: "Network switch declined" }))
             .finally(() => setBusy(false));
         }}
         disabled={busy}
@@ -222,7 +226,10 @@ export function ConnectButton({ chainId }: { chainId: ChainId }) {
 
   return (
     <button
-      onClick={disconnect}
+      onClick={() => {
+        disconnect();
+        toast({ tone: "note", title: "Wallet disconnected" });
+      }}
       title="Disconnect"
       className="group inline-flex items-center gap-1.5 rounded-lg border border-rule bg-stock-800/70 px-3 py-1.5 font-mono text-[12px] text-ink-soft transition-colors hover:border-rule-bright"
     >

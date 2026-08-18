@@ -16,6 +16,7 @@ import { keccak256, parseEther, stringToHex, toFunctionSelector, type Address, t
 import { abis, contracts, CHAINS, type ChainId } from "@/lib/chain";
 import { Panel } from "@/components/ui";
 import { useWallet } from "./wallet";
+import { useToast } from "./toast";
 
 /**
  * Issuing is the one write with a struct argument and a mandate to compose, so it
@@ -33,6 +34,7 @@ export function IssueForm({
   defaults: { vendor: Address; validator: Address; agentId: string };
 }) {
   const { address, send } = useWallet();
+  const { toast } = useToast();
   const [agentId, setAgentId] = useState(defaults.agentId);
   const [faceValue, setFaceValue] = useState("0.05");
   const [fee, setFee] = useState("0.005");
@@ -126,13 +128,18 @@ export function IssueForm({
         chainId,
       });
       setResult({ ok: true, hash });
+      toast({
+        tone: "sealed",
+        title: "Credit issued",
+        detail: `${faceValue} locked under your mandate.`,
+        href: `${CHAINS[chainId].explorer}/tx/${hash}`,
+      });
     } catch (e) {
       const err = e as { shortMessage?: string; message?: string; metaMessages?: string[] };
       const decoded = (err.metaMessages ?? []).find((m) => /^Error: \w+\(/.test(m.trim()));
-      setResult({
-        ok: false,
-        message: decoded?.trim().replace(/^Error:\s*/, "") ?? err.shortMessage ?? err.message,
-      });
+      const message = decoded?.trim().replace(/^Error:\s*/, "") ?? err.shortMessage ?? err.message;
+      setResult({ ok: false, message });
+      toast({ tone: "refused", title: "Issue failed", detail: message });
     } finally {
       setBusy(false);
     }
