@@ -1,53 +1,44 @@
 /**
- * The AVAL seal.
+ * The AVAL mark: the AV Lozenge.
  *
- * "Per aval" is a guarantee written directly onto a bill of exchange — a third
- * party endorsing that the instrument will be honoured. The mark is that idea:
- * an engraved seal with a chord struck across it, because an aval is a signature
- * laid *over* someone else's paper.
+ * An A laid over an inverted A — a V — so the two letters of the name form the
+ * lozenge of a bill of exchange between them, with a crimson diamond seal at
+ * the crossing. Every element derives from what the product is: two parties'
+ * strokes crossing, and a seal standing at the heart of the instrument.
  *
- * Drawn rather than lettered so the identity does not depend on a webfont, and so
- * the same geometry can be inked in brass, verdigris or oxblood as the state
- * requires.
+ * Drawn as strokes so it inherits the theme: the A takes the surrounding text
+ * colour, the V takes the muted sand, and the seal keeps its crimson on both
+ * grounds via the .aval-mark-seal rule in globals.css. Reduces cleanly to 16px,
+ * which is why it also serves as the favicon (app/icon.svg).
  */
 export function Mark({
   className = "",
-  tone = "brass",
+  tone = "ink",
 }: {
   className?: string;
   tone?: "brass" | "verd" | "seal" | "ink";
 }) {
-  const stroke = {
+  const aStroke = {
+    ink: "currentColor",
     brass: "var(--color-brass)",
     verd: "var(--color-verd)",
     seal: "var(--color-seal)",
-    ink: "var(--color-ink)",
   }[tone];
 
   return (
-    <svg viewBox="0 0 48 48" fill="none" className={className} aria-hidden>
-      {/* the seal: two concentric rings, the outer one milled like a coin */}
-      <circle cx="24" cy="24" r="21" stroke={stroke} strokeWidth="1.1" opacity="0.5" />
-      <circle cx="24" cy="24" r="16.5" stroke={stroke} strokeWidth="1.6" />
-      <g stroke={stroke} strokeWidth="1.1" opacity="0.55">
-        {Array.from({ length: 24 }).map((_, i) => {
-          const a = (i / 24) * Math.PI * 2;
-          const r1 = 18.6;
-          const r2 = 21;
-          return (
-            <line
-              key={i}
-              x1={24 + Math.cos(a) * r1}
-              y1={24 + Math.sin(a) * r1}
-              x2={24 + Math.cos(a) * r2}
-              y2={24 + Math.sin(a) * r2}
-            />
-          );
-        })}
-      </g>
-      {/* the A of aval, cut as a chord across the seal */}
-      <path d="M17 31.5 L24 15.5 L31 31.5" stroke={stroke} strokeWidth="2.1" strokeLinecap="square" />
-      <path d="M19.9 25.6 H28.1" stroke={stroke} strokeWidth="2.1" strokeLinecap="square" />
+    <svg viewBox="0 0 200 200" fill="none" className={className} aria-hidden>
+      {/* the V — the counterparty's stroke, set back in muted sand */}
+      <path
+        d="M 55 35 L 100 165 L 145 35"
+        stroke="var(--color-brass-deep)"
+        strokeWidth="17"
+        strokeLinecap="square"
+      />
+      {/* the A — the principal's stroke, in ink */}
+      <path d="M 55 165 L 100 35 L 145 165" stroke={aStroke} strokeWidth="17" strokeLinecap="square" />
+      <path d="M 76 118 L 124 118" stroke={aStroke} strokeWidth="17" strokeLinecap="square" />
+      {/* the seal at the crossing */}
+      <path d="M 100 83 L 117 100 L 100 117 L 83 100 Z" className="aval-mark-seal" />
     </svg>
   );
 }

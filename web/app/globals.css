@@ -403,6 +403,15 @@ html[data-theme="light"] .brass-text {
   color: transparent;
 }
 
+/* The mark's seal keeps true crimson on both grounds — the theme's seal
+   token shifts for text contrast, but a wax seal does not change colour. */
+.aval-mark-seal {
+  fill: #a32017;
+}
+html[data-theme="light"] .aval-mark-seal {
+  fill: #8e1616;
+}
+
 /* The atmosphere belongs to the plate; the paper stays quiet. */
 html[data-theme="light"] .plate-only {
   display: none;
