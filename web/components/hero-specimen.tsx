@@ -71,7 +71,7 @@ export function HeroSpecimen({ tags }: { tags: Tag[] }) {
             animate={reduced ? undefined : { opacity: 1, scale: 1 }}
             transition={{ delay: 0.7 + i * 0.16, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
             style={{ left: t.x, top: t.y, transform: "translateZ(46px)" }}
-            className="absolute"
+            className="absolute hidden md:block"
           >
             {t.href ? (
               <a
@@ -100,6 +100,35 @@ export function HeroSpecimen({ tags }: { tags: Tag[] }) {
         ))}
       </motion.div>
 
+      {/* the same tags, as a wrap row where there is no room to float them */}
+      <div className="mt-4 flex flex-wrap gap-2 md:hidden">
+        {tags.map((t) =>
+          t.href ? (
+            <a
+              key={t.label}
+              href={t.href}
+              target="_blank"
+              rel="noreferrer"
+              className={`border px-2.5 py-1.5 font-mono text-[9.5px] tracking-[0.1em] uppercase ${
+                t.tone === "seal"
+                  ? "border-seal bg-seal-bg/90 text-seal"
+                  : "border-brass-deep bg-stock-950/85 text-brass-soft"
+              }`}
+            >
+              <span className="block text-[8px] opacity-60">{t.label}</span>
+              {t.value}
+            </a>
+          ) : (
+            <div
+              key={t.label}
+              className="border border-brass-deep bg-stock-950/85 px-2.5 py-1.5 font-mono text-[9.5px] tracking-[0.1em] text-brass-soft uppercase"
+            >
+              <span className="block text-[8px] opacity-60">{t.label}</span>
+              {t.value}
+            </div>
+          ),
+        )}
+      </div>
       <p className="mt-4 text-right font-mono text-[9px] tracking-[0.16em] text-ink-faint uppercase">
         bill of exchange · vienna 1854 · public domain
       </p>

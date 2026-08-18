@@ -72,7 +72,17 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     setChainId(Number(id));
   }, []);
 
-  const disconnect = useCallback(() => setAddress(null), []);
+  const disconnect = useCallback(() => {
+    setAddress(null);
+    // MetaMask supports revoking the connection permission; other wallets may
+    // not — for those, clearing our state is the whole gesture.
+    window.ethereum
+      ?.request({
+        method: "wallet_revokePermissions",
+        params: [{ eth_accounts: {} }] as never,
+      })
+      .catch(() => {});
+  }, []);
 
   /** Switches the wallet to BOT Chain, adding the network if it is unknown. */
   const ensureChain = useCallback(async (target: ChainId) => {
@@ -82,24 +92,43 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
     try {
       await eth.request({ method: "wallet_switchEthereumChain", params: [{ chainId: hex }] as never });
     } catch (e) {
-      // 4902: the wallet has never heard of this chain.
-      if ((e as { code?: number }).code === 4902) {
-        const c = CHAINS[target];
-        await eth.request({
-          method: "wallet_addEthereumChain",
-          params: [
-            {
-              chainId: hex,
-              chainName: c.name,
-              nativeCurrency: { name: "BOT", symbol: c.symbol, decimals: 18 },
-              rpcUrls: [c.rpc],
-              blockExplorerUrls: [c.explorer],
-            },
-          ] as never,
-        });
-      } else {
-        throw e;
-      }
+      /**
+       * EIP-3085 says an unknown chain is code 4902 — but MetaMask in practice
+       * often surfaces it as -32603 ("Unrecognized chain ID … Try adding the
+       * chain"), sometimes with the 4902 buried in data.originalError. Anything
+       * that smells like "the wallet has never heard of this chain" gets the
+       * add-chain flow; only genuinely different failures (like the user
+       * rejecting the switch, 4001) are rethrown.
+       */
+      const err = e as {
+        code?: number;
+        message?: string;
+        data?: { originalError?: { code?: number } };
+      };
+      const unknownChain =
+        err.code === 4902 ||
+        err.data?.originalError?.code === 4902 ||
+        err.code === -32603 ||
+        /unrecognized chain|unknown chain|add.*chain/i.test(err.message ?? "");
+      if (!unknownChain) throw e;
+
+      const c = CHAINS[target];
+      await eth.request({
+        method: "wallet_addEthereumChain",
+        params: [
+          {
+            chainId: hex,
+            chainName: c.name,
+            nativeCurrency: { name: "BOT", symbol: c.symbol, decimals: 18 },
+            rpcUrls: [c.rpc],
+            blockExplorerUrls: [c.explorer],
+          },
+        ] as never,
+      });
+      // Adding usually switches as a side effect, but not in every wallet.
+      await eth
+        .request({ method: "wallet_switchEthereumChain", params: [{ chainId: hex }] as never })
+        .catch(() => {});
     }
     setChainId(target);
   }, []);
@@ -160,7 +189,9 @@ export function ConnectButton({ chainId }: { chainId: ChainId }) {
       <button
         onClick={() => {
           setBusy(true);
-          connect().finally(() => setBusy(false));
+          connect()
+            .catch(() => {})
+            .finally(() => setBusy(false));
         }}
         disabled={busy}
         className="inline-flex items-center gap-1.5 rounded-lg border border-brass-deep bg-brass/10 px-3 py-1.5 text-[12.5px] font-medium text-brass-soft transition-colors hover:bg-brass/20 disabled:opacity-60"
@@ -174,10 +205,17 @@ export function ConnectButton({ chainId }: { chainId: ChainId }) {
   if (wrongChain) {
     return (
       <button
-        onClick={() => ensureChain(chainId)}
-        className="inline-flex items-center gap-1.5 rounded-lg border border-seal-deep bg-seal/10 px-3 py-1.5 text-[12.5px] font-medium text-seal transition-colors hover:bg-seal/20"
+        onClick={() => {
+          setBusy(true);
+          // A rejection here is the user declining in the wallet — not an error.
+          ensureChain(chainId)
+            .catch(() => {})
+            .finally(() => setBusy(false));
+        }}
+        disabled={busy}
+        className="inline-flex items-center gap-1.5 rounded-lg border border-seal-deep bg-seal/10 px-3 py-1.5 text-[12.5px] font-medium text-seal transition-colors hover:bg-seal/20 disabled:opacity-60"
       >
-        Switch to {CHAINS[chainId].name}
+        {busy ? "Confirm in wallet…" : `Switch to ${CHAINS[chainId].name}`}
       </button>
     );
   }
