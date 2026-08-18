@@ -56,9 +56,10 @@ export function Sheet({
     verd: "border-verd-deep",
     brass: "border-brass-deep",
   } as const;
+  const glow = { default: "", seal: "glow-seal", verd: "glow-verd", brass: "glow-brass" }[tone];
   return (
     <div
-      className={`relative border ${tones[tone]} bg-stock-850/70 backdrop-blur-[2px] ${className}`}
+      className={`sheet-depth relative border ${tones[tone]} ${glow} backdrop-blur-[2px] transition-shadow duration-300 ${className}`}
     >
       {children}
     </div>

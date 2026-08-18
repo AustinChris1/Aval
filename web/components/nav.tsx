@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "motion/react";
+import { motion, useScroll, useSpring, useTransform } from "motion/react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { ConnectButton } from "./wallet";
@@ -16,7 +16,9 @@ const LINKS = [
 
 export function Nav({ chainId, chainLabel }: { chainId: ChainId; chainLabel: string }) {
   const pathname = usePathname();
-  const { scrollY } = useScroll();
+  const { scrollY, scrollYProgress } = useScroll();
+  // Reading progress, sprung so it glides — a document you are working through.
+  const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 28, mass: 0.4 });
   const blur = useTransform(scrollY, [0, 120], [0, 16]);
   const border = useTransform(scrollY, [0, 120], ["rgba(38,48,73,0)", "rgba(38,48,73,1)"]);
   const bg = useTransform(scrollY, [0, 120], ["rgba(10,13,24,0)", "rgba(10,13,24,0.88)"]);
@@ -49,7 +51,7 @@ export function Nav({ chainId, chainLabel }: { chainId: ChainId; chainLabel: str
                 key={href}
                 href={href}
                 className={`group relative py-1 font-mono text-[11px] tracking-[0.16em] uppercase transition-colors ${
-                  active ? "text-brass" : "text-ink-faint hover:text-ink"
+                  active ? "text-brass" : "text-ink-dim hover:text-ink"
                 }`}
               >
                 {label}
@@ -76,6 +78,10 @@ export function Nav({ chainId, chainLabel }: { chainId: ChainId; chainLabel: str
           <ConnectButton chainId={chainId} />
         </div>
       </div>
+      <motion.div
+        style={{ scaleX: progress }}
+        className="absolute bottom-0 left-0 h-[2px] w-full origin-left bg-gradient-to-r from-brass-deep via-brass to-brass-soft"
+      />
     </motion.header>
   );
 }

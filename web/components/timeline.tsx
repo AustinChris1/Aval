@@ -54,7 +54,7 @@ export function Timeline({ rows, txBase }: { rows: Row[]; txBase: string }) {
             className="relative flex gap-4"
             initial={reduced ? undefined : { opacity: 0, x: -12 }}
             whileInView={reduced ? undefined : { opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-40px" }}
+            viewport={{ once: true, amount: 0.05 }}
             transition={{ duration: 0.5, delay: Math.min(i * 0.05, 0.4), ease: [0.16, 1, 0.3, 1] }}
           >
             <div

@@ -220,7 +220,7 @@ export function IssueForm({
           onClick={submit}
           disabled={busy || !address}
           title={address ? undefined : "Connect a wallet to lock your own funds"}
-          className="inline-flex items-center gap-2 rounded-lg bg-brass px-5 py-2.5 text-[14px] font-semibold text-stock-950 transition-transform hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-50"
+          className="btn-brass inline-flex items-center gap-2 rounded-sm px-6 py-3 text-[14px] font-semibold transition-transform hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-50"
         >
           {busy ? <Loader2 className="size-4 animate-spin" /> : <PenLine className="size-4" />}
           {busy ? "Signing…" : `Issue and lock ${faceValue} ${CHAINS[chainId].symbol}`}

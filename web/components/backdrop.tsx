@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef } from "react";
+import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "motion/react";
 
 /**
  * Builds a hypotrochoid — the interlaced curve that engraved security printing
@@ -32,10 +33,10 @@ function Guilloche() {
       aria-hidden
     >
       <g className="origin-center animate-[spin_240s_linear_infinite]">
-        <path d={outer} stroke="var(--color-brass)" strokeWidth="0.22" opacity="0.16" />
+        <path d={outer} stroke="var(--color-brass)" strokeWidth="0.3" opacity="0.42" />
       </g>
       <g className="origin-center animate-[spin_180s_linear_infinite_reverse]">
-        <path d={inner} stroke="var(--color-verd)" strokeWidth="0.2" opacity="0.11" />
+        <path d={inner} stroke="var(--color-verd)" strokeWidth="0.28" opacity="0.3" />
       </g>
     </svg>
   );
@@ -110,7 +111,7 @@ function LedgerField() {
           const b = nodes[j]!;
           const d = Math.hypot(a.x - b.x, a.y - b.y);
           if (d > LINK) continue;
-          ctx.strokeStyle = `rgba(148,141,132,${((1 - d / LINK) * 0.13).toFixed(3)})`;
+          ctx.strokeStyle = `rgba(148,141,132,${((1 - d / LINK) * 0.3).toFixed(3)})`;
           ctx.lineWidth = 1;
           ctx.beginPath();
           ctx.moveTo(a.x, a.y);
@@ -120,7 +121,7 @@ function LedgerField() {
       }
 
       for (const n of nodes) {
-        ctx.fillStyle = "rgba(201,195,186,0.26)";
+        ctx.fillStyle = "rgba(201,195,186,0.5)";
         ctx.beginPath();
         ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2);
         ctx.fill();
@@ -147,14 +148,14 @@ function LedgerField() {
         const y = a.y + (b.y - a.y) * p.t;
         const fade = Math.sin(p.t * Math.PI);
 
-        ctx.strokeStyle = `rgba(94,207,168,${(0.17 * fade).toFixed(3)})`;
+        ctx.strokeStyle = `rgba(94,207,168,${(0.35 * fade).toFixed(3)})`;
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(a.x, a.y);
         ctx.lineTo(x, y);
         ctx.stroke();
 
-        ctx.fillStyle = `rgba(127,232,196,${(0.8 * fade).toFixed(3)})`;
+        ctx.fillStyle = `rgba(127,232,196,${(1.0 * fade).toFixed(3)})`;
         ctx.beginPath();
         ctx.arc(x, y, 1.9, 0, Math.PI * 2);
         ctx.fill();
@@ -188,22 +189,36 @@ function LedgerField() {
     };
   }, []);
 
-  return <canvas ref={ref} className="absolute inset-0 h-full w-full opacity-70" />;
+  return <canvas ref={ref} className="absolute inset-0 h-full w-full" />;
 }
 
 export function Backdrop() {
+  /**
+   * Full intensity in the hero, then dimmed as the reader scrolls into the
+   * clauses. The engraving is a cover ornament: it should never compete with a
+   * paragraph someone is actually reading.
+   */
+  const { scrollY } = useScroll();
+  const reduced = useReducedMotion();
+  const raw = useTransform(scrollY, [0, 700], [1, 0.3]);
+  const dimmed = useSpring(raw, { stiffness: 90, damping: 26 });
+
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden>
-      <div className="absolute -top-1/3 left-1/2 h-[95vh] w-[130vw] -translate-x-1/2 animate-drift rounded-full bg-[radial-gradient(closest-side,rgba(94,207,168,0.10),transparent_70%)] blur-3xl" />
-      <div className="absolute top-1/3 -right-1/4 h-[75vh] w-[75vw] animate-drift rounded-full bg-[radial-gradient(closest-side,rgba(216,166,87,0.09),transparent_70%)] blur-3xl [animation-delay:-16s]" />
-      <div className="absolute bottom-0 -left-1/4 h-[60vh] w-[70vw] animate-drift rounded-full bg-[radial-gradient(closest-side,rgba(255,107,90,0.05),transparent_70%)] blur-3xl [animation-delay:-28s]" />
-      <div className="absolute inset-0 opacity-60">
+      {/* the page's own ambient gradients — body is transparent by design */}
+      <div className="absolute inset-0 bg-[radial-gradient(1400px_700px_at_50%_-12%,rgba(216,166,87,0.10),transparent_60%),radial-gradient(1000px_600px_at_8%_18%,rgba(94,207,168,0.07),transparent_60%)]" />
+      <motion.div style={reduced ? { opacity: 0.45 } : { opacity: dimmed }} className="absolute inset-0">
+      <div className="absolute -top-1/3 left-1/2 h-[95vh] w-[130vw] -translate-x-1/2 animate-drift rounded-full bg-[radial-gradient(closest-side,rgba(94,207,168,0.22),transparent_70%)] blur-3xl" />
+      <div className="absolute top-1/3 -right-1/4 h-[75vh] w-[75vw] animate-drift rounded-full bg-[radial-gradient(closest-side,rgba(216,166,87,0.20),transparent_70%)] blur-3xl [animation-delay:-16s]" />
+      <div className="absolute bottom-0 -left-1/4 h-[60vh] w-[70vw] animate-drift rounded-full bg-[radial-gradient(closest-side,rgba(255,107,90,0.12),transparent_70%)] blur-3xl [animation-delay:-28s]" />
+      <div className="absolute inset-0 opacity-90">
         <Guilloche />
       </div>
       <LedgerField />
       <div className="hatch absolute inset-0 opacity-40" />
       <div className="grain absolute inset-0 opacity-30" />
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_30%,var(--color-stock-900)_96%)]" />
+      </motion.div>
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_55%,rgba(10,13,24,0.72)_100%)]" />
     </div>
   );
 }

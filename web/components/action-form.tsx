@@ -205,8 +205,8 @@ export function ActionForm({
                   <button
                     onClick={runDemo}
                     disabled={busy !== null}
-                    className={`inline-flex items-center gap-2 rounded-lg px-4 py-2 text-[13px] font-semibold transition-transform hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-60 ${
-                      seal ? "bg-seal text-stock-950" : "bg-verd text-stock-950"
+                    className={`inline-flex items-center gap-2 rounded-sm px-5 py-2.5 text-[13px] font-semibold transition-transform hover:-translate-y-0.5 disabled:translate-y-0 disabled:opacity-60 ${
+                      seal ? "bg-gradient-to-b from-seal-bright to-seal text-stock-950 shadow-[0_0_24px_-6px_rgba(255,107,90,0.6)]" : "btn-verd"
                     }`}
                   >
                     {busy === "demo" ? (

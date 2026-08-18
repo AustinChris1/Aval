@@ -98,10 +98,10 @@ html {
 }
 
 body {
-  background:
-    radial-gradient(1200px 600px at 50% -10%, rgba(216, 166, 87, 0.06), transparent 60%),
-    radial-gradient(900px 500px at 10% 20%, rgba(94, 207, 168, 0.045), transparent 60%),
-    var(--color-stock-900);
+  /* Transparent on purpose: an opaque background here paints OVER the fixed
+     backdrop at z -10, which silently deletes the entire atmosphere layer.
+     The base colour lives on html; the gradients live in the backdrop. */
+  background: transparent;
   color: var(--color-ink);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
@@ -294,6 +294,65 @@ html.lenis body {
   height: 1px;
   background: var(--color-rule);
   margin: 2.2em 0;
+}
+
+/* A sheet with actual light on it: gradient fill, top edge highlight, depth. */
+.sheet-depth {
+  /* Opaque enough that the engraving never bleeds through a paragraph. */
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 40%),
+    linear-gradient(180deg, rgba(19, 24, 40, 0.93), rgba(14, 18, 31, 0.96));
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.06) inset,
+    0 24px 48px -24px rgba(0, 0, 0, 0.75);
+}
+
+.glow-verd {
+  box-shadow: 0 0 0 1px var(--color-verd-deep), 0 8px 40px -12px rgba(94, 207, 168, 0.45);
+}
+.glow-seal {
+  box-shadow: 0 0 0 1px var(--color-seal-deep), 0 8px 40px -12px rgba(255, 107, 90, 0.4);
+}
+.glow-brass {
+  box-shadow: 0 0 0 1px var(--color-brass-deep), 0 8px 40px -12px rgba(216, 166, 87, 0.35);
+}
+
+/* Solid buttons that read as buttons. */
+.btn-verd {
+  background: linear-gradient(180deg, var(--color-verd-glow), var(--color-verd));
+  color: var(--color-stock-950);
+  box-shadow: 0 0 24px -6px rgba(94, 207, 168, 0.55), 0 1px 0 rgba(255, 255, 255, 0.35) inset;
+}
+.btn-verd:hover {
+  box-shadow: 0 0 36px -4px rgba(94, 207, 168, 0.75), 0 1px 0 rgba(255, 255, 255, 0.35) inset;
+}
+.btn-brass {
+  background: linear-gradient(180deg, var(--color-brass-soft), var(--color-brass));
+  color: var(--color-stock-950);
+  box-shadow: 0 0 24px -6px rgba(216, 166, 87, 0.5), 0 1px 0 rgba(255, 255, 255, 0.35) inset;
+}
+.btn-brass:hover {
+  box-shadow: 0 0 36px -4px rgba(216, 166, 87, 0.7), 0 1px 0 rgba(255, 255, 255, 0.35) inset;
+}
+
+/* Number displays with a lit gradient instead of flat colour. */
+.figure-verd {
+  background: linear-gradient(180deg, var(--color-verd-glow), var(--color-verd) 55%, var(--color-verd-deep));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.figure-brass {
+  background: linear-gradient(180deg, var(--color-brass-soft), var(--color-brass) 55%, var(--color-brass-deep));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.figure-ink {
+  background: linear-gradient(180deg, #ffffff, var(--color-ink) 50%, var(--color-ink-dim));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 @media (prefers-reduced-motion: reduce) {

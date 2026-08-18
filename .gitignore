@@ -16,3 +16,7 @@ agent/node_modules/
 
 # local rehearsal artifacts (chainId 31337)
 deployments/31337*.json
+
+# local visual-verification tooling
+web/shot.mjs
+web/console.mjs

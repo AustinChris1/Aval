@@ -73,7 +73,8 @@ export default async function Home() {
         </div>
 
         <h1 className="mt-12 max-w-[15ch] font-display text-[52px] leading-[0.98] tracking-[-0.02em] text-ink sm:text-[86px]">
-          <SplitHeadline text="Someone stands behind it." />
+          <SplitHeadline text="Someone stands" />{" "}
+          <span className="brass-text">behind it.</span>
         </h1>
 
         <div className="mt-10 lg:grid lg:grid-cols-[minmax(0,1fr)_320px] lg:gap-16">
@@ -95,7 +96,7 @@ export default async function Home() {
               {feature && (
                 <Link
                   href={`/letter/${feature.id}`}
-                  className="group inline-flex items-center gap-2 border border-verd-deep bg-verd/10 px-5 py-2.5 font-mono text-[11px] tracking-[0.16em] text-verd uppercase transition-colors hover:bg-verd/20"
+                  className="btn-verd group inline-flex items-center gap-2 rounded-sm px-6 py-3 font-mono text-[12px] font-bold tracking-[0.16em] uppercase transition-transform duration-200 hover:-translate-y-0.5"
                 >
                   {open ? "Act on the open credit" : "Replay a settled credit"}
                   <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
@@ -103,7 +104,7 @@ export default async function Home() {
               )}
               <Link
                 href="/issue"
-                className="inline-flex items-center gap-2 border border-brass-deep bg-brass/10 px-5 py-2.5 font-mono text-[11px] tracking-[0.16em] text-brass-soft uppercase transition-colors hover:bg-brass/20"
+                className="btn-brass inline-flex items-center gap-2 rounded-sm px-6 py-3 font-mono text-[12px] font-bold tracking-[0.16em] uppercase transition-transform duration-200 hover:-translate-y-0.5"
               >
                 Issue your own
               </Link>

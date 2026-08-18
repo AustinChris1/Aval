@@ -52,7 +52,7 @@ const DOCS: { slug: string; title: string; blurb: string; source: string }[] = [
   {
     slug: "overview",
     title: "Overview",
-    blurb: "What LETTER is, why a documentary credit, and how the pieces fit together.",
+    blurb: "What AVAL is, why a documentary credit, and how the pieces fit together.",
     source: "README.md",
   },
   {

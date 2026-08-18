@@ -3,7 +3,7 @@ export const docsIndex = [
   {
     "slug": "overview",
     "title": "Overview",
-    "blurb": "What LETTER is, why a documentary credit, and how the pieces fit together."
+    "blurb": "What AVAL is, why a documentary credit, and how the pieces fit together."
   },
   {
     "slug": "research",
