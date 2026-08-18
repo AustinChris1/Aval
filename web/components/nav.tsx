@@ -20,8 +20,8 @@ export function Nav({ chainId, chainLabel }: { chainId: ChainId; chainLabel: str
   // Reading progress, sprung so it glides — a document you are working through.
   const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 28, mass: 0.4 });
   const blur = useTransform(scrollY, [0, 120], [0, 16]);
-  const border = useTransform(scrollY, [0, 120], ["rgba(38,48,73,0)", "rgba(38,48,73,1)"]);
-  const bg = useTransform(scrollY, [0, 120], ["rgba(10,13,24,0)", "rgba(10,13,24,0.88)"]);
+  const border = useTransform(scrollY, [0, 120], ["rgba(43,35,27,0)", "rgba(43,35,27,1)"]);
+  const bg = useTransform(scrollY, [0, 120], ["rgba(10,8,7,0)", "rgba(10,8,7,0.88)"]);
 
   return (
     <motion.header

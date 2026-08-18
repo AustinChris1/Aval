@@ -13,38 +13,38 @@
  * is why the eye lands exactly where the argument is.
  */
 @theme {
-  /* stock — cool indigo-black, warmer as it comes forward */
-  --color-stock-950: #060811;
-  --color-stock-900: #0a0d18;
-  --color-stock-850: #0e121f;
-  --color-stock-800: #131828;
-  --color-stock-750: #1a2033;
-  --color-stock-700: #222a41;
+  /* stock — warm near-black, like aged printing ink */
+  --color-stock-950: #050403;
+  --color-stock-900: #0a0807;
+  --color-stock-850: #0f0c0a;
+  --color-stock-800: #151110;
+  --color-stock-750: #1d1815;
+  --color-stock-700: #27201b;
 
-  --color-rule: #263049;
-  --color-rule-bright: #35415e;
+  --color-rule: #2b231b;
+  --color-rule-bright: #3e3327;
 
-  /* ink — warm parchment, never pure white */
-  --color-ink: #f2ece1;
-  --color-ink-soft: #c9c3ba;
-  --color-ink-dim: #948d84;
-  --color-ink-faint: #6b6560;
+  /* ink — cream, straight from the palette's lightest stop */
+  --color-ink: #f8eedf;
+  --color-ink-soft: #d9cdba;
+  --color-ink-dim: #9c907c;
+  --color-ink-faint: #6e6452;
 
-  /* verdigris — settlement, value that moved */
-  --color-verd: #5ecfa8;
-  --color-verd-deep: #1d5c48;
-  --color-verd-glow: #7fe8c4;
+  /* the granted seal — bright cream-gold for success and primary actions */
+  --color-verd: #e8c999;
+  --color-verd-deep: #6e5632;
+  --color-verd-glow: #f8eedf;
 
-  /* oxblood — refusal, the hero state */
-  --color-seal: #ff6b5a;
-  --color-seal-bright: #ff8f80;
-  --color-seal-deep: #6b241d;
-  --color-seal-bg: #24100d;
+  /* the refused seal — the palette's crimson, #8E1616 at its core */
+  --color-seal: #d24837;
+  --color-seal-bright: #ea6c55;
+  --color-seal-deep: #8e1616;
+  --color-seal-bg: #1e0a07;
 
-  /* brass — the wax seal, headings, ornament */
-  --color-brass: #d8a657;
-  --color-brass-deep: #6b5225;
-  --color-brass-soft: #f0cd91;
+  /* sand — ornament, rules, the engraver's line */
+  --color-brass: #e8c999;
+  --color-brass-deep: #7a5f36;
+  --color-brass-soft: #f4dfc0;
 
   --font-display: var(--font-instrument), ui-serif, Georgia, serif;
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
@@ -139,7 +139,7 @@ html.lenis body {
 }
 
 .grain {
-  background-image: radial-gradient(circle at 1px 1px, rgba(242, 236, 225, 0.055) 1px, transparent 0);
+  background-image: radial-gradient(circle at 1px 1px, rgba(248, 238, 223, 0.05) 1px, transparent 0);
   background-size: 24px 24px;
 }
 
@@ -147,8 +147,8 @@ html.lenis body {
 .hatch {
   background-image: repeating-linear-gradient(
     45deg,
-    rgba(216, 166, 87, 0.05) 0px,
-    rgba(216, 166, 87, 0.05) 1px,
+    rgba(232, 201, 153, 0.05) 0px,
+    rgba(232, 201, 153, 0.05) 1px,
     transparent 1px,
     transparent 7px
   );
@@ -301,38 +301,38 @@ html.lenis body {
   /* Opaque enough that the engraving never bleeds through a paragraph. */
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 40%),
-    linear-gradient(180deg, rgba(19, 24, 40, 0.93), rgba(14, 18, 31, 0.96));
+    linear-gradient(180deg, rgba(21, 17, 16, 0.93), rgba(15, 12, 10, 0.96));
   box-shadow:
     0 1px 0 0 rgba(255, 255, 255, 0.06) inset,
     0 24px 48px -24px rgba(0, 0, 0, 0.75);
 }
 
 .glow-verd {
-  box-shadow: 0 0 0 1px var(--color-verd-deep), 0 8px 40px -12px rgba(94, 207, 168, 0.45);
+  box-shadow: 0 0 0 1px var(--color-verd-deep), 0 8px 40px -12px rgba(232, 201, 153, 0.4);
 }
 .glow-seal {
-  box-shadow: 0 0 0 1px var(--color-seal-deep), 0 8px 40px -12px rgba(255, 107, 90, 0.4);
+  box-shadow: 0 0 0 1px var(--color-seal-deep), 0 8px 40px -12px rgba(142, 22, 22, 0.55);
 }
 .glow-brass {
-  box-shadow: 0 0 0 1px var(--color-brass-deep), 0 8px 40px -12px rgba(216, 166, 87, 0.35);
+  box-shadow: 0 0 0 1px var(--color-brass-deep), 0 8px 40px -12px rgba(232, 201, 153, 0.35);
 }
 
 /* Solid buttons that read as buttons. */
 .btn-verd {
   background: linear-gradient(180deg, var(--color-verd-glow), var(--color-verd));
   color: var(--color-stock-950);
-  box-shadow: 0 0 24px -6px rgba(94, 207, 168, 0.55), 0 1px 0 rgba(255, 255, 255, 0.35) inset;
+  box-shadow: 0 0 24px -6px rgba(232, 201, 153, 0.5), 0 1px 0 rgba(255, 255, 255, 0.4) inset;
 }
 .btn-verd:hover {
-  box-shadow: 0 0 36px -4px rgba(94, 207, 168, 0.75), 0 1px 0 rgba(255, 255, 255, 0.35) inset;
+  box-shadow: 0 0 36px -4px rgba(232, 201, 153, 0.7), 0 1px 0 rgba(255, 255, 255, 0.4) inset;
 }
 .btn-brass {
   background: linear-gradient(180deg, var(--color-brass-soft), var(--color-brass));
   color: var(--color-stock-950);
-  box-shadow: 0 0 24px -6px rgba(216, 166, 87, 0.5), 0 1px 0 rgba(255, 255, 255, 0.35) inset;
+  box-shadow: 0 0 24px -6px rgba(232, 201, 153, 0.45), 0 1px 0 rgba(255, 255, 255, 0.35) inset;
 }
 .btn-brass:hover {
-  box-shadow: 0 0 36px -4px rgba(216, 166, 87, 0.7), 0 1px 0 rgba(255, 255, 255, 0.35) inset;
+  box-shadow: 0 0 36px -4px rgba(232, 201, 153, 0.65), 0 1px 0 rgba(255, 255, 255, 0.35) inset;
 }
 
 /* Number displays with a lit gradient instead of flat colour. */

@@ -36,7 +36,7 @@ function Guilloche() {
         <path d={outer} stroke="var(--color-brass)" strokeWidth="0.3" opacity="0.42" />
       </g>
       <g className="origin-center animate-[spin_180s_linear_infinite_reverse]">
-        <path d={inner} stroke="var(--color-verd)" strokeWidth="0.28" opacity="0.3" />
+        <path d={inner} stroke="var(--color-seal-deep)" strokeWidth="0.3" opacity="0.5" />
       </g>
     </svg>
   );
@@ -148,14 +148,14 @@ function LedgerField() {
         const y = a.y + (b.y - a.y) * p.t;
         const fade = Math.sin(p.t * Math.PI);
 
-        ctx.strokeStyle = `rgba(94,207,168,${(0.35 * fade).toFixed(3)})`;
+        ctx.strokeStyle = `rgba(232,201,153,${(0.4 * fade).toFixed(3)})`;
         ctx.lineWidth = 1;
         ctx.beginPath();
         ctx.moveTo(a.x, a.y);
         ctx.lineTo(x, y);
         ctx.stroke();
 
-        ctx.fillStyle = `rgba(127,232,196,${(1.0 * fade).toFixed(3)})`;
+        ctx.fillStyle = `rgba(248,238,223,${(1.0 * fade).toFixed(3)})`;
         ctx.beginPath();
         ctx.arc(x, y, 1.9, 0, Math.PI * 2);
         ctx.fill();
@@ -206,11 +206,11 @@ export function Backdrop() {
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden>
       {/* the page's own ambient gradients — body is transparent by design */}
-      <div className="absolute inset-0 bg-[radial-gradient(1400px_700px_at_50%_-12%,rgba(216,166,87,0.10),transparent_60%),radial-gradient(1000px_600px_at_8%_18%,rgba(94,207,168,0.07),transparent_60%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(1400px_700px_at_50%_-12%,rgba(232,201,153,0.10),transparent_60%),radial-gradient(1000px_600px_at_8%_18%,rgba(142,22,22,0.06),transparent_60%)]" />
       <motion.div style={reduced ? { opacity: 0.45 } : { opacity: dimmed }} className="absolute inset-0">
-      <div className="absolute -top-1/3 left-1/2 h-[95vh] w-[130vw] -translate-x-1/2 animate-drift rounded-full bg-[radial-gradient(closest-side,rgba(94,207,168,0.22),transparent_70%)] blur-3xl" />
-      <div className="absolute top-1/3 -right-1/4 h-[75vh] w-[75vw] animate-drift rounded-full bg-[radial-gradient(closest-side,rgba(216,166,87,0.20),transparent_70%)] blur-3xl [animation-delay:-16s]" />
-      <div className="absolute bottom-0 -left-1/4 h-[60vh] w-[70vw] animate-drift rounded-full bg-[radial-gradient(closest-side,rgba(255,107,90,0.12),transparent_70%)] blur-3xl [animation-delay:-28s]" />
+      <div className="absolute -top-1/3 left-1/2 h-[95vh] w-[130vw] -translate-x-1/2 animate-drift rounded-full bg-[radial-gradient(closest-side,rgba(232,201,153,0.18),transparent_70%)] blur-3xl" />
+      <div className="absolute top-1/3 -right-1/4 h-[75vh] w-[75vw] animate-drift rounded-full bg-[radial-gradient(closest-side,rgba(232,201,153,0.16),transparent_70%)] blur-3xl [animation-delay:-16s]" />
+      <div className="absolute bottom-0 -left-1/4 h-[60vh] w-[70vw] animate-drift rounded-full bg-[radial-gradient(closest-side,rgba(142,22,22,0.16),transparent_70%)] blur-3xl [animation-delay:-28s]" />
       <div className="absolute inset-0 opacity-90">
         <Guilloche />
       </div>
@@ -218,7 +218,7 @@ export function Backdrop() {
       <div className="hatch absolute inset-0 opacity-40" />
       <div className="grain absolute inset-0 opacity-30" />
       </motion.div>
-      <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_55%,rgba(10,13,24,0.72)_100%)]" />
+      <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_55%,rgba(10,8,7,0.72)_100%)]" />
     </div>
   );
 }

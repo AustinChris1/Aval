@@ -153,6 +153,34 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* ── the lineage: a real instrument, 1854 ─────────────────────── */}
+      <section className="pb-4">
+        <Reveal>
+          <figure className="group relative overflow-hidden border border-rule">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/wechsel-1854.jpg"
+              alt="A bill of exchange drawn in Vienna in 1854, with an engraved ornamental border and copperplate script"
+              className="w-full transition-transform duration-[2.5s] ease-out [filter:sepia(0.22)_brightness(0.9)_contrast(1.03)] group-hover:scale-[1.015]"
+            />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-stock-950/90 via-stock-950/10 to-stock-950/35" />
+            <div className="hatch pointer-events-none absolute inset-0 opacity-30" />
+            <figcaption className="absolute inset-x-0 bottom-0 flex flex-wrap items-end justify-between gap-x-8 gap-y-2 p-5 sm:p-7">
+              <span className="max-w-[58ch] text-[13px] leading-relaxed text-ink sm:text-[14px]">
+                <span className="font-display text-[17px] text-brass-soft sm:text-[19px]">
+                  Vienna, 30 October 1854.
+                </span>{" "}
+                A bill of exchange for one thousand gulden. The drawer names who pays, who is paid,
+                how much, and by when — the same four terms an AVAL mandate writes into the chain.
+              </span>
+              <span className="font-mono text-[9.5px] tracking-[0.14em] text-ink-faint uppercase">
+                public domain · wikimedia commons
+              </span>
+            </figcaption>
+          </figure>
+        </Reveal>
+      </section>
+
       <DrawRule />
 
       {/* ── the refusal ─────────────────────────────────────────────── */}

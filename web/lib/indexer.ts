@@ -286,7 +286,7 @@ export async function getTimeline(chainId: ChainId, letterId: bigint) {
     const a = l.args as { faceValue: bigint; fee: bigint; validator: Address; minScore: number };
     push(
       "issued",
-      "Letter issued",
+      "Credit issued",
       `${formatEther(a.faceValue)} locked · ${formatEther(a.fee)} reserved as the fee · examiner ${a.validator.slice(0, 10)}… · threshold ${a.minScore}`,
       l,
     );

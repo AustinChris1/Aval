@@ -1,0 +1,18 @@
+import { chromium } from "playwright";
+const out = process.argv[2];
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+await page.goto("http://127.0.0.1:3025/", { waitUntil: "networkidle", timeout: 60000 });
+await page.waitForTimeout(2200);
+await page.screenshot({ path: `${out}/p1-hero.png` });
+await page.evaluate(() => window.scrollTo({ top: 950, behavior: "instant" }));
+await page.waitForTimeout(2000);
+await page.screenshot({ path: `${out}/p1-artifact.png` });
+await page.evaluate(() => window.scrollTo({ top: 2600, behavior: "instant" }));
+await page.waitForTimeout(2000);
+await page.screenshot({ path: `${out}/p1-register.png` });
+await page.goto("http://127.0.0.1:3025/letter/2", { waitUntil: "networkidle", timeout: 60000 });
+await page.waitForTimeout(2000);
+await page.screenshot({ path: `${out}/p2-letter.png` });
+console.log("done");
+await browser.close();
