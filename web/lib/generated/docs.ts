@@ -6,13 +6,18 @@ export const docsIndex = [
     "blurb": "What AVAL is, why a documentary credit, and how the pieces fit together."
   },
   {
+    "slug": "how-it-works",
+    "title": "How it works",
+    "blurb": "The lifecycle, the four parties, and Mr. A's supplier payments as a worked example."
+  },
+  {
+    "slug": "guide",
+    "title": "Using the dapp",
+    "blurb": "Every page and every function, plus a five-minute test drive that needs no wallet."
+  },
+  {
     "slug": "research",
     "title": "BOT Chain research",
     "blurb": "Verified chain facts, three corrections to widely-repeated claims, and the ERC-8004 gap."
-  },
-  {
-    "slug": "submission",
-    "title": "Submission pack",
-    "blurb": "The pitch, the demo script, the mainnet runbook, and the limits stated up front."
   }
 ] as const;

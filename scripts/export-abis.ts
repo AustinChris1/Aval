@@ -56,16 +56,22 @@ const DOCS: { slug: string; title: string; blurb: string; source: string }[] = [
     source: "README.md",
   },
   {
+    slug: "how-it-works",
+    title: "How it works",
+    blurb: "The lifecycle, the four parties, and Mr. A's supplier payments as a worked example.",
+    source: "docs/HOW-IT-WORKS.md",
+  },
+  {
+    slug: "guide",
+    title: "Using the dapp",
+    blurb: "Every page and every function, plus a five-minute test drive that needs no wallet.",
+    source: "docs/GUIDE.md",
+  },
+  {
     slug: "research",
     title: "BOT Chain research",
     blurb: "Verified chain facts, three corrections to widely-repeated claims, and the ERC-8004 gap.",
     source: "docs/RESEARCH.md",
-  },
-  {
-    slug: "submission",
-    title: "Submission pack",
-    blurb: "The pitch, the demo script, the mainnet runbook, and the limits stated up front.",
-    source: "docs/SUBMISSION.md",
   },
 ];
 

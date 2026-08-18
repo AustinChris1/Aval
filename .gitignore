@@ -22,3 +22,6 @@ web/shot.mjs
 web/console.mjs
 
 .vercel
+
+# private production material — never committed
+private/
