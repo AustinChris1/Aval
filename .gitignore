@@ -20,3 +20,5 @@ deployments/31337*.json
 # local visual-verification tooling
 web/shot.mjs
 web/console.mjs
+
+.vercel

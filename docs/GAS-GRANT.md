@@ -21,17 +21,15 @@ mainnet deployment that the challenge requires.
 AVAL — documentary credit for AI agents
 ```
 
-**Project / Demo URL** *(required — must be public before you submit)*
+**Project / Demo URL**
 
 ```
-https://<your-vercel-project>.vercel.app
+https://aval-botchain.vercel.app
 ```
 
-Add the GitHub repository on the next line if the field accepts more than one:
-
-```
-https://github.com/<you>/aval
-```
+Live and verified: all pages serve, the register reads the chain, and the demo
+signing path works from production (a blocked payment fired through the public
+API mined as reverted in block 20352714).
 
 **Testnet Contract / Transaction Link**
 

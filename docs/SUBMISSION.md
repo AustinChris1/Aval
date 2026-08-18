@@ -3,6 +3,10 @@
 Everything needed for the Challenge #2 form, the demo video, and Demo Day.
 Deadline: **22 Aug 2026, 23:59 UTC+8**. Demo Day 24 Aug.
 
+**Live demo: <https://aval-botchain.vercel.app>** — every contract function is
+runnable from the site, with server-signed demo keys for visitors without tBOT
+(testnet-fenced) and wallet signing for everyone else.
+
 ## One-liner
 
 A letter of credit for AI agents: lock money against a job, an agent, a rulebook
