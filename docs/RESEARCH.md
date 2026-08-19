@@ -47,7 +47,7 @@ rather than trusting either the docs or this note.
 `eth_getBlobSidecarByTxHash` both answer on mainnet (`result: []` and
 `result: null` respectively). A method that did not exist returns
 `-32601 the method … does not exist/is not available`, which is what a control
-call produced. EIP-4844 is therefore active — the reason this project compiles
+call produced. EIP-4844 is therefore active, the reason this project compiles
 for `evmVersion: "cancun"` at all, since OpenZeppelin 5.4 emits `MCOPY`.
 
 **3. ERC-4337 is deployed.** EntryPoint v0.7 has code at the canonical
@@ -55,7 +55,7 @@ for `evmVersion: "cancun"` at all, since OpenZeppelin 5.4 emits `MCOPY`.
 (`0xcA11bde…CA11`) and Permit2 (`0x000000000022D473…78BA3`). Account abstraction
 is not "coming soon" at the contract layer; what is missing is a public bundler.
 
-## The ERC-8004 situation on BOT Chain — the gap this project fills
+## The ERC-8004 situation on BOT Chain, the gap this project fills
 
 The canonical ERC-8004 registries are **reserved but not functional** on BOT
 Chain mainnet. This is the central finding.
@@ -69,7 +69,7 @@ Evidence:
 
 - Both proxies' EIP-1967 implementation slot points at
   `0xcB7Af40C0be4Fb92E183942b6DbB6b14A888F067`, which Blockscout has verified
-  under the name `MinimalUUPSMainnet` — the placeholder from the reference repo.
+  under the name `MinimalUUPSMainnet`, the placeholder from the reference repo.
 - `name()` **reverts** on the identity registry. There is no ERC-721 behind it,
   so no agent can be registered.
 - `getVersion()` returns `1.0.0` (the placeholder) rather than `2.0.0` (the real
@@ -85,9 +85,9 @@ via a singleton factory (EIP-2470's factory is present on 677 at
 never got the registries.
 
 So: ERC-8004 is announced on BOT Chain and not usable on BOT Chain. AVAL
-deploys spec-conformant registries — ported from the reference implementation
-with the external ABI unchanged — and builds a real product on top of them.
-Because only the ERC-8004 interface is used, the letter contract can be
+deploys spec-conformant registries, ported from the reference implementation
+with the external ABI unchanged, and builds a real product on top of them.
+Because only the ERC-8004 interface is used, the credit contract can be
 repointed at the canonical addresses unchanged if they are ever filled in.
 
 ## Spec details that shaped the design
@@ -96,20 +96,20 @@ Read from the ERC-8004 draft and the reference implementation, and they are not
 obvious:
 
 - **Identity is an ERC-721**, and the `agentWallet` is bound separately by an
-  EIP-712 signature *from the wallet itself* — a principal cannot claim a key it
+  EIP-712 signature *from the wallet itself*, a principal cannot claim a key it
   does not control. The binding is cleared on transfer, so selling an agent does
   not hand over its live signing key.
 - **`agentId` starts at 0.** Never use `agentId != 0` as an existence check; use
   `ownerOf`, which reverts for a nonexistent id.
 - **`giveFeedback` rejects self-feedback**: it reverts if the caller owns or is
   approved for the agent. This is why AVAL must *not* hold blanket ERC-721
-  approval over the agents it settles for — if it did, its own feedback would be
-  rejected as self-feedback. It also means feedback written by the letter
+  approval over the agents it settles for, if it did, its own feedback would be
+  rejected as self-feedback. It also means feedback written by the credit
   contract is structurally more trustworthy than feedback from an arbitrary
   address, which is the same intent as the spec's `proofOfPayment` field.
 - **`validationRequest` must come from the agent's owner or an approved
   operator**, not from an arbitrary contract. So the principal opens the
-  examination; the letter only *reads* the result.
+  examination; the credit only *reads* the result.
 - **A pending validation reads as `response = 0`**, indistinguishable from a
   genuine zero score, and the spec exposes no "has answered" flag. AVAL
   therefore requires `minScore >= 1` at issuance, which makes an unexamined
@@ -120,10 +120,10 @@ obvious:
 
 Real tokens with real holder counts, from the Blockscout token index:
 
-- WBOT `0xD5452816194a3784dBa983426cCe7c122F4abd30` — 57,736 holders
-- USDT `0xaBabc7Ddc03e501d190C676BF3d92ef0e6e87a3C` — 289,191 holders
+- WBOT `0xD5452816194a3784dBa983426cCe7c122F4abd30`, 57,736 holders
+- USDT `0xaBabc7Ddc03e501d190C676BF3d92ef0e6e87a3C`, 289,191 holders
 
-A letter can be denominated in either, which matters for the RWA framing: real
+A credit can be denominated in either, which matters for the RWA framing: real
 documentary credits are written in stablecoin-equivalents, not in a volatile gas
 token. `LetterOfCredit` supports the native coin and any ERC-20.
 

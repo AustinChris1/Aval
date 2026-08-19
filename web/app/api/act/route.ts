@@ -9,8 +9,8 @@ import { DEMO_CHAIN_ID, KEY_FOR_ROLE, MAX_VALUE_WEI, demoAvailable } from "@/lib
  * Demo signing.
  *
  * The point of this route is that a visitor with no wallet and no tBOT can still
- * drive the whole instrument — issue, spend, be refused, present, examine,
- * settle — and watch it land on a public chain. It signs with the four throwaway
+ * drive the whole instrument, issue, spend, be refused, present, examine,
+ * settle, and watch it land on a public chain. It signs with the four throwaway
  * demo role keys.
  *
  * It is therefore deliberately fenced in:

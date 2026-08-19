@@ -7,6 +7,11 @@ const nextConfig = {
   // should not. On Vercel, set the project's Root Directory to `web` and this
   // resolves to the same place.
   outputFileTracingRoot: import.meta.dirname,
+  // The product renamed its instrument pages from /letter to /credit; old links
+  // in chats and forms keep working.
+  async redirects() {
+    return [{ source: "/letter/:id", destination: "/credit/:id", permanent: true }];
+  },
 };
 
 export default nextConfig;

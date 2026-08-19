@@ -48,7 +48,7 @@ try {
 }
 
 // The docs say eth_getLogs is disabled on the public mainnet RPC. It is not, as
-// of this writing — but verify per-endpoint rather than trusting either source.
+// of this writing, but verify per-endpoint rather than trusting either source.
 try {
   const from = blockNumber > 200n ? blockNumber - 200n : 0n;
   const logs = await publicClient.getLogs({ fromBlock: from, toBlock: blockNumber });

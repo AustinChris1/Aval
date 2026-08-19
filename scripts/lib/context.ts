@@ -1,5 +1,5 @@
 /**
- * Shared plumbing for every LETTER script: role resolution, deployment lookup,
+ * Shared plumbing for every AVAL script: role resolution, deployment lookup,
  * document hashing, and the helpers that make an intentionally-rejected
  * transaction land on-chain instead of dying in gas estimation.
  */
@@ -106,8 +106,8 @@ export type Rejection = {
  * Gas is supplied manually on purpose. viem estimates gas before sending, and a
  * reverting call fails estimation, so nothing would ever be broadcast and there
  * would be no evidence a block producer saw the attempt. Skipping estimation
- * gets the attempt mined as reverted on a normal geth-family chain — BOT Chain
- * included — which turns the refusal into a permanent artifact with a decoded
+ * gets the attempt mined as reverted on a normal geth-family chain, BOT Chain
+ * included, which turns the refusal into a permanent artifact with a decoded
  * error that anyone can open on the explorer.
  *
  * Hardhat's local EDR node is the exception: it rejects a reverting transaction

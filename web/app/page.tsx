@@ -46,7 +46,7 @@ export default async function Home() {
   const moved = letters.reduce((acc, l) => acc + Number(formatEther(l.letter.spent)), 0);
   const feature = open ?? letters[0];
 
-  // The latest refusal becomes the hero's crimson tag — a live link to a mined
+  // The latest refusal becomes the hero's crimson tag, a live link to a mined
   // revert, not an illustration of one.
   let refusalTag: { value: string; href: string } | null = null;
   if (feature) {
@@ -115,14 +115,14 @@ export default async function Home() {
             <Reveal delay={0.35} className="mt-7 max-w-[46ch]">
               <p className="text-[16.5px] leading-[1.6] text-ink-soft">
                 Lock value to a job, a rulebook and an examiner. Off-mandate payments revert,
-                on-chain — and the fee moves only against examined documents.
+                on-chain, and the fee moves only against examined documents.
               </p>
             </Reveal>
 
             <Reveal delay={0.45} className="mt-9 flex flex-wrap items-center gap-3">
               {feature && (
                 <Link
-                  href={`/letter/${feature.id}`}
+                  href={`/credit/${feature.id}`}
                   className="btn-verd group inline-flex items-center gap-2 rounded-sm px-6 py-3 font-mono text-[12px] font-bold tracking-[0.16em] uppercase transition-transform duration-200 hover:-translate-y-0.5"
                 >
                   {open ? "Act on credit №" + String(feature.id).padStart(4, "0") : "Replay a credit"}
@@ -140,7 +140,7 @@ export default async function Home() {
             <Reveal delay={0.55} className="mt-8">
               <div className="inline-flex items-center gap-2 font-mono text-[10.5px] tracking-[0.12em] text-ink-faint uppercase">
                 <CircleCheck className="size-3.5 text-verd" />
-                every refusal is a mined transaction — open one
+                every refusal is a mined transaction, open one
               </div>
             </Reveal>
           </div>
@@ -174,7 +174,7 @@ export default async function Home() {
         {error && (
           <ClauseBody className="mt-6">
             <Sheet tone="seal" className="p-4 text-[13px] text-seal">
-              Could not reach {info.rpc} — {error}
+              Could not reach {info.rpc}, {error}
             </Sheet>
           </ClauseBody>
         )}
@@ -249,7 +249,7 @@ export default async function Home() {
                         </td>
                         <td className="px-3 py-3.5 text-right">
                           <Link
-                            href={`/letter/${row.id}`}
+                            href={`/credit/${row.id}`}
                             className="inline-flex items-center gap-1 font-mono text-[10.5px] tracking-[0.14em] text-verd uppercase opacity-60 transition-opacity group-hover:opacity-100"
                           >
                             open
@@ -262,7 +262,7 @@ export default async function Home() {
                   {letters.length === 0 && (
                     <tr>
                       <td colSpan={7} className="px-3 py-8 text-[13.5px] text-ink-faint">
-                        Nothing issued yet —{" "}
+                        Nothing issued yet:{" "}
                         <Link href="/issue" className="text-verd underline underline-offset-4">
                           issue the first credit
                         </Link>
@@ -296,7 +296,7 @@ export default async function Home() {
               </div>
               {feature && (
                 <Link
-                  href={`/letter/${feature.id}#timeline`}
+                  href={`/credit/${feature.id}#timeline`}
                   className="group inline-flex shrink-0 items-center gap-2 font-mono text-[11px] tracking-[0.16em] text-seal uppercase"
                 >
                   See it on-chain

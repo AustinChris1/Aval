@@ -471,6 +471,45 @@ html[data-theme="light"] .backdrop-scrim {
   color: transparent;
 }
 
+/* Diagrams rendered from the docs' mermaid fences. */
+.mermaid-figure {
+  margin: 1.6em 0;
+  overflow-x: auto;
+  border: 1px solid var(--color-rule);
+  padding: 14px;
+  background: color-mix(in srgb, var(--color-stock-850) 60%, transparent);
+}
+.mermaid-figure svg {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Docs on a phone: nothing may force the page wider than the screen. */
+.prose-letter {
+  overflow-wrap: anywhere;
+}
+.prose-letter code {
+  word-break: break-all;
+}
+.prose-letter pre code {
+  word-break: normal;
+}
+@media (max-width: 640px) {
+  .prose-letter h1 {
+    font-size: 1.7rem;
+  }
+  .prose-letter h2 {
+    font-size: 1.3rem;
+  }
+  .prose-letter th,
+  .prose-letter td {
+    padding: 6px 8px;
+    font-size: 12.5px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

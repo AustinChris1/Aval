@@ -38,7 +38,7 @@ export function ActionForm({
   demoAvailable: boolean;
   open?: boolean;
   /**
-   * Why this action will not apply to the letter in its current state. Shown, but
+   * Why this action will not apply to the credit in its current state. Shown, but
    * never used to disable the button: attempting it anyway and reading the
    * contract's own refusal is the more honest lesson.
    */
@@ -58,14 +58,14 @@ export function ActionForm({
     } else if (o.refusalRecorded) {
       toast({
         tone: "refused",
-        title: "Refused — recorded on-chain",
+        title: "Refused: recorded on-chain",
         detail: `${action.label} was blocked by the mandate, as intended.`,
         href,
       });
     } else if (o.status === "reverted") {
       toast({ tone: "refused", title: "Transaction reverted", detail: action.label, href });
     } else {
-      toast({ tone: "sealed", title: `${action.label} — sent`, href });
+      toast({ tone: "sealed", title: `${action.label}: sent`, href });
     }
   };
 
@@ -187,7 +187,7 @@ export function ActionForm({
               {note && (
                 <div className="mb-4 flex items-start gap-2 rounded-lg border border-brass-deep/60 bg-brass/5 px-3.5 py-2.5 text-[12px] leading-relaxed text-brass">
                   <TriangleAlert className="mt-0.5 size-3.5 shrink-0" />
-                  <span>{note} You can still send it — the contract will tell you the same thing.</span>
+                  <span>{note} You can still send it, the contract will tell you the same thing.</span>
                 </div>
               )}
               <div className="grid gap-3 sm:grid-cols-2">
@@ -203,8 +203,8 @@ export function ActionForm({
                         onChange={(e) => set(f.name, e.target.value)}
                         className="w-full rounded-lg border border-rule bg-stock-950/70 px-3 py-2 font-mono text-[12.5px] text-ink outline-none focus:border-brass-deep"
                       >
-                        <option value="true">yes — for the agent</option>
-                        <option value="false">no — for the applicant</option>
+                        <option value="true">yes, for the agent</option>
+                        <option value="false">no, for the applicant</option>
                       </select>
                     ) : f.type === "json" ? (
                       <textarea

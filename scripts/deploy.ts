@@ -1,5 +1,5 @@
 /**
- * Deploys LETTER: three ERC-8004 registries, the letter contract, and the demo
+ * Deploys AVAL: three ERC-8004 registries, the credit contract, and the demo
  * counterparty. Writes deployments/<chainId>.json, which the SDK, the agent and
  * the web app all read, so no address is ever hardcoded in two places.
  *

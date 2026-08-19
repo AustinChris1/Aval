@@ -1,9 +1,9 @@
 /**
- * Issues a letter and leaves it Open, so the dashboard always has a live
+ * Issues a credit and leaves it Open, so the dashboard always has a live
  * instrument for a visitor to act on.
  *
  * Without this the only letters on the site are settled ones, and every agent
- * action a visitor tries comes back BadStatus — a real refusal, but for the wrong
+ * action a visitor tries comes back BadStatus, a real refusal, but for the wrong
  * reason, which teaches them nothing about the mandate.
  *
  * The mandate here names the supplier contract and its invoice() method, and
@@ -31,7 +31,7 @@ const FEE = parseEther("0.01");
 const PER_CALL = parseEther("0.02");
 const HOURS = 72n;
 
-banner(`Seeding an open letter on chain ${chainId}`);
+banner(`Seeding an open credit on chain ${chainId}`);
 
 const block = await publicClient.getBlock();
 const letter = await ctx.contracts.letter(ctx.roles.applicant);
@@ -48,7 +48,7 @@ const tx = await letter.write.issue(
       disputeWindow: 0n,
       validator: address.validator,
       minScore: 75,
-      termsHash: keccak256(stringToHex(`open-letter-${Date.now()}`)),
+      termsHash: keccak256(stringToHex(`aval-open-${Date.now()}`)),
       termsURI: "",
       allowedRecipients: [] as Address[],
       allowedTargets: [deployment.contracts.ServiceVendor],
@@ -62,7 +62,7 @@ await publicClient.waitForTransactionReceipt({ hash: tx });
 const read = await ctx.contracts.letter();
 const letterId = (await read.read.totalLetters()) as bigint;
 
-console.log(`  letter #${letterId} issued and left Open`);
+console.log(`  credit #${letterId} issued and left Open`);
 console.log(`  face value      ${bot(FACE)}`);
 console.log(`  working capital ${bot(FACE - FEE)}`);
 console.log(`  per-call cap    ${bot(PER_CALL)}`);
@@ -70,4 +70,4 @@ console.log(`  expires in      ${HOURS}h`);
 console.log(`  mandate         ${deployment.contracts.ServiceVendor} · invoice(bytes32) only`);
 console.log(`  no named recipients, so any plain payment is refused by construction`);
 console.log(`\n  tx ${txLink(explorer, tx)}`);
-console.log(`  open /letter/${letterId} on the dashboard to act on it`);
+console.log(`  open /credit/${letterId} on the dashboard to act on it`);

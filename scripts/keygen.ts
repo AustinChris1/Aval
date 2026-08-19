@@ -1,5 +1,5 @@
 /**
- * Generates the four development keys LETTER needs and writes them into .env.
+ * Generates the four development keys AVAL needs and writes them into .env.
  *
  * These are throwaway keys for a testnet/mainnet demo. Never reuse them for
  * anything that holds value beyond the gas and float this demo needs.
@@ -10,7 +10,7 @@ import { writeFileSync, readFileSync, existsSync, copyFileSync } from "node:fs";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 
 const ROLES = [
-  ["DEPLOYER_PRIVATE_KEY", "deploys the registries and the letter contract"],
+  ["DEPLOYER_PRIVATE_KEY", "deploys the registries and the credit contract"],
   ["APPLICANT_PRIVATE_KEY", "the human/treasury that issues letters and locks funds"],
   ["AGENT_PRIVATE_KEY", "the agent's bound wallet: acts, never custodies"],
   ["VALIDATOR_PRIVATE_KEY", "the named examiner that scores documents"],
@@ -41,7 +41,7 @@ writeFileSync(envPath, env);
 
 if (generated.length > 0) {
   console.log(`\nWrote ${generated.length} new key(s) to .env (gitignored).`);
-  console.log("\nFund these on BOT Chain Testnet (968) — 10 tBOT per address per 24h:");
+  console.log("\nFund these on BOT Chain Testnet (968), 10 tBOT per address per 24h:");
   console.log("  https://faucet.botchain.ai/basic");
   console.log("\nThe deployer needs gas. The applicant needs gas plus the letters' face value.");
   console.log("The agent needs only gas: it never holds the credit.");

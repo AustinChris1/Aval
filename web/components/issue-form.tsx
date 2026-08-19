@@ -87,7 +87,7 @@ export function IssueForm({
         ))}
         {values.length === 0 && (
           <p className="rounded-lg border border-dashed border-rule px-3 py-2 text-[12px] text-ink-faint">
-            none — nothing can be sent this way
+            none, nothing can be sent this way
           </p>
         )}
       </div>
@@ -112,7 +112,7 @@ export function IssueForm({
         disputeWindow: BigInt(disputeWindow),
         validator: validator as Address,
         minScore: Number(minScore),
-        termsHash: keccak256(stringToHex(`letter-terms-${Date.now()}`)),
+        termsHash: keccak256(stringToHex(`aval-terms-${Date.now()}`)),
         termsURI: "",
         allowedRecipients: recipients.filter(Boolean) as Address[],
         allowedTargets: targets.filter(Boolean) as Address[],
@@ -214,7 +214,7 @@ export function IssueForm({
       <div className="mt-6 flex items-start gap-2 rounded-lg border border-brass-deep/60 bg-brass/5 px-4 py-3">
         <Info className="mt-0.5 size-3.5 shrink-0 text-brass" />
         <p className="text-[12px] leading-relaxed text-ink-soft">
-          Leave the recipient list empty and a bare transfer has nowhere to go — that is what produces
+          Leave the recipient list empty and a bare transfer has nowhere to go, that is what produces
           the <span className="font-mono text-seal">RecipientNotAllowed</span> refusal. Name a contract
           but not a method, and you get{" "}
           <span className="font-mono text-seal">SelectorNotAllowed</span>. The mandate is the security
@@ -234,7 +234,7 @@ export function IssueForm({
         </button>
         {!address && (
           <span className="text-[12.5px] text-ink-faint">
-            Connect a wallet — issuing locks real value, so it is signed by you, never by us.
+            Connect a wallet, issuing locks real value, so it is signed by you, never by us.
           </span>
         )}
       </div>

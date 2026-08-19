@@ -14,8 +14,8 @@ import {
 
 /**
  * Toasts, in the house style: not floating pills but stamped receipt slips.
- * Three tones map to the instrument's states — sealed (gold, a thing granted),
- * refused (crimson, a thing refused — which for this product is often the
+ * Three tones map to the instrument's states, sealed (gold, a thing granted),
+ * refused (crimson, a thing refused, which for this product is often the
  * success case), and note (neutral ink).
  */
 export type ToastTone = "sealed" | "refused" | "note";

@@ -21,7 +21,7 @@ export function Nav({ chainId, chainLabel }: { chainId: ChainId; chainLabel: str
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const { scrollY, scrollYProgress } = useScroll();
-  // Reading progress, sprung so it glides — a document you are working through.
+  // Reading progress, sprung so it glides, a document you are working through.
   const progress = useSpring(scrollYProgress, { stiffness: 140, damping: 28, mass: 0.4 });
   // Opacity-only animation so the glass itself is painted with theme tokens.
   const solidity = useTransform(scrollY, [0, 120], [0, 1]);

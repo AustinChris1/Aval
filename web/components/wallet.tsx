@@ -76,7 +76,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
   const disconnect = useCallback(() => {
     setAddress(null);
     // MetaMask supports revoking the connection permission; other wallets may
-    // not — for those, clearing our state is the whole gesture.
+    // not, for those, clearing our state is the whole gesture.
     window.ethereum
       ?.request({
         method: "wallet_revokePermissions",
@@ -94,7 +94,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
       await eth.request({ method: "wallet_switchEthereumChain", params: [{ chainId: hex }] as never });
     } catch (e) {
       /**
-       * EIP-3085 says an unknown chain is code 4902 — but MetaMask in practice
+       * EIP-3085 says an unknown chain is code 4902, but MetaMask in practice
        * often surfaces it as -32603 ("Unrecognized chain ID … Try adding the
        * chain"), sometimes with the 4902 buried in data.originalError. Anything
        * that smells like "the wallet has never heard of this chain" gets the
@@ -210,7 +210,7 @@ export function ConnectButton({ chainId }: { chainId: ChainId }) {
       <button
         onClick={() => {
           setBusy(true);
-          // A rejection here is the user declining in the wallet — not an error.
+          // A rejection here is the user declining in the wallet, not an error.
           ensureChain(chainId)
             .then(() => toast({ tone: "sealed", title: `Switched to ${CHAINS[chainId].name}` }))
             .catch(() => toast({ tone: "note", title: "Network switch declined" }))

@@ -44,8 +44,8 @@ export function viemChain(chainId: ChainId) {
 
 /**
  * Reads always go through the chain's own RPC, never the explorer's API. The
- * explorer is used in one place only — discovering candidate transactions that
- * emitted no logs because they reverted — and every candidate it returns is
+ * explorer is used in one place only, discovering candidate transactions that
+ * emitted no logs because they reverted, and every candidate it returns is
  * re-checked here before it is shown.
  */
 export function publicClient(chainId: ChainId) {

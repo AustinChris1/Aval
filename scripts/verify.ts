@@ -39,7 +39,7 @@ for (const [name, address] of Object.entries(record.contracts) as [string, strin
 
 /**
  * The exit code of `hardhat verify` is not the answer. It runs every configured
- * verifier and fails the command if any of them declines — Sourcify does not know
+ * verifier and fails the command if any of them declines, Sourcify does not know
  * chain 677 or 968, so a perfectly verified contract still exits non-zero. Ask
  * the explorer what it actually holds instead.
  */

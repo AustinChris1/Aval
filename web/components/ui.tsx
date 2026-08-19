@@ -6,7 +6,7 @@ import type { ReactNode } from "react";
  *
  * These are deliberately not generic dashboard cards. A documentary credit is a
  * printed object with a letterhead, a reference number, ruled entries and a
- * margin for annotations, so the components below are those parts — which is why
+ * margin for annotations, so the components below are those parts, which is why
  * almost nothing here is a rounded box with an icon in the corner.
  */
 

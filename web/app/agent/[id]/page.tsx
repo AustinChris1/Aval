@@ -75,7 +75,7 @@ export default async function AgentPage({ params }: { params: Promise<{ id: stri
                 {bound ? "bound" : "unbound"}
               </div>
               <div className="mt-1.5 text-[13px] text-ink-faint">
-                acting key — custodies nothing
+                acting key, custodies nothing
               </div>
             </Panel>
           </Reveal>
@@ -89,7 +89,7 @@ export default async function AgentPage({ params }: { params: Promise<{ id: stri
         <Reveal className="mt-6">
           <Panel className="p-6">
             <KeyValue label="Name">{agent.card?.name ?? "—"}</KeyValue>
-            <KeyValue label="Principal — owns the ERC-721" mono>
+            <KeyValue label="Principal, owns the ERC-721" mono>
               {agent.owner ? (
                 <Addr href={addressUrl(chainId, agent.owner)}>
                   <span className="hidden sm:inline">{agent.owner}</span>
@@ -99,7 +99,7 @@ export default async function AgentPage({ params }: { params: Promise<{ id: stri
                 "—"
               )}
             </KeyValue>
-            <KeyValue label="Bound wallet — acts, holds nothing" mono>
+            <KeyValue label="Bound wallet, acts, holds nothing" mono>
               {agent.wallet ? (
                 <Addr href={addressUrl(chainId, agent.wallet)}>
                   <span className="hidden sm:inline">{agent.wallet}</span>
@@ -131,7 +131,7 @@ export default async function AgentPage({ params }: { params: Promise<{ id: stri
               <Addr href={addressUrl(chainId, c.LetterOfCredit)} className="text-[13.5px]">
                 {short(c.LetterOfCredit, 10, 8)}
               </Addr>
-              , and it can only do so for a letter that actually paid out. The summary above is
+              , and it can only do so for a credit that actually paid out. The summary above is
               filtered to that one client address, so reviews from anywhere else do not count towards
               it.
             </p>

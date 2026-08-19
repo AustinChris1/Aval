@@ -1,7 +1,7 @@
 /**
  * The AVAL mark: the AV Lozenge.
  *
- * An A laid over an inverted A — a V — so the two letters of the name form the
+ * An A laid over an inverted A, a V, so the two letters of the name form the
  * lozenge of a bill of exchange between them, with a crimson diamond seal at
  * the crossing. Every element derives from what the product is: two parties'
  * strokes crossing, and a seal standing at the heart of the instrument.
@@ -27,14 +27,14 @@ export function Mark({
 
   return (
     <svg viewBox="0 0 200 200" fill="none" className={className} aria-hidden>
-      {/* the V — the counterparty's stroke, set back in muted sand */}
+      {/* the V, the counterparty's stroke, set back in muted sand */}
       <path
         d="M 55 35 L 100 165 L 145 35"
         stroke="var(--color-brass-deep)"
         strokeWidth="17"
         strokeLinecap="square"
       />
-      {/* the A — the principal's stroke, in ink */}
+      {/* the A, the principal's stroke, in ink */}
       <path d="M 55 165 L 100 35 L 145 165" stroke={aStroke} strokeWidth="17" strokeLinecap="square" />
       <path d="M 76 118 L 124 118" stroke={aStroke} strokeWidth="17" strokeLinecap="square" />
       {/* the seal at the crossing */}

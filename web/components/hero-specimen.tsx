@@ -17,7 +17,7 @@ type Tag = {
 /**
  * The hero: the 1854 bill of exchange floating as a physical object, with live
  * on-chain values pinned to it like an examiner's evidence tags. The old paper
- * carries the new data — the whole product in one picture.
+ * carries the new data, the whole product in one picture.
  */
 export function HeroSpecimen({ tags }: { tags: Tag[] }) {
   const ref = useRef<HTMLDivElement>(null);

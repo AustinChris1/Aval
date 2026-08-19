@@ -127,7 +127,7 @@ export default async function IssuePage() {
 
         <div className="mt-8">
           <MarginNote>
-            Issuing locks real value, so it is always signed by your own wallet — there is deliberately
+            Issuing locks real value, so it is always signed by your own wallet, there is deliberately
             no demo shortcut for it. The per-role demo buttons elsewhere exist so that someone without
             tBOT can still drive an existing credit; they sign with throwaway testnet keys, are capped,
             and are refused outright on mainnet.

@@ -5,7 +5,7 @@ import { parseEther, keccak256, stringToHex, type Hex } from "viem";
  * forms that render them, the wallet path that signs them in the visitor's own
  * browser, and the demo path that signs them server-side on testnet.
  *
- * Declaring them in one place is what keeps "runnable from the web" honest —
+ * Declaring them in one place is what keeps "runnable from the web" honest:
  * there is no function in the contracts that the UI quietly cannot reach.
  */
 
@@ -50,7 +50,7 @@ export type ActionDef = {
 };
 
 export const ROLE_LABEL: Record<Role, string> = {
-  applicant: "the applicant that issued the letter",
+  applicant: "the applicant that issued the credit",
   agent: "the agent's bound wallet",
   validator: "the examiner named at issuance",
   principal: "the agent's owner",
@@ -70,12 +70,12 @@ export const ACTIONS: ActionDef[] = [
     expectRevert: true,
     tone: "seal",
     fields: [
-      { name: "letterId", label: "Letter", type: "uint" },
+      { name: "letterId", label: "Credit", type: "uint" },
       {
         name: "recipient",
         label: "Recipient",
         type: "address",
-        help: "Any address that is not in the mandate — the agent's own key is the honest demonstration.",
+        help: "Any address that is not in the mandate, the agent's own key is the honest demonstration.",
       },
       { name: "amount", label: "Amount", type: "ether", placeholder: "0.1" },
     ],
@@ -88,7 +88,7 @@ export const ACTIONS: ActionDef[] = [
     fn: "payTo",
     role: "agent",
     fields: [
-      { name: "letterId", label: "Letter", type: "uint" },
+      { name: "letterId", label: "Credit", type: "uint" },
       { name: "recipient", label: "Recipient", type: "address" },
       { name: "amount", label: "Amount", type: "ether", placeholder: "0.1" },
     ],
@@ -102,7 +102,7 @@ export const ACTIONS: ActionDef[] = [
     fn: "execute",
     role: "agent",
     fields: [
-      { name: "letterId", label: "Letter", type: "uint" },
+      { name: "letterId", label: "Credit", type: "uint" },
       { name: "target", label: "Target contract", type: "address" },
       { name: "value", label: "Value", type: "ether", placeholder: "0.1" },
       {
@@ -123,7 +123,7 @@ export const ACTIONS: ActionDef[] = [
     fn: "presentDocuments",
     role: "agent",
     fields: [
-      { name: "letterId", label: "Letter", type: "uint" },
+      { name: "letterId", label: "Credit", type: "uint" },
       { name: "documentURI", label: "Document URI", type: "string", optional: true },
       {
         name: "documents",
@@ -154,7 +154,7 @@ export const ACTIONS: ActionDef[] = [
     id: "validationResponse",
     label: "Answer the examination",
     blurb:
-      "The examiner scores the presented hash from 0 to 100. This is what the letter reads at settlement — below the threshold, the fee is simply not payable.",
+      "The examiner scores the presented hash from 0 to 100. This is what the credit reads at settlement. Below the threshold, the fee is simply not payable.",
     contract: "ValidationRegistry",
     fn: "validationResponse",
     role: "validator",
@@ -178,7 +178,7 @@ export const ACTIONS: ActionDef[] = [
     fn: "draw",
     role: "anyone",
     tone: "verd",
-    fields: [{ name: "letterId", label: "Letter", type: "uint" }],
+    fields: [{ name: "letterId", label: "Credit", type: "uint" }],
   },
   {
     id: "dispute",
@@ -188,7 +188,7 @@ export const ACTIONS: ActionDef[] = [
     fn: "dispute",
     role: "applicant",
     fields: [
-      { name: "letterId", label: "Letter", type: "uint" },
+      { name: "letterId", label: "Credit", type: "uint" },
       { name: "reasonURI", label: "Reason URI", type: "string", optional: true },
     ],
   },
@@ -196,12 +196,12 @@ export const ACTIONS: ActionDef[] = [
     id: "resolveDispute",
     label: "Resolve the dispute",
     blurb:
-      "The named examiner rules. Only the fee is at stake — capital already paid to a named destination is gone by construction.",
+      "The named examiner rules. Only the fee is at stake, capital already paid to a named destination is gone by construction.",
     contract: "LetterOfCredit",
     fn: "resolveDispute",
     role: "validator",
     fields: [
-      { name: "letterId", label: "Letter", type: "uint" },
+      { name: "letterId", label: "Credit", type: "uint" },
       { name: "favourBeneficiary", label: "Rule for the agent?", type: "bool" },
       { name: "resolutionURI", label: "Resolution URI", type: "string", optional: true },
     ],
@@ -209,20 +209,20 @@ export const ACTIONS: ActionDef[] = [
   {
     id: "refundExpired",
     label: "Refund after expiry",
-    blurb: "Once the letter has expired, whatever was not spent returns to the applicant.",
+    blurb: "Once the credit has expired, whatever was not spent returns to the applicant.",
     contract: "LetterOfCredit",
     fn: "refundExpired",
     role: "anyone",
-    fields: [{ name: "letterId", label: "Letter", type: "uint" }],
+    fields: [{ name: "letterId", label: "Credit", type: "uint" }],
   },
   {
     id: "cancel",
-    label: "Cancel an untouched letter",
+    label: "Cancel an untouched credit",
     blurb: "The applicant withdraws, allowed only while nothing has been spent.",
     contract: "LetterOfCredit",
     fn: "cancel",
     role: "applicant",
-    fields: [{ name: "letterId", label: "Letter", type: "uint" }],
+    fields: [{ name: "letterId", label: "Credit", type: "uint" }],
   },
 
   // --- identity ------------------------------------------------------------
@@ -298,7 +298,7 @@ export function finaliseArgs(action: ActionDef, args: unknown[]): unknown[] {
 
 export function valueOf(action: ActionDef, values: Record<string, string>): bigint {
   if (!action.valueField) {
-    // `issue` is handled by its own form; `execute` funds the call from the letter.
+    // `issue` is handled by its own form; `execute` funds the call from the credit.
     return 0n;
   }
   const raw = (values[action.valueField] ?? "0").trim();

@@ -1,11 +1,11 @@
 /**
  * The agent runtime.
  *
- * Structured as the loop BOT Chain's own guidance describes — propose, validate,
- * authorize, submit, verify — with one difference that is the whole point of
+ * Structured as the loop BOT Chain's own guidance describes, propose, validate,
+ * authorize, submit, verify, with one difference that is the whole point of
  * LETTER: `validate` is not the last line of defence. The agent checks its own
  * intent against the mandate before spending gas, but if that check is wrong,
- * buggy, or deliberately skipped, the letter still refuses the payment on-chain.
+ * buggy, or deliberately skipped, the credit still refuses the payment on-chain.
  * The runtime is a convenience; the contract is the control.
  *
  * The agent holds no funds. Its key can do exactly two things: move working
@@ -59,8 +59,8 @@ export class AgentRuntime {
     ]);
     const reasons: string[] = [];
 
-    if (Number(L.status) !== 1) reasons.push(`letter status is ${L.status}, not Open`);
-    if (BigInt(Math.floor(Date.now() / 1000)) > L.expiry) reasons.push("letter has expired");
+    if (Number(L.status) !== 1) reasons.push(`credit status is ${L.status}, not Open`);
+    if (BigInt(Math.floor(Date.now() / 1000)) > L.expiry) reasons.push("credit has expired");
 
     const amount = intent.kind === "payTo" ? intent.amount : intent.value;
     if (amount > m.perCallCap) {
@@ -84,7 +84,7 @@ export class AgentRuntime {
     return { allowed: reasons.length === 0, reasons };
   }
 
-  /** Submits an intent. Reverts if the mandate forbids it — by design. */
+  /** Submits an intent. Reverts if the mandate forbids it, by design. */
   async submit(intent: Intent): Promise<Hex> {
     const letter = await this.ctx.contracts.letter(this.ctx.roles.agent);
     if (intent.kind === "payTo") {
@@ -118,7 +118,7 @@ export class AgentRuntime {
    * Asks the named examiner to attest the presented documents.
    *
    * ERC-8004 requires the requester to be the agent's owner or an approved
-   * operator, so this is sent by the principal — the key that holds the agent's
+   * operator, so this is sent by the principal, the key that holds the agent's
    * ERC-721, which in this demo is the deployer key. (Separate from the agent's
    * acting key on purpose: the principal owns the agent, the bound wallet works.)
    *

@@ -4,7 +4,7 @@ import type { Role } from "./actions";
  * The demo role keys, read on the server only.
  *
  * These are throwaway testnet keys holding faucet funds. They exist so a visitor
- * with no wallet and no tBOT can still drive an existing letter end to end. If a
+ * with no wallet and no tBOT can still drive an existing credit end to end. If a
  * deployment does not configure them, the UI falls back to asking for a wallet.
  */
 export const KEY_FOR_ROLE: Record<Role, string | undefined> = {

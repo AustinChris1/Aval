@@ -99,8 +99,8 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
   };
 
   /**
-   * Why an action cannot apply right now. The forms stay enabled regardless —
-   * being refused by the contract is the point of the product — but a visitor
+   * Why an action cannot apply right now. The forms stay enabled regardless;
+   * being refused by the contract is the point of the product, but a visitor
    * should not mistake a status refusal for a mandate refusal.
    */
   const noteFor = (actionId: string): string | undefined => {
@@ -193,7 +193,7 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
               icon: Coins,
               value: Number(formatEther(letter.fee)),
               decimals: 3,
-              label: "fee reserved — not spendable",
+              label: "fee reserved, not spendable",
               tone: "text-verd",
               panel: "verd" as const,
             },
@@ -230,7 +230,7 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
               <p className="text-[13px] leading-relaxed text-brass">
                 The explorer&apos;s transaction index is unreachable, so refused attempts cannot be
                 listed right now. The successful steps come from <code>eth_getLogs</code> and are
-                unaffected — a reverted call emits no logs, so there is no RPC-only way to enumerate
+                unaffected, a reverted call emits no logs, so there is no RPC-only way to enumerate
                 them.
               </p>
             </Panel>
@@ -250,7 +250,7 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
 
       <section className="py-14">
         <SectionHeading n="§ 02" eyebrow="drive it yourself" title="Act as the agent">
-          Only the ERC-8004-bound wallet gets through. Try it from your own —{" "}
+          Only the ERC-8004-bound wallet gets through. Try it from your own:{" "}
           <span className="font-mono text-seal">NotAgentWallet</span> is itself the demonstration.
         </SectionHeading>
         <div className="mt-7 space-y-3">{renderActions(AGENT_ACTIONS)}</div>
@@ -258,7 +258,7 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
 
       <section className="pb-14">
         <SectionHeading n="§ 03" eyebrow="examination and payment" title="Examine, then settle">
-          Score below the threshold and the fee is not payable —{" "}
+          Score below the threshold and the fee is not payable:{" "}
           <span className="font-mono text-seal">ScoreBelowThreshold</span>.
         </SectionHeading>
         <div className="mt-7 space-y-3">{renderActions(SETTLE_ACTIONS)}</div>
@@ -274,7 +274,7 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
       <section className="py-14">
         <SectionHeading n="§ 05" eyebrow="the rulebook" title="The mandate">
           Written at issuance and immutable afterwards. This is what the agent could and could not do
-          — and the reason the refusals above exist.
+         , and the reason the refusals above exist.
         </SectionHeading>
         <Reveal className="mt-7">
           <Panel className="p-6">
@@ -310,7 +310,7 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
         <SectionHeading n="§ 06" eyebrow="who is who" title="Parties" />
         <Reveal className="mt-7">
           <Panel className="p-6">
-            <KeyValue label="Applicant — locked the funds" mono>
+            <KeyValue label="Applicant, locked the funds" mono>
               <Addr href={addressUrl(chainId, letter.applicant)}>
                 <span className="hidden sm:inline">{letter.applicant}</span>
                 <span className="sm:hidden">{short(letter.applicant, 8, 6)}</span>
@@ -324,7 +324,7 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
                 #{String(letter.agentId)}
               </Link>
             </KeyValue>
-            <KeyValue label="Credit holder — receives the fee" mono>
+            <KeyValue label="Credit holder, receives the fee" mono>
               {holder ?? "—"}
             </KeyValue>
             <KeyValue label="Examiner" mono>

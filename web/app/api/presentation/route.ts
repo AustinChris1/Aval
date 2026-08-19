@@ -5,7 +5,7 @@ import { getLetter } from "@/lib/indexer";
 
 /**
  * Returns the raw material for verifying a presentation: the document bytes as
- * they were emitted, the hash the letter stored, and the examiner's answer.
+ * they were emitted, the hash the credit stored, and the examiner's answer.
  *
  * This route deliberately does no checking. It fetches from the chain and hands
  * the bytes over; the hashing and the comparison happen in the browser, so the

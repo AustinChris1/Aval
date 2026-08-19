@@ -12,7 +12,7 @@ type Doc = { slug: string; title: string; blurb: string };
  * The docs switcher: pages change without scrolling anywhere.
  *
  * Desktop gets a sticky sidebar beside the article. Phones get a floating
- * button (bottom-left, clear of the toast stack) that opens a slide-up sheet —
+ * button (bottom-left, clear of the toast stack) that opens a slide-up sheet,
  * always reachable no matter how deep into a document the reader is.
  */
 export function DocsNav({ docs, current }: { docs: readonly Doc[]; current: string }) {

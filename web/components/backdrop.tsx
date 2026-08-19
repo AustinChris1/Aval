@@ -4,7 +4,7 @@ import { useEffect, useMemo, useRef } from "react";
 import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "motion/react";
 
 /**
- * Builds a hypotrochoid — the interlaced curve that engraved security printing
+ * Builds a hypotrochoid, the interlaced curve that engraved security printing
  * uses on share certificates, banknotes and, historically, letters of credit.
  * It is here because it is the correct ornament for the object, not decoration
  * for its own sake.
@@ -46,7 +46,7 @@ type Node = { x: number; y: number; vx: number; vy: number; r: number };
 
 /**
  * A slow field of drifting nodes with links between near neighbours, and
- * occasional pulses that travel along a link and terminate — value settling
+ * occasional pulses that travel along a link and terminate, value settling
  * between two parties.
  *
  * Hand-rolled on a canvas so it stays one file with no runtime dependency. It
@@ -205,7 +205,7 @@ export function Backdrop() {
 
   return (
     <div className="pointer-events-none fixed inset-0 -z-10 overflow-hidden" aria-hidden>
-      {/* the page's own ambient gradients — body is transparent by design */}
+      {/* the page's own ambient gradients, body is transparent by design */}
       <div className="plate-only absolute inset-0 bg-[radial-gradient(1400px_700px_at_50%_-12%,rgba(232,201,153,0.10),transparent_60%),radial-gradient(1000px_600px_at_8%_18%,rgba(142,22,22,0.06),transparent_60%)]" />
       <motion.div style={reduced ? { opacity: 0.45 } : { opacity: dimmed }} className="absolute inset-0">
       <div className="plate-only absolute -top-1/3 left-1/2 h-[95vh] w-[130vw] -translate-x-1/2 animate-drift rounded-full bg-[radial-gradient(closest-side,rgba(232,201,153,0.18),transparent_70%)] blur-3xl" />

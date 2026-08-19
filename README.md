@@ -17,7 +17,7 @@ Built for the BOT Chain Builder Challenge #2 (AI × RWA).
 Agents now hold wallets. Every team shipping one gets the same question and none
 of them have a good answer: *what happens when it goes wrong?*
 
-The industry's answer so far is observability — log what the agent did, and
+The industry's answer so far is observability, log what the agent did, and
 review it afterwards. That is a flight recorder: it tells you how you crashed. If
 an agent with a funded key decides to send everything to an address it invented,
 a log tells you about it after the money is gone.
@@ -52,17 +52,17 @@ applicant                LetterOfCredit                    agent
    │                           └───────── reputation written to ERC-8004
 ```
 
-Three properties follow, and each one is a test in `test/letter.ts`:
+Three properties follow, and each one is a test in `test/credit.ts`:
 
-**The agent never holds the money.** The letter contract does. The agent submits
-intents and the contract executes them only if the mandate permits — allowlisted
+**The agent never holds the money.** The credit contract does. The agent submits
+intents and the contract executes them only if the mandate permits, allowlisted
 recipients, allowlisted contract *and* method, a per-call cap, a total cap, an
 expiry. A forbidden payment is not a loss to chase afterwards; it reverts.
 
 **Payment is against documents.** The fee is reserved out of the face value and
 is not spendable working capital. It becomes drawable only once the examiner
 named at issuance has scored the exact document hash the agent presented, at or
-above the threshold written into the letter. The letter reads that score from the
+above the threshold written into the credit. The credit reads that score from the
 ERC-8004 Validation Registry.
 
 The examiner is a named, trusted party, exactly as the issuing bank is in a real
@@ -71,8 +71,8 @@ above *this* threshold; it does not prove the examiner was honest. The applicant
 chose them at issuance, and that choice is the trust assumption. Anyone claiming
 otherwise about an escrow like this is overselling it.
 
-**The letter is itself a claim.** It is an ERC-721. Whoever holds it receives the
-proceeds, so a credit can be assigned or sold — which is how documentary credits
+**The credit is itself a claim.** It is an ERC-721. Whoever holds it receives the
+proceeds, so a credit can be assigned or sold, which is how documentary credits
 work in the real world, and what makes this an RWA rather than an escrow with
 extra steps. To be precise about what changes hands: the assignable asset is the
 *contingent claim on the reserved fee*, not the working capital. Capital already
@@ -82,7 +82,7 @@ applicant's decision, taken at issuance.
 ## Why this is an RWA, honestly
 
 A tokenized invoice built in five days is a fake invoice. There is no debtor, no
-legal claim, and no redemption path — just an NFT asserting something.
+legal claim, and no redemption path, just an NFT asserting something.
 
 A documentary credit has no such problem: **it is real the moment the funds are
 locked.** The instrument is a contingent claim on specific escrowed value, under
@@ -90,7 +90,7 @@ named conditions, before a named date, transferable to a third party. Every
 element that makes it a financial asset is on-chain and enforceable. Nothing is
 asserted off-chain and hoped for.
 
-## Where ERC-8004 comes in — and the gap we found
+## Where ERC-8004 comes in, and the gap we found
 
 The agent's identity, reputation and examination all use ERC-8004 (Trustless
 Agents), the standard BOT Chain has publicly committed to.
@@ -103,9 +103,9 @@ registered, and the upgrade key belongs to the ERC-8004 deployer, so they cannot
 be filled in by anyone else. The full evidence is in
 [docs/RESEARCH.md](docs/RESEARCH.md).
 
-So AVAL ships working registries — ported from the ERC-8004 reference
-implementation with the external ABI unchanged — and a real product on top of
-them. The letter contract touches nothing outside the ERC-8004 interface, so it
+So AVAL ships working registries, ported from the ERC-8004 reference
+implementation with the external ABI unchanged, and a real product on top of
+them. The credit contract touches nothing outside the ERC-8004 interface, so it
 can be repointed at the canonical addresses unchanged if they are ever filled in.
 
 Integration is load-bearing rather than decorative:
@@ -115,9 +115,9 @@ Integration is load-bearing rather than decorative:
 - The **Validation Registry is the documentary examination.** No score over the
   presented hash, no payment.
 - **Reputation is payment-backed.** The only client that writes feedback is the
-  letter contract, and only for a letter that actually settled. AVAL
+  credit contract, and only for a credit that actually settled. AVAL
   deliberately does *not* take blanket ERC-721 approval over agents, because
-  `giveFeedback` rejects self-feedback from an approved operator — so its
+  `giveFeedback` rejects self-feedback from an approved operator, so its
   feedback is structurally harder to fake than an arbitrary address's.
 
 ## The demo
@@ -133,10 +133,10 @@ The mandate names one contract and one method on it.
 2. **The agent tries a forbidden method** on the *approved* contract. → `SelectorNotAllowed`
 3. The agent does the job it was mandated to do. → the supplier is paid
 4. The agent presents documents, on-chain, in full.
-5. The examiner re-derives every claim from chain state — including reading the
-   supplier's own contract to confirm the invoice was really settled — and scores it.
+5. The examiner re-derives every claim from chain state, including reading the
+   supplier's own contract to confirm the invoice was really settled, and scores it.
 6. Anyone can settle: fee to the credit holder, unspent capital back to the applicant.
-7. Reputation is written that only a settled letter could have produced.
+7. Reputation is written that only a settled credit could have produced.
 
 Steps 1 and 2 are broadcast with gas supplied manually so they are **mined as
 reverted** rather than dying in local gas estimation. The refusals become
@@ -167,7 +167,7 @@ at all, run `npx hardhat node` and use `--network localhost`.
 ## Deployed addresses
 
 Written to `deployments/<chainId>.json` by the deploy script, and read from there
-by every other script — no address is hardcoded twice.
+by every other script, no address is hardcoded twice.
 
 All five are **verified with source** on Blockscout.
 
@@ -185,10 +185,10 @@ A full lifecycle ran on testnet 968. These two are mined, reverted, and permanen
 
 | | |
 | --- | --- |
-| The agent tried to pay itself | [`0x001eb6da…b0b1`](https://scan.bohr.life/tx/0x001eb6da851df99a40eff70cc411ec495f6b2db04f5152c4e029be4f3c4db0b1) — `RecipientNotAllowed`, block 20204469 |
-| The agent tried a forbidden method on the *approved* supplier | [`0x86d0261f…b07d`](https://scan.bohr.life/tx/0x86d0261f862fb4e13d735576a6858541c59a40f3e955ef5885340932ebcfb07d) — `SelectorNotAllowed`, block 20204477 |
+| The agent tried to pay itself | [`0x001eb6da…b0b1`](https://scan.bohr.life/tx/0x001eb6da851df99a40eff70cc411ec495f6b2db04f5152c4e029be4f3c4db0b1), `RecipientNotAllowed`, block 20204469 |
+| The agent tried a forbidden method on the *approved* supplier | [`0x86d0261f…b07d`](https://scan.bohr.life/tx/0x86d0261f862fb4e13d735576a6858541c59a40f3e955ef5885340932ebcfb07d), `SelectorNotAllowed`, block 20204477 |
 
-And the rest of the same letter: [permitted job](https://scan.bohr.life/tx/0x8ad60d173cc1079242e7e811b222b2e9a0ee2282244a818a0df762e4b990a625) ·
+And the rest of the same credit: [permitted job](https://scan.bohr.life/tx/0x8ad60d173cc1079242e7e811b222b2e9a0ee2282244a818a0df762e4b990a625) ·
 [documents](https://scan.bohr.life/tx/0x1c1df42749c8cd1bf7807894086b071b74abcbb2d832a4176fbd1e2e7012f16b) ·
 [examination 100/100](https://scan.bohr.life/tx/0x79abf3068801902e2f2e4b359560e3a695983a33699f900a3b9bfdba35844f9f) ·
 [drawn](https://scan.bohr.life/tx/0xcae91adb7df6c170b91067d4287884b5deb246e1cd82dd59d5d2c3e8fbebd8e4)
@@ -202,35 +202,35 @@ cd web && npm install && npm run dev
 
 Next.js 15, Tailwind CSS 4, motion, lenis and lucide-react. Deploys to Vercel as
 -is: import the repo, set the Root Directory to `web`, deploy. There are no
-environment variables, no database and no external services — the RPC endpoints
+environment variables, no database and no external services, the RPC endpoints
 are public, and every page reads the chain on the server with a short revalidate
 window.
 
 Four surfaces, no design system:
 
-- **Letters** — every letter, its status, and what has been spent against it.
-- **Letter replay** — one timeline from issuance to settlement. The refusals are
-  first-class rows, in red, with their decoded custom error — not errors hidden
+- **Credits**, every credit, its status, and what has been spent against it.
+- **Credit replay**, one timeline from issuance to settlement. The refusals are
+  first-class rows, in red, with their decoded custom error, not errors hidden
   as noise.
-- **Verify** — fetches the document bytes as they were emitted, re-hashes them
+- **Verify**, fetches the document bytes as they were emitted, re-hashes them
   **in your browser**, and reads the examiner's answer out of the Validation
   Registry. Four checks, one click, nothing taken on trust from the page.
 
 Motion is treated as an enhancement rather than a dependency. `prefers-reduced-motion`
 turns off the smooth scrolling, the background field and every reveal, and all
-figures — including the refusal count — render their true values in the server
+figures, including the refusal count, render their true values in the server
 HTML before any JavaScript runs. A page whose argument is "two payments were
 refused" must not say "0 refusals" while a script is still loading.
-- **ERC-8004 on BOT Chain** — the canonical addresses checked live against
+- **ERC-8004 on BOT Chain**, the canonical addresses checked live against
   mainnet, next to the registries that actually work.
 
 One implementation note worth stating plainly, because it is the hardest part of
 showing this product. **A reverted transaction emits no logs**, so no amount of
-`eth_getLogs` will ever find the refusals — the exact thing worth showing is
+`eth_getLogs` will ever find the refusals, the exact thing worth showing is
 invisible to a normal indexer. The dashboard uses the explorer's transaction
 index purely to *discover* candidate hashes, then re-verifies every one against
 the RPC: the receipt must really be a failure, the calldata must really name this
-letter, and the revert reason is decoded by replaying the call with `eth_call`
+credit, and the revert reason is decoded by replaying the call with `eth_call`
 against its parent block. If the explorer is down the timeline degrades to the
 successful steps and says so, rather than silently dropping the refusals.
 
@@ -239,14 +239,14 @@ successful steps and says so, rather than silently dropping the refusals.
 ```
 contracts/
   LetterOfCredit.sol        the instrument: mandate, presentation, draw, dispute
-  erc8004/                  Identity, Reputation, Validation — spec-conformant ports
+  erc8004/                  Identity, Reputation, Validation, spec-conformant ports
   interfaces/IERC8004.sol   only what AVAL calls, so it stays repointable
   demo/ServiceVendor.sol    an approved supplier, for a real target to allowlist
 agent/
   runtime.ts                propose → validate → authorize → submit → verify
   examiner.ts               re-derives every claim from chain state, then scores
 web/
-  app/letter/[id]/          the replay, and the in-browser verifier
+  app/credit/[id]/          the replay, and the in-browser verifier
   app/erc8004/              the canonical-vs-working registry comparison
   lib/indexer.ts            log indexing + revert recovery via eth_call replay
 scripts/
@@ -254,7 +254,7 @@ scripts/
   deploy.ts / verify.ts     deploy and Blockscout verification
   setup-agent.ts            ERC-8004 registration + EIP-712 key binding
   demo.ts                   the full lifecycle
-test/letter.ts              31 tests, every mandate-violation path included
+test/credit.ts              31 tests, every mandate-violation path included
 docs/RESEARCH.md            verified BOT Chain facts, incl. three corrections
 ```
 
@@ -264,11 +264,11 @@ docs/RESEARCH.md            verified BOT Chain facts, incl. three corrections
 reads the mandate and refuses bad intents before spending gas. It deliberately
 does not share code with the contract, and the demo submits a forbidden intent
 anyway to make the point: if the agent's reasoning is buggy, compromised, or
-simply skipped, the letter still refuses. A safety property that lives in the
+simply skipped, the credit still refuses. A safety property that lives in the
 agent is not a safety property.
 
 **The mandate prevents loss; the dispute governs the fee.** Working capital paid
-to a destination the applicant named is gone — that was the applicant's decision,
+to a destination the applicant named is gone, that was the applicant's decision,
 made at issuance. A dispute therefore decides whether the agent earned its fee,
 not whether the payment can be reversed. This is honest about what escrow can and
 cannot do, and it is why the mandate is where the care goes.
@@ -279,12 +279,12 @@ wallet as the agent. The applicant is protected by the mandate, not by key
 immutability. The wallet in force at issuance is recorded in `LetterIssued` so
 the audit trail still shows it.
 
-**A selector allowlist is not a full mandate — and this is a v1 limit.**
+**A selector allowlist is not a full mandate, and this is a v1 limit.**
 `execute` constrains the target contract and the 4-byte method, and does not
 inspect the arguments. That is exactly right for `invoice(bytes32)`, where the
 value is capped and the money can only reach one contract. It would be
 insufficient for something like a DEX router, where the same selector can carry
-any path and any recipient — allowlisting one would let the agent choose where
+any path and any recipient, allowlisting one would let the agent choose where
 the funds end up. Argument-level constraints are the obvious next version;
 until then, mandates should name contracts whose methods cannot redirect value.
 The safe pattern today is `payTo` with named recipients.
@@ -293,14 +293,14 @@ The safe pattern today is `payTo` with named recipients.
 sub-second blocks, a document body costs a fraction of a cent as event data, and
 it then survives without a pinning service, a gateway, or this repo staying
 online. The hash is what the examiner scores, and the contract enforces that a
-supplied body hashes to it — otherwise "the evidence is the event" would be a
+supplied body hashes to it, otherwise "the evidence is the event" would be a
 claim rather than a guarantee. A hash-only presentation is still allowed for
 documents that are bulky or confidential.
 
-**A disputed letter is refundable after expiry.** Otherwise an examiner going
+**A disputed credit is refundable after expiry.** Otherwise an examiner going
 offline would strand the funds forever. The trade-off is that an applicant could
 dispute and wait out the clock; the mitigations are that agents choose which
-examiners they will work under, and that a letter can be presented and drawn well
+examiners they will work under, and that a credit can be presented and drawn well
 before expiry with a short dispute window.
 
 ## Status

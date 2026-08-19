@@ -59,7 +59,7 @@ const LETTER_EVENTS = {
 
 const FROM_BLOCK = 0n;
 
-/** Full letter state, straight from the contract. */
+/** Full credit state, straight from the contract. */
 export async function getLetter(chainId: ChainId, letterId: bigint) {
   const client = publicClient(chainId);
   const address = contracts(chainId).LetterOfCredit;
@@ -167,12 +167,12 @@ function extractRevertData(e: unknown): string | undefined {
 }
 
 /**
- * Finds transactions sent to the letter contract that reverted for this letter.
+ * Finds transactions sent to the credit contract that reverted for this credit.
  *
  * This is the one place the explorer is consulted, because there is no standard
  * JSON-RPC way to list an address's transactions. Everything it returns is then
  * re-verified against the chain: the receipt must really be a failure, and the
- * calldata must really name this letter. If the explorer is unavailable the
+ * calldata must really name this credit. If the explorer is unavailable the
  * timeline degrades to events only rather than breaking.
  */
 export async function findRefusals(
@@ -230,14 +230,14 @@ export async function findRefusals(
 }
 
 function titleForRefusal(fn: string, error?: string) {
-  if (error?.startsWith("RecipientNotAllowed")) return "Refused — payee not named in the mandate";
-  if (error?.startsWith("SelectorNotAllowed")) return "Refused — method not permitted";
-  if (error?.startsWith("TargetNotAllowed")) return "Refused — contract not named in the mandate";
-  if (error?.startsWith("ExceedsPerCallCap")) return "Refused — over the per-call cap";
-  if (error?.startsWith("InsufficientCredit")) return "Refused — beyond the working capital";
-  if (error?.startsWith("NotAgentWallet")) return "Refused — caller is not the agent's bound wallet";
-  if (error?.startsWith("LetterExpired")) return "Refused — the letter had expired";
-  return `Refused — ${fn}`;
+  if (error?.startsWith("RecipientNotAllowed")) return "Refused: payee not named in the mandate";
+  if (error?.startsWith("SelectorNotAllowed")) return "Refused: method not permitted";
+  if (error?.startsWith("TargetNotAllowed")) return "Refused: contract not named in the mandate";
+  if (error?.startsWith("ExceedsPerCallCap")) return "Refused: over the per-call cap";
+  if (error?.startsWith("InsufficientCredit")) return "Refused: beyond the working capital";
+  if (error?.startsWith("NotAgentWallet")) return "Refused: caller is not the agent's bound wallet";
+  if (error?.startsWith("LetterExpired")) return "Refused: the credit had expired";
+  return `Refused: ${fn}`;
 }
 
 function describeAttempt(fn: string, args: readonly unknown[]) {
@@ -246,7 +246,7 @@ function describeAttempt(fn: string, args: readonly unknown[]) {
   return fn;
 }
 
-/** The full history of one letter: successes from logs, refusals from receipts. */
+/** The full history of one credit: successes from logs, refusals from receipts. */
 export async function getTimeline(chainId: ChainId, letterId: bigint) {
   const client = publicClient(chainId);
   const address = contracts(chainId).LetterOfCredit;
@@ -362,7 +362,7 @@ export async function getErc8004Status(chainId: ChainId) {
       });
       return { address, deployed: true, working: true, note: `name() = "${name}"` };
     } catch {
-      return { address, deployed: true, working: false, note: "name() reverts — placeholder proxy" };
+      return { address, deployed: true, working: false, note: "name() reverts, placeholder proxy" };
     }
   };
 

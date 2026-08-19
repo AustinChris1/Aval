@@ -15,7 +15,7 @@ import type { Address } from "viem";
 const ctx = await connect();
 const { publicClient, address, explorer, chainId } = ctx;
 
-banner("LETTER — agent registration (ERC-8004)");
+banner("LETTER, agent registration (ERC-8004)");
 
 const identityAsPrincipal = await ctx.contracts.identity(ctx.roles.deployer);
 const identity = await ctx.contracts.identity();
@@ -49,7 +49,7 @@ if (agentId === undefined) {
     description:
       "Settles approved supplier invoices under a documentary credit. Custodies nothing: " +
       "spends only from a LETTER mandate, and is paid only against an examined presentation.",
-    services: [{ name: "web", endpoint: "https://letter.credit/agents/treasury-ops" }],
+    services: [{ name: "web", endpoint: "https://aval-botchain.vercel.app/agent/0" }],
     x402Support: false,
     active: true,
     supportedTrust: ["reputation"],

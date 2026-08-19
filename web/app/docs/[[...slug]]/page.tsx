@@ -5,6 +5,7 @@ import { marked } from "marked";
 import { docsIndex } from "@/lib/generated/docs";
 import { DocsNav } from "@/components/docs-nav";
 import { Reveal } from "@/components/motion";
+import { DocArticle } from "@/components/doc-article";
 
 export const dynamic = "force-static";
 
@@ -50,8 +51,8 @@ export default async function DocsPage({ params }: { params: Promise<{ slug?: st
   return (
     <div className="grid gap-12 pt-12 pb-8 lg:grid-cols-[230px_minmax(0,1fr)]">
       <DocsNav docs={docsIndex} current={current} />
-      <Reveal key={current}>
-        <article className="prose-letter max-w-[76ch]" dangerouslySetInnerHTML={{ __html: html }} />
+      <Reveal key={current} className="min-w-0">
+        <DocArticle html={html} />
       </Reveal>
     </div>
   );

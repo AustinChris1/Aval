@@ -38,7 +38,7 @@ export default async function Erc8004Page() {
             BOT Chain has publicly committed to ERC-8004 (Trustless Agents), and the standard&apos;s
             canonical vanity addresses were reserved here alongside roughly two dozen other chains.
             On mainnet those addresses hold placeholder proxies: <code>name()</code> reverts, no agent
-            can be registered, and the upgrade key belongs to the ERC-8004 deployer — so nobody else
+            can be registered, and the upgrade key belongs to the ERC-8004 deployer, so nobody else
             can fill them in.
           </p>
           <p className="mt-4 text-[16px] leading-relaxed text-ink-soft">
@@ -52,7 +52,7 @@ export default async function Erc8004Page() {
       {error && (
         <Panel tone="seal" className="mb-10 flex items-start gap-2 p-4 text-[13px] text-seal">
           <TriangleAlert className="mt-0.5 size-4 shrink-0" />
-          Could not reach the RPC — {error}
+          Could not reach the RPC, {error}
         </Panel>
       )}
 
@@ -65,8 +65,8 @@ export default async function Erc8004Page() {
               n="§ 01" eyebrow="reserved, not shipped"
               title="The canonical addresses, on mainnet 677"
             >
-              A <span className="text-seal">placeholder</span> verdict means the address has code — an
-              ERC1967 proxy — but <code>name()</code> reverts, so there is no ERC-721 registry behind
+              A <span className="text-seal">placeholder</span> verdict means the address has code, an
+              ERC1967 proxy, but <code>name()</code> reverts, so there is no ERC-721 registry behind
               it and no agent can ever be registered against it.
             </SectionHeading>
 
@@ -95,7 +95,7 @@ export default async function Erc8004Page() {
               n="§ 02" eyebrow="working, today"
               title={`What AVAL deployed on ${info.name}`}
             >
-              Ports of the ERC-8004 reference implementation with the external ABI unchanged — so
+              Ports of the ERC-8004 reference implementation with the external ABI unchanged, so
               anything written against the canonical registries works against these.
             </SectionHeading>
 
@@ -149,7 +149,7 @@ export default async function Erc8004Page() {
                 {
                   icon: ShieldCheck,
                   title: "Validation is the examination",
-                  body: "The Validation Registry is not a badge — it is the documentary examination itself. No score over the presented hash, from the named examiner, at or above threshold: no payment.",
+                  body: "The Validation Registry is not a badge, it is the documentary examination itself. No score over the presented hash, from the named examiner, at or above threshold: no payment.",
                 },
                 {
                   icon: CircleSlash,
@@ -170,8 +170,8 @@ export default async function Erc8004Page() {
             <Reveal delay={0.2} className="mt-6">
               <Panel className="p-6">
                 <p className="text-[14px] leading-relaxed text-ink-soft">
-                  Because AVAL touches nothing outside the ERC-8004 interface — no private helpers,
-                  no extensions — the letter contract can be repointed at the canonical addresses
+                  Because AVAL touches nothing outside the ERC-8004 interface, no private helpers,
+                  no extensions, so the credit contract can be repointed at the canonical addresses
                   without a code change, the day someone fills them in.
                 </p>
               </Panel>

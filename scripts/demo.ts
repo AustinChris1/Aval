@@ -9,11 +9,11 @@
  *   5. The agent presents documents.
  *   6. The examiner re-derives every claim from chain state and scores it.
  *   7. The credit is drawn: fee to the holder, unspent capital back to the applicant.
- *   8. Reputation is written that only a settled letter could have produced.
+ *   8. Reputation is written that only a settled credit could have produced.
  *
  * Steps 2 and 3 are broadcast with explicit gas so they are *mined as reverted*
  * rather than dying in local estimation. The refusals become permanent,
- * inspectable transactions — that is the evidence, not a log line.
+ * inspectable transactions, that is the evidence, not a log line.
  *
  *   npx hardhat run scripts/demo.ts --network botTestnet
  */
@@ -56,7 +56,7 @@ const record = (step: string, hash: Hex | undefined, outcome: string) => {
 
 // --- 0. context ----------------------------------------------------------
 
-banner(`LETTER on BOT Chain ${chainId} — full lifecycle`);
+banner(`LETTER on BOT Chain ${chainId}, full lifecycle`);
 console.log(`applicant  ${address.applicant}   ${bot(await publicClient.getBalance({ address: address.applicant }))}`);
 console.log(`principal  ${address.deployer}   (owns agent #${agentId})`);
 console.log(`agent      ${address.agent}   ${bot(await publicClient.getBalance({ address: address.agent }))}  custodies nothing`);
@@ -72,7 +72,7 @@ const JOB_AMOUNT = parseEther("0.2");
 const INVOICE_SELECTOR = toFunctionSelector("invoice(bytes32)");
 const invoiceRef = keccak256(stringToHex(`invoice-${Date.now()}`));
 
-banner("1. The applicant issues a letter of credit");
+banner("1. The applicant issues a credit");
 
 const terms = {
   job: "Settle approved supplier invoice",
@@ -115,10 +115,10 @@ await publicClient.waitForTransactionReceipt({ hash: issueTx });
 
 const letterRead = await ctx.contracts.letter();
 const letterId = (await letterRead.read.totalLetters()) as bigint;
-record("issue", issueTx, "letter issued");
+record("issue", issueTx, "credit issued");
 
-console.log(`\n  letter #${letterId}`);
-console.log(`  face value        ${bot(FACE)}   locked in the letter contract`);
+console.log(`\n  credit #${letterId}`);
+console.log(`  face value        ${bot(FACE)}   locked in the credit contract`);
 console.log(`  working capital   ${bot(FACE - FEE)}   spendable under mandate`);
 console.log(`  reserved fee      ${bot(FEE)}   payable only on a compliant presentation`);
 console.log(`  per-call cap      ${bot(PER_CALL)}`);
@@ -150,7 +150,7 @@ const blockedTheft = await sendExpectedRejection(ctx, ctx.roles.agent, {
   functionName: "payTo",
   args: [letterId, address.agent, PER_CALL],
 });
-console.log(`  the letter refused it: ${blockedTheft.error}`);
+console.log(`  the credit refused it: ${blockedTheft.error}`);
 record(
   "blocked-theft",
   blockedTheft.hash,
@@ -173,7 +173,7 @@ const blockedSelector = await sendExpectedRejection(ctx, ctx.roles.agent, {
   args: [letterId, deployment.contracts.ServiceVendor, 0n, drainData],
 });
 console.log(`  the target is approved; the method is not.`);
-console.log(`  the letter refused it: ${blockedSelector.error}`);
+console.log(`  the credit refused it: ${blockedSelector.error}`);
 record(
   "blocked-selector",
   blockedSelector.hash,
@@ -205,7 +205,7 @@ record("job", jobTx, jobResult.ok ? "supplier paid" : "failed");
 
 const supplierBalance = await publicClient.getBalance({ address: deployment.contracts.ServiceVendor });
 console.log(`\n  supplier now holds  ${bot(supplierBalance)}`);
-console.log(`  letter capital left ${bot((await letterRead.read.available([letterId])) as bigint)}`);
+console.log(`  credit capital left ${bot((await letterRead.read.available([letterId])) as bigint)}`);
 
 // --- 5. presentation -----------------------------------------------------
 
@@ -236,14 +236,14 @@ const exam = await examiner.examine(letterId, documents, presentation.docHash);
 for (const f of exam.findings) {
   console.log(`  [${f.ok ? "pass" : "FAIL"}] ${f.check.padEnd(30)} ${f.detail}`);
 }
-console.log(`\n  score ${exam.score}/100 — ${exam.summary}`);
+console.log(`\n  score ${exam.score}/100, ${exam.summary}`);
 
 const response = await examiner.respond(presentation.docHash, exam, "");
 record("examination", response.tx, `scored ${exam.score}/100`);
 
 // --- 7. settlement -------------------------------------------------------
 
-banner("7. Settlement — payment against documents");
+banner("7. Settlement, payment against documents");
 
 const holder = (await letterRead.read.ownerOf([letterId])) as Address;
 const holderBefore = await publicClient.getBalance({ address: holder });
@@ -266,7 +266,7 @@ console.log(`  status                     ${["None", "Open", "Presented", "Dispu
 
 // --- 8. reputation -------------------------------------------------------
 
-banner("8. Reputation that only a settled letter could have written");
+banner("8. Reputation that only a settled credit could have written");
 
 const reputation = await ctx.contracts.reputation();
 const [count, value] = (await reputation.read.getSummary([
@@ -278,8 +278,8 @@ const [count, value] = (await reputation.read.getSummary([
 
 console.log(`  settled letters for agent #${agentId}: ${count}`);
 console.log(`  average examined score:              ${value}/100`);
-console.log(`\n  The only client that can write this feedback is the letter contract,`);
-console.log(`  and it can only do so for a letter that actually paid out.`);
+console.log(`\n  The only client that can write this feedback is the credit contract,`);
+console.log(`  and it can only do so for a credit that actually paid out.`);
 
 // --- summary -------------------------------------------------------------
 

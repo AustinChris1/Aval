@@ -1,14 +1,14 @@
 /**
  * The examiner.
  *
- * In a documentary credit a bank does not take the seller's word for it — it
+ * In a documentary credit a bank does not take the seller's word for it, it
  * examines the documents against the terms and pays only on a compliant
  * presentation. This is that role, and it is deliberately not a rubber stamp:
  * every claim the agent makes is re-derived from chain state the examiner reads
  * itself. If the agent says it paid a supplier, the examiner checks the
  * supplier's own contract, not the agent's report.
  *
- * The score it writes to the ERC-8004 Validation Registry is what the letter
+ * The score it writes to the ERC-8004 Validation Registry is what the credit
  * reads at settlement, so a discrepancy here means the fee is simply not payable.
  */
 import { type Address, type Hex, formatEther, keccak256, stringToHex } from "viem";
@@ -46,12 +46,12 @@ export class Examiner {
     const vendor = await this.ctx.contracts.vendor();
     const L = await letterContract.read.getLetter([letterId]);
 
-    // 1. The documents must be the ones the letter actually recorded.
+    // 1. The documents must be the ones the credit actually recorded.
     const recomputed = keccak256(stringToHex(JSON.stringify(docs)));
     findings.push({
       check: "document integrity",
       ok: recomputed.toLowerCase() === docHash.toLowerCase() && L.docHash.toLowerCase() === docHash.toLowerCase(),
-      detail: `presented hash ${docHash.slice(0, 18)}… matches the letter's record`,
+      detail: `presented hash ${docHash.slice(0, 18)}… matches the credit's record`,
     });
 
     // 2. The claimed payee must be one the applicant named in the mandate.
@@ -64,7 +64,7 @@ export class Examiner {
     });
 
     // 3. The invoice must exist on the supplier's own books, for the right amount,
-    //    paid by the letter itself. This is the check that makes the examination
+    //    paid by the credit itself. This is the check that makes the examination
     //    substantive: it is read from the counterparty, not from the agent.
     const ref = docs.invoiceRef as Hex;
     const invoice = (await vendor.read.invoices([ref])) as unknown as [Address, bigint, bigint];
@@ -82,12 +82,12 @@ export class Examiner {
         : "supplier has no record of this invoice",
     });
 
-    // 4. The letter's own accounting must agree with the claim.
+    // 4. The credit's own accounting must agree with the claim.
     const spentOk = L.spent >= expected;
     findings.push({
-      check: "letter accounting",
+      check: "credit accounting",
       ok: spentOk,
-      detail: `letter records ${formatEther(L.spent)} BOT spent against a claim of ${formatEther(expected)}`,
+      detail: `credit records ${formatEther(L.spent)} BOT spent against a claim of ${formatEther(expected)}`,
     });
 
     const passed = findings.filter((f) => f.ok).length;
@@ -109,7 +109,7 @@ export class Examiner {
       exam.score,
       responseURI,
       responseHash,
-      "letter",
+      "aval",
     ]);
     await this.ctx.publicClient.waitForTransactionReceipt({ hash: tx });
     return { tx, responseHash };
