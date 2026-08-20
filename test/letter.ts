@@ -11,16 +11,10 @@ import {
   type WalletClient,
 } from "viem";
 
-/**
- * LETTER test suite.
- *
- * The claim this product makes is that an agent physically cannot move money
- * outside its mandate, and cannot be paid without an examined document. Both are
- * proven here against real reverts, not mocked.
- */
+// AVAL test suite: proves an agent cannot spend outside its mandate nor be paid unexamined, against real reverts.
 
 const ONE_HOUR = 3600n;
-/** toFunctionSelector("invoice(bytes32)") — computed, not guessed. */
+/** toFunctionSelector("invoice(bytes32)"), computed, not guessed. */
 const INVOICE_SELECTOR = toFunctionSelector("invoice(bytes32)");
 
 /** Address equality that ignores EIP-55 checksum casing. */
@@ -43,7 +37,7 @@ async function expectRevert(p: Promise<unknown>, name: string) {
   assert.fail(`expected revert "${name}" but the call succeeded`);
 }
 
-describe("LETTER — documentary credit for agents", async () => {
+describe("AVAL, documentary credit for agents", async () => {
   const { viem, networkHelpers } = await network.connect();
 
   let deployer: WalletClient;
@@ -230,7 +224,7 @@ describe("LETTER — documentary credit for agents", async () => {
         await publicClient.getBalance({ address: letter.address }),
         parseEther("10"),
       );
-      // The beneficiary — the agent's owner — holds the letter and may assign it.
+      // The beneficiary (the agent's owner) holds the credit and may assign it.
       eqAddr(await letter.read.ownerOf([id]), addr(principal));
       // The fee is reserved: it is not working capital.
       assert.equal(await letter.read.available([id]), parseEther("9"));
@@ -411,8 +405,7 @@ describe("LETTER — documentary credit for agents", async () => {
       const id = await issueLetter();
       const agent = await asAgent();
       const lie = stringToHex(JSON.stringify({ job: "something else entirely" }));
-      // Committing to `docHash` while emitting different bytes would make the
-      // on-chain evidence meaningless, so the letter rejects it outright.
+      // Committing to docHash while emitting different bytes would gut the evidence, so the credit rejects it.
       await expectRevert(
         agent.write.presentDocuments([id, "https://letter.example/docs/1.json", docHash, lie]),
         "DocumentHashMismatch",
@@ -541,8 +534,7 @@ describe("LETTER — documentary credit for agents", async () => {
       await validatorLetter.write.resolveDispute([id, false, "https://letter.example/res/1.json"]);
       const after = await publicClient.getBalance({ address: addr(applicant) });
 
-      // The fee is withheld and the unspent capital returns; the 2 BOT already
-      // paid to the named supplier is gone by construction.
+      // The fee is withheld and unspent capital returns; the 2 BOT paid to the supplier is gone by construction.
       assert.equal(after - before, parseEther("8"));
       assert.equal((await letter.read.getLetter([id])).status, 5); // Refunded
     });

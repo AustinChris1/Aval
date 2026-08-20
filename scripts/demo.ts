@@ -1,22 +1,4 @@
-/**
- * The full LETTER lifecycle, end to end, on a live network.
- *
- * Narrative:
- *   1. An applicant locks BOT against a job, an agent, a mandate and an examiner.
- *   2. The agent tries to pay itself.        -> the chain refuses
- *   3. The agent tries a forbidden method.   -> the chain refuses
- *   4. The agent does the permitted job.     -> settled at the supplier
- *   5. The agent presents documents.
- *   6. The examiner re-derives every claim from chain state and scores it.
- *   7. The credit is drawn: fee to the holder, unspent capital back to the applicant.
- *   8. Reputation is written that only a settled credit could have produced.
- *
- * Steps 2 and 3 are broadcast with explicit gas so they are *mined as reverted*
- * rather than dying in local estimation. The refusals become permanent,
- * inspectable transactions, that is the evidence, not a log line.
- *
- *   npx hardhat run scripts/demo.ts --network botTestnet
- */
+// Full AVAL lifecycle on a live network: issue, two forbidden payments mined as reverts, the permitted job, presentation, examination, draw, reputation. Run with --network botTestnet.
 import {
   connect,
   banner,
@@ -56,7 +38,7 @@ const record = (step: string, hash: Hex | undefined, outcome: string) => {
 
 // --- 0. context ----------------------------------------------------------
 
-banner(`LETTER on BOT Chain ${chainId}, full lifecycle`);
+banner(`AVAL on BOT Chain ${chainId}, full lifecycle`);
 console.log(`applicant  ${address.applicant}   ${bot(await publicClient.getBalance({ address: address.applicant }))}`);
 console.log(`principal  ${address.deployer}   (owns agent #${agentId})`);
 console.log(`agent      ${address.agent}   ${bot(await publicClient.getBalance({ address: address.agent }))}  custodies nothing`);
@@ -103,8 +85,7 @@ const issueTx = await letterAsApplicant.write.issue(
       minScore: 75,
       termsHash,
       termsURI: "",
-      // The mandate: the supplier contract, and only its invoice() method.
-      // No recipient is named at all, so a bare transfer has nowhere to go.
+      // The mandate names only the supplier's invoice() method and no recipients, so a bare transfer has nowhere to go.
       allowedRecipients: [] as Address[],
       allowedTargets: [deployment.contracts.ServiceVendor],
       allowedSelectors: [INVOICE_SELECTOR],

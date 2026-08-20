@@ -14,11 +14,7 @@ type Tag = {
   y: string;
 };
 
-/**
- * The hero: the 1854 bill of exchange floating as a physical object, with live
- * on-chain values pinned to it like an examiner's evidence tags. The old paper
- * carries the new data, the whole product in one picture.
- */
+// The 1854 bill of exchange floating as a physical object, live on-chain values pinned to it like evidence tags.
 export function HeroSpecimen({ tags }: { tags: Tag[] }) {
   const ref = useRef<HTMLDivElement>(null);
   const reduced = useReducedMotion();

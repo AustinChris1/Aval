@@ -25,11 +25,7 @@ export const DEPLOYED_CHAIN_IDS = Object.keys(deployments)
   .map(Number)
   .filter((id): id is ChainId => id in CHAINS);
 
-/**
- * The site's interactive surface stays on testnet: demo signing is refused on
- * mainnet in code, so 968 is where a visitor can actually drive the product.
- * Mainnet (677) is deployed and listed alongside, never the default.
- */
+// Testnet 968 is the interactive default (demo signing is refused on mainnet in code); mainnet 677 is listed alongside, never the default.
 export const DEFAULT_CHAIN_ID: ChainId = (
   DEPLOYED_CHAIN_IDS.includes(968 as ChainId) ? 968 : (DEPLOYED_CHAIN_IDS[0] ?? 968)
 ) as ChainId;
@@ -49,12 +45,7 @@ export function viemChain(chainId: ChainId) {
   });
 }
 
-/**
- * Reads always go through the chain's own RPC, never the explorer's API. The
- * explorer is used in one place only, discovering candidate transactions that
- * emitted no logs because they reverted, and every candidate it returns is
- * re-checked here before it is shown.
- */
+// Reads go through the chain's own RPC; the explorer only discovers reverted candidates, each re-checked here before display.
 export function publicClient(chainId: ChainId) {
   return createPublicClient({ chain: viemChain(chainId), transport: http(CHAINS[chainId].rpc) });
 }

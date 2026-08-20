@@ -42,8 +42,7 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
     error: r.error,
   }));
 
-  // Sensible starting values, derived from this letter, so nobody has to hand-copy
-  // an address out of the page and into a form.
+  // Starting values derived from this credit, so nobody hand-copies an address into a form.
   const firstTarget = mandate.targets[0] ?? c.ServiceVendor;
   const invoiceCalldata = encodeFunctionData({
     abi: abis.ServiceVendor,
@@ -98,11 +97,7 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
     }
   };
 
-  /**
-   * Why an action cannot apply right now. The forms stay enabled regardless;
-   * being refused by the contract is the point of the product, but a visitor
-   * should not mistake a status refusal for a mandate refusal.
-   */
+  // Why an action cannot apply right now; forms stay enabled so a status refusal is not mistaken for a mandate refusal.
   const noteFor = (actionId: string): string | undefined => {
     const st = letter.status;
     const needsOpen = ["payToBlocked", "payTo", "execute", "presentDocuments"];

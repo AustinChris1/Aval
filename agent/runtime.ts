@@ -1,16 +1,4 @@
-/**
- * The agent runtime.
- *
- * Structured as the loop BOT Chain's own guidance describes, propose, validate,
- * authorize, submit, verify, with one difference that is the whole point of
- * LETTER: `validate` is not the last line of defence. The agent checks its own
- * intent against the mandate before spending gas, but if that check is wrong,
- * buggy, or deliberately skipped, the credit still refuses the payment on-chain.
- * The runtime is a convenience; the contract is the control.
- *
- * The agent holds no funds. Its key can do exactly two things: move working
- * capital to destinations the applicant named, and put documents on-chain.
- */
+// The agent runtime: propose, validate, submit, verify. The self-check is a convenience; the credit's on-chain refusal is the control, and the agent holds no funds.
 import { type Address, type Hex, formatEther } from "viem";
 import { encodeDocuments, type Ctx } from "../scripts/lib/context.ts";
 
@@ -43,13 +31,7 @@ export class AgentRuntime {
     };
   }
 
-  /**
-   * Reads the mandate and says whether an intent is inside it.
-   *
-   * Deliberately mirrors the contract's checks rather than sharing code with
-   * them: an agent reasoning about its own limits must read the same public
-   * state a third party would, not a private copy it could drift from.
-   */
+  // Mirrors the contract's checks by reading the same public state a third party would, not a private copy that could drift.
   async validate(intent: Intent): Promise<PreCheck> {
     const letter = await this.ctx.contracts.letter();
     const [L, m, available] = await Promise.all([
@@ -99,13 +81,7 @@ export class AgentRuntime {
     return { ok: receipt.status === "success", gasUsed: receipt.gasUsed, receipt };
   }
 
-  /**
-   * Puts the job's documents on-chain and stops acting.
-   *
-   * The full document body is emitted as event data, so the evidence survives
-   * without IPFS, a pinning service, or this repo staying online. `docHash` is
-   * what the named examiner scores.
-   */
+  // Emits the full document body on-chain so the evidence needs no pinning service; docHash is what the examiner scores.
   async present(doc: unknown, documentURI = "") {
     const { bytes, hash, json } = encodeDocuments(doc);
     const letter = await this.ctx.contracts.letter(this.ctx.roles.agent);
@@ -114,18 +90,7 @@ export class AgentRuntime {
     return { tx, docHash: hash, json };
   }
 
-  /**
-   * Asks the named examiner to attest the presented documents.
-   *
-   * ERC-8004 requires the requester to be the agent's owner or an approved
-   * operator, so this is sent by the principal, the key that holds the agent's
-   * ERC-721, which in this demo is the deployer key. (Separate from the agent's
-   * acting key on purpose: the principal owns the agent, the bound wallet works.)
-   *
-   * Note LETTER deliberately does *not* hold blanket approval over the agent. If
-   * it did, `isAuthorizedOrOwner` would be true for it and the reputation
-   * registry would reject its feedback as self-feedback.
-   */
+  // Sent by the principal (owner of the agent's ERC-721): ERC-8004 requires owner or operator, and blanket approval for the credit would turn its feedback into self-feedback.
   async requestExamination(docHash: Hex, requestURI = "") {
     const validation = await this.ctx.contracts.validation(this.ctx.roles.deployer);
     const tx = await validation.write.validationRequest([

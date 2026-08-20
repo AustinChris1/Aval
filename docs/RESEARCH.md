@@ -75,8 +75,8 @@ Evidence:
 - `getVersion()` returns `1.0.0` (the placeholder) rather than `2.0.0` (the real
   implementation).
 - `owner()` is `0x547289319C3e6aedB179C0b8e8aF0B5ACd062603`, the ERC-8004
-  deployer, hardcoded in `MinimalUUPSMainnet.initialize`. **We cannot upgrade
-  them**, so occupying the canonical addresses is not an option.
+  deployer, hardcoded in `MinimalUUPSMainnet.initialize`. **Nobody else can
+  upgrade them**, so occupying the canonical addresses is not an option.
 - On testnet 968 the addresses have no code at all.
 
 The reference implementation reserved these vanity addresses across ~24 chains

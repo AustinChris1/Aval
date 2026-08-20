@@ -2,11 +2,7 @@
 
 import { useEffect, useRef } from "react";
 
-/**
- * Renders a documentation article and turns its ```mermaid fences into live
- * diagrams, themed with the site's own palette. Mermaid is imported lazily so
- * the docs route only pays for it when a page actually contains a diagram.
- */
+// Renders a docs article; mermaid fences become diagrams themed with the site palette, imported lazily.
 export function DocArticle({ html }: { html: string }) {
   const ref = useRef<HTMLDivElement>(null);
 

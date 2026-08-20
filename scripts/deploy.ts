@@ -1,11 +1,4 @@
-/**
- * Deploys AVAL: three ERC-8004 registries, the credit contract, and the demo
- * counterparty. Writes deployments/<chainId>.json, which the SDK, the agent and
- * the web app all read, so no address is ever hardcoded in two places.
- *
- *   npx hardhat run scripts/deploy.ts --network botTestnet
- *   npx hardhat run scripts/deploy.ts --network botMainnet
- */
+// Deploys AVAL and writes deployments/<chainId>.json, the single record every consumer reads. Run with --network botTestnet or botMainnet.
 import { network } from "hardhat";
 import { formatEther } from "viem";
 import { mkdirSync, writeFileSync } from "node:fs";

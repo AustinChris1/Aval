@@ -1,18 +1,4 @@
-/**
- * Issues a credit and leaves it Open, so the dashboard always has a live
- * instrument for a visitor to act on.
- *
- * Without this the only letters on the site are settled ones, and every agent
- * action a visitor tries comes back BadStatus, a real refusal, but for the wrong
- * reason, which teaches them nothing about the mandate.
- *
- * The mandate here names the supplier contract and its invoice() method, and
- * names no plain recipients at all, so an attempt to pay any address produces
- * RecipientNotAllowed and an attempt at any other method produces
- * SelectorNotAllowed.
- *
- *   npx hardhat run scripts/seed-open-letter.ts --network botTestnet
- */
+// Issues a credit and leaves it Open so the dashboard always has a live instrument; the mandate allows only the supplier's invoice(), so every other attempt is refused for the right reason.
 import { connect, banner, bot, txLink } from "./lib/context.ts";
 import { parseEther, keccak256, stringToHex, toFunctionSelector, type Address } from "viem";
 import { readFileSync, existsSync } from "node:fs";

@@ -1,12 +1,4 @@
-/**
- * Verifies every deployed contract on BOT Chain's Blockscout instance.
- *
- * Verified source is an explicit judging requirement and it is also the only way
- * a reader can check that the mandate logic on-chain is the mandate logic in this
- * repo. Blockscout needs no API key.
- *
- *   npx hardhat run scripts/verify.ts --network botTestnet
- */
+// Verifies every deployed contract on BOT Chain's Blockscout (no API key). Run with --network botTestnet or botMainnet.
 import { network } from "hardhat";
 import { readFileSync } from "node:fs";
 import { spawnSync } from "node:child_process";
@@ -37,12 +29,7 @@ for (const [name, address] of Object.entries(record.contracts) as [string, strin
   spawnSync("npx", args, { stdio: "inherit", shell: true });
 }
 
-/**
- * The exit code of `hardhat verify` is not the answer. It runs every configured
- * verifier and fails the command if any of them declines, Sourcify does not know
- * chain 677 or 968, so a perfectly verified contract still exits non-zero. Ask
- * the explorer what it actually holds instead.
- */
+// hardhat verify exits non-zero when Sourcify (which lacks chains 677/968) declines, so ask the explorer what it actually holds.
 console.log("\nconfirming with the explorer:");
 let unverified = 0;
 for (const [name, address] of Object.entries(record.contracts) as [string, string][]) {

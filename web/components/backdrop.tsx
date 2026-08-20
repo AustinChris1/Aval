@@ -3,12 +3,7 @@
 import { useEffect, useMemo, useRef } from "react";
 import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "motion/react";
 
-/**
- * Builds a hypotrochoid, the interlaced curve that engraved security printing
- * uses on share certificates, banknotes and, historically, letters of credit.
- * It is here because it is the correct ornament for the object, not decoration
- * for its own sake.
- */
+// Hypotrochoid: the interlaced engraving curve of banknotes, share certificates and letters of credit.
 function guilloche(R: number, r: number, d: number, turns = 60, step = 0.06) {
   const points: string[] = [];
   const k = (R - r) / r;
@@ -44,15 +39,7 @@ function Guilloche() {
 
 type Node = { x: number; y: number; vx: number; vy: number; r: number };
 
-/**
- * A slow field of drifting nodes with links between near neighbours, and
- * occasional pulses that travel along a link and terminate, value settling
- * between two parties.
- *
- * Hand-rolled on a canvas so it stays one file with no runtime dependency. It
- * disables itself entirely for reduced-motion users, on narrow screens, and
- * whenever the tab is hidden.
- */
+// Drifting ledger field with pulses settling between nodes; canvas-only, disabled for reduced motion, narrow screens and hidden tabs.
 function LedgerField() {
   const ref = useRef<HTMLCanvasElement>(null);
 
@@ -193,11 +180,7 @@ function LedgerField() {
 }
 
 export function Backdrop() {
-  /**
-   * Full intensity in the hero, then dimmed as the reader scrolls into the
-   * clauses. The engraving is a cover ornament: it should never compete with a
-   * paragraph someone is actually reading.
-   */
+  // Full intensity in the hero, dimmed as the reader scrolls into the clauses.
   const { scrollY } = useScroll();
   const reduced = useReducedMotion();
   const raw = useTransform(scrollY, [0, 700], [1, 0.3]);

@@ -1,16 +1,4 @@
-/**
- * The examiner.
- *
- * In a documentary credit a bank does not take the seller's word for it, it
- * examines the documents against the terms and pays only on a compliant
- * presentation. This is that role, and it is deliberately not a rubber stamp:
- * every claim the agent makes is re-derived from chain state the examiner reads
- * itself. If the agent says it paid a supplier, the examiner checks the
- * supplier's own contract, not the agent's report.
- *
- * The score it writes to the ERC-8004 Validation Registry is what the credit
- * reads at settlement, so a discrepancy here means the fee is simply not payable.
- */
+// The examiner: re-derives every claim from chain state itself; the score it writes to the Validation Registry is what the credit reads at settlement.
 import { type Address, type Hex, formatEther, keccak256, stringToHex } from "viem";
 import type { Ctx } from "../scripts/lib/context.ts";
 
@@ -35,11 +23,7 @@ export type PresentedDocuments = {
 export class Examiner {
   constructor(private ctx: Ctx) {}
 
-  /**
-   * Examines a presentation. Each check is worth an equal share of 100 and every
-   * finding is recorded, so a partial failure produces a partial score rather
-   * than an opaque rejection.
-   */
+  // Each check is an equal share of 100, so a partial failure yields a partial score rather than an opaque rejection.
   async examine(letterId: bigint, docs: PresentedDocuments, docHash: Hex): Promise<Examination> {
     const findings: Finding[] = [];
     const letterContract = await this.ctx.contracts.letter();
@@ -63,9 +47,7 @@ export class Examiner {
       detail: `${docs.paidTo} is a destination the applicant named`,
     });
 
-    // 3. The invoice must exist on the supplier's own books, for the right amount,
-    //    paid by the credit itself. This is the check that makes the examination
-    //    substantive: it is read from the counterparty, not from the agent.
+    // 3. The invoice must exist on the supplier's own books, read from the counterparty, not from the agent.
     const ref = docs.invoiceRef as Hex;
     const invoice = (await vendor.read.invoices([ref])) as unknown as [Address, bigint, bigint];
     const [payer, amount, paidAt] = invoice;

@@ -30,7 +30,7 @@ export type TimelineRow = {
   error?: string;
 };
 
-const LETTER_EVENTS = {
+const CREDIT_EVENTS = {
   issued: parseAbiItem(
     "event LetterIssued(uint256 indexed letterId, address indexed applicant, uint256 indexed agentId, address agentWalletAtIssuance, address asset, uint256 faceValue, uint256 fee, uint256 maxPerCall, uint64 expiry, address validator, uint8 minScore, bytes32 termsHash, string termsURI)",
   ),
@@ -108,14 +108,7 @@ export async function totalLetters(chainId: ChainId): Promise<bigint> {
   })) as bigint;
 }
 
-/**
- * Recovers a reverted transaction's decoded custom error.
- *
- * A reverted call emits no logs, so no amount of eth_getLogs will find it. The
- * transaction itself is still in the chain, so we replay it with eth_call against
- * its parent block and decode the revert data against our own ABI. Nothing here
- * trusts the explorer's rendering of the failure.
- */
+// A reverted transaction emits no logs, so replay it with eth_call at its parent block and decode the revert data against our own ABI.
 export async function decodeRevert(chainId: ChainId, hash: Hex): Promise<string | undefined> {
   const client = publicClient(chainId);
   try {
@@ -166,15 +159,7 @@ function extractRevertData(e: unknown): string | undefined {
   return walk(e);
 }
 
-/**
- * Finds transactions sent to the credit contract that reverted for this credit.
- *
- * This is the one place the explorer is consulted, because there is no standard
- * JSON-RPC way to list an address's transactions. Everything it returns is then
- * re-verified against the chain: the receipt must really be a failure, and the
- * calldata must really name this credit. If the explorer is unavailable the
- * timeline degrades to events only rather than breaking.
- */
+// The one explorer consultation (no standard RPC lists an address's transactions); every candidate is re-verified on-chain, and explorer downtime degrades the timeline to events only.
 export async function findRefusals(
   chainId: ChainId,
   letterId: bigint,
@@ -252,10 +237,10 @@ export async function getTimeline(chainId: ChainId, letterId: bigint) {
   const address = contracts(chainId).LetterOfCredit;
   const rows: TimelineRow[] = [];
 
-  const pull = async <K extends keyof typeof LETTER_EVENTS>(key: K) =>
+  const pull = async <K extends keyof typeof CREDIT_EVENTS>(key: K) =>
     client.getLogs({
       address,
-      event: LETTER_EVENTS[key] as never,
+      event: CREDIT_EVENTS[key] as never,
       args: { letterId } as never,
       fromBlock: FROM_BLOCK,
       toBlock: "latest",
@@ -334,18 +319,9 @@ export async function getTimeline(chainId: ChainId, letterId: bigint) {
   return { rows, explorerAvailable };
 }
 
-/**
- * Live check of the canonical ERC-8004 addresses versus this deployment.
- *
- * The canonical pair is always checked on **mainnet 677**, whichever chain this
- * app is pointed at, because that is where the reservation actually happened.
- * On testnet those addresses simply have no code, which understates the finding:
- * the interesting case is a deployed proxy whose registry logic is a placeholder.
- */
+// The canonical pair is always checked on mainnet 677, whichever chain the app shows, because that is where the reservation happened.
 export async function getErc8004Status(chainId: ChainId) {
-  // Ours is judged on mainnet when we are deployed there: the placeholder
-  // proxies and the working registries then sit on the same chain, which is
-  // the honest comparison.
+  // Judged on mainnet when deployed there, so placeholders and working registries sit on the same chain.
   const { hasDeployment } = await import("./chain");
   const ourChainId: ChainId = hasDeployment(677) ? (677 as ChainId) : chainId;
   const client = publicClient(ourChainId);

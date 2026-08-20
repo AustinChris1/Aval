@@ -1,8 +1,4 @@
-/**
- * Shared plumbing for every AVAL script: role resolution, deployment lookup,
- * document hashing, and the helpers that make an intentionally-rejected
- * transaction land on-chain instead of dying in gas estimation.
- */
+// Shared script plumbing: role resolution, deployment lookup, document hashing, mined-revert helpers.
 import { network } from "hardhat";
 import { keccak256, stringToHex, formatEther, type Address, type Hex } from "viem";
 import { readFileSync, existsSync } from "node:fs";
@@ -99,22 +95,7 @@ export type Rejection = {
   error: string;
 };
 
-/**
- * Sends a call that the mandate is expected to refuse, and reports whether the
- * refusal was recorded on-chain.
- *
- * Gas is supplied manually on purpose. viem estimates gas before sending, and a
- * reverting call fails estimation, so nothing would ever be broadcast and there
- * would be no evidence a block producer saw the attempt. Skipping estimation
- * gets the attempt mined as reverted on a normal geth-family chain, BOT Chain
- * included, which turns the refusal into a permanent artifact with a decoded
- * error that anyone can open on the explorer.
- *
- * Hardhat's local EDR node is the exception: it rejects a reverting transaction
- * at eth_sendTransaction rather than mining it, so during local rehearsal there
- * is no hash to show. That is a property of the dev node, not of the mandate, and
- * it is reported as `mined: false` rather than papered over.
- */
+// Manual gas skips estimation so the expected refusal is mined as a reverted transaction; Hardhat's local node rejects it at send instead, reported honestly as mined: false.
 export async function sendExpectedRejection(
   ctx: Ctx,
   wallet: Ctx["roles"]["agent"],

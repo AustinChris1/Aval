@@ -1,14 +1,7 @@
 import { ExternalLink } from "lucide-react";
 import type { ReactNode } from "react";
 
-/**
- * The furniture of an engraved instrument.
- *
- * These are deliberately not generic dashboard cards. A documentary credit is a
- * printed object with a letterhead, a reference number, ruled entries and a
- * margin for annotations, so the components below are those parts, which is why
- * almost nothing here is a rounded box with an icon in the corner.
- */
+// The furniture of an engraved instrument: letterhead, reference numbers, ruled entries and margins, not dashboard cards.
 
 /** A ruled entry line, the way a printed instrument lists its terms. */
 export function Entry({
@@ -113,11 +106,7 @@ export function Addr({
   );
 }
 
-/**
- * A section opening: a numbered clause marker in the margin, the heading, and an
- * optional standfirst. The number is what makes the page read as an instrument
- * rather than a landing page.
- */
+// Section opening: numbered clause marker in the margin, heading, optional standfirst.
 export function Clause({
   n,
   eyebrow,
@@ -191,13 +180,7 @@ export function SealDot({ className = "", tone = "seal" }: { className?: string;
   );
 }
 
-/**
- * Compatibility aliases.
- *
- * The instrument vocabulary above replaced an earlier dashboard vocabulary. The
- * prop shapes are identical, so pages not yet re-set in the new style keep
- * working while they are converted one at a time.
- */
+// Compatibility aliases for the earlier dashboard vocabulary; identical prop shapes.
 export const Panel = Sheet;
 export const Badge = Stamp;
 export const KeyValue = Entry;

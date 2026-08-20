@@ -18,14 +18,7 @@ import { Panel } from "@/components/ui";
 import { useWallet } from "./wallet";
 import { useToast } from "./toast";
 
-/**
- * Issuing is the one write with a struct argument and a mandate to compose, so it
- * gets a purpose-built form rather than the generic action renderer.
- *
- * It is deliberately the most explanatory screen in the app: the mandate is the
- * whole security model, and someone filling it in should be able to see exactly
- * which field stops which class of loss.
- */
+// Issuing composes a struct mandate, the whole security model, so it gets a purpose-built and deliberately explanatory form.
 export function IssueForm({
   chainId,
   defaults,

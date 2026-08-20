@@ -3,10 +3,7 @@
 import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 
-/**
- * Plate or paper. The choice is stored, and an inline script in the layout
- * applies it before first paint so neither theme ever flashes.
- */
+// Plate or paper; the stored choice is applied before first paint by an inline script in the layout.
 export function ThemeToggle() {
   const [theme, setTheme] = useState<"dark" | "light" | null>(null);
 

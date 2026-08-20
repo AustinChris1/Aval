@@ -37,11 +37,7 @@ export function ActionForm({
   defaults?: Record<string, string>;
   demoAvailable: boolean;
   open?: boolean;
-  /**
-   * Why this action will not apply to the credit in its current state. Shown, but
-   * never used to disable the button: attempting it anyway and reading the
-   * contract's own refusal is the more honest lesson.
-   */
+  // Shown but never used to disable the button: attempting anyway and reading the contract's own refusal is the more honest lesson.
   note?: string;
 }) {
   const [open, setOpen] = useState(initiallyOpen);

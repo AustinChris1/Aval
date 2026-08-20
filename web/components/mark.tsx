@@ -1,16 +1,4 @@
-/**
- * The AVAL mark: the AV Lozenge.
- *
- * An A laid over an inverted A, a V, so the two letters of the name form the
- * lozenge of a bill of exchange between them, with a crimson diamond seal at
- * the crossing. Every element derives from what the product is: two parties'
- * strokes crossing, and a seal standing at the heart of the instrument.
- *
- * Drawn as strokes so it inherits the theme: the A takes the surrounding text
- * colour, the V takes the muted sand, and the seal keeps its crimson on both
- * grounds via the .aval-mark-seal rule in globals.css. Reduces cleanly to 16px,
- * which is why it also serves as the favicon (app/icon.svg).
- */
+// The AV Lozenge: an A over an inverted A forming the lozenge of a bill of exchange, crimson seal at the crossing; stroke-drawn to inherit the theme, legible at 16px (also the favicon).
 export function Mark({
   className = "",
   tone = "ink",

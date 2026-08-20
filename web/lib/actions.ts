@@ -1,13 +1,6 @@
 import { parseEther, keccak256, stringToHex, type Hex } from "viem";
 
-/**
- * Every write LETTER supports, described once and used by three consumers: the
- * forms that render them, the wallet path that signs them in the visitor's own
- * browser, and the demo path that signs them server-side on testnet.
- *
- * Declaring them in one place is what keeps "runnable from the web" honest:
- * there is no function in the contracts that the UI quietly cannot reach.
- */
+// Every write AVAL supports, declared once for three consumers: the forms, the wallet path, and the testnet demo signer, so no contract function is quietly unreachable from the UI.
 
 export type FieldType =
   | "address"
@@ -41,10 +34,7 @@ export type ActionDef = {
   fields: Field[];
   /** Field whose ether amount becomes msg.value. */
   valueField?: string;
-  /**
-   * Send with gas supplied manually so the transaction is mined as reverted
-   * instead of dying in estimation. Only used where a refusal is the point.
-   */
+  // Manual gas so the transaction is mined as reverted instead of dying in estimation; only used where refusal is the point.
   expectRevert?: boolean;
   tone?: "default" | "seal" | "verd";
 };
@@ -285,11 +275,7 @@ export function parseArgs(action: ActionDef, values: Record<string, string>): un
   });
 }
 
-/**
- * `presentDocuments` commits to a hash and emits a body, and the contract
- * enforces that they agree. The hash is therefore derived here rather than typed,
- * so the two can never be entered inconsistently.
- */
+// The hash is derived from the body here, so the two can never be entered inconsistently.
 export function finaliseArgs(action: ActionDef, args: unknown[]): unknown[] {
   if (action.fn !== "presentDocuments") return args;
   const [letterId, documentURI, documents] = args as [bigint, string, Hex];

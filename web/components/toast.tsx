@@ -12,12 +12,7 @@ import {
   type ReactNode,
 } from "react";
 
-/**
- * Toasts, in the house style: not floating pills but stamped receipt slips.
- * Three tones map to the instrument's states, sealed (gold, a thing granted),
- * refused (crimson, a thing refused, which for this product is often the
- * success case), and note (neutral ink).
- */
+// Toasts as stamped receipt slips: sealed (gold), refused (crimson, often the success case here), note (neutral ink).
 export type ToastTone = "sealed" | "refused" | "note";
 
 type ToastInput = {

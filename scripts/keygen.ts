@@ -1,11 +1,4 @@
-/**
- * Generates the four development keys AVAL needs and writes them into .env.
- *
- * These are throwaway keys for a testnet/mainnet demo. Never reuse them for
- * anything that holds value beyond the gas and float this demo needs.
- *
- *   npx hardhat run scripts/keygen.ts
- */
+// Generates the four throwaway demo keys into .env; never reuse them for anything holding real value.
 import { writeFileSync, readFileSync, existsSync, copyFileSync } from "node:fs";
 import { generatePrivateKey, privateKeyToAccount } from "viem/accounts";
 

@@ -1,13 +1,4 @@
-/**
- * Registers the demo agent in the ERC-8004 Identity Registry and binds its
- * acting key. Idempotent: safe to re-run.
- *
- * Two keys, two roles, on purpose:
- *   principal  (deployer key) owns the agent's ERC-721 and speaks for it
- *   agent      (agent key)    is the bound `agentWallet` that acts, holding nothing
- *
- *   npx hardhat run scripts/setup-agent.ts --network botTestnet
- */
+// Registers the demo agent and binds its acting key; idempotent. The principal (deployer key) owns the ERC-721, the agent key acts and holds nothing.
 import { connect, banner, addrLink, txLink } from "./lib/context.ts";
 import { writeFileSync, readFileSync, existsSync } from "node:fs";
 import type { Address } from "viem";
@@ -15,7 +6,7 @@ import type { Address } from "viem";
 const ctx = await connect();
 const { publicClient, address, explorer, chainId } = ctx;
 
-banner("LETTER, agent registration (ERC-8004)");
+banner("AVAL, agent registration (ERC-8004)");
 
 const identityAsPrincipal = await ctx.contracts.identity(ctx.roles.deployer);
 const identity = await ctx.contracts.identity();
@@ -38,17 +29,13 @@ if (existsSync(statePath)) {
 }
 
 if (agentId === undefined) {
-  /**
-   * The registration file is embedded as a data URI so the agent's card is
-   * self-describing on-chain: nothing to host, nothing to expire. Shape follows
-   * the ERC-8004 registration-v1 format.
-   */
+  // The registration file is an embedded data URI (ERC-8004 registration-v1): self-describing on-chain, nothing to host.
   const card = {
     type: "https://eips.ethereum.org/EIPS/eip-8004#registration-v1",
     name: "Treasury Operations Agent",
     description:
       "Settles approved supplier invoices under a documentary credit. Custodies nothing: " +
-      "spends only from a LETTER mandate, and is paid only against an examined presentation.",
+      "spends only from an AVAL mandate, and is paid only against an examined presentation.",
     services: [{ name: "web", endpoint: "https://aval-botchain.vercel.app/agent/0" }],
     x402Support: false,
     active: true,

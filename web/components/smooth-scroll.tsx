@@ -3,13 +3,7 @@
 import { useEffect } from "react";
 import Lenis from "lenis";
 
-/**
- * Lenis smooth scroll.
- *
- * Kept deliberately gentle: this is a page about money moving under rules, not a
- * showreel. Anyone who has asked their OS to reduce motion gets native scrolling
- * instead, and every reveal below falls back to plain visible content.
- */
+// Lenis smooth scroll, kept gentle; reduced-motion users get native scrolling.
 export function SmoothScroll() {
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;

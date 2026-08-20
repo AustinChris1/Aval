@@ -52,16 +52,7 @@ export function RevealGroup({
   );
 }
 
-/**
- * Counts up to a number when it scrolls into view.
- *
- * The true value is what renders on the server and what sits in the markup. The
- * animation is layered on top only once the element is actually in view, and only
- * for people who have not asked for reduced motion. That ordering matters here:
- * these numbers include how many payments the chain refused, and a page that
- * renders "0 refusals" whenever JavaScript is slow, blocked, or screenshotted
- * early would be misstating the one fact the page exists to show.
- */
+// The true value renders on the server; the count-up layers on only in view, so "0 refusals" is never shown when JavaScript is slow or blocked.
 export function CountUp({
   to,
   decimals = 0,
@@ -82,8 +73,7 @@ export function CountUp({
   useEffect(() => {
     if (reduced || !inView) return;
 
-    // Subscribing only now means the rendered value is never overwritten with 0
-    // unless an animation is genuinely about to run to completion.
+    // Subscribing only now keeps the true value from ever being overwritten with 0.
     const unsubscribe = spring.on("change", (v) => {
       if (ref.current) ref.current.textContent = v.toFixed(decimals) + suffix;
     });

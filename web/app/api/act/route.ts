@@ -5,26 +5,7 @@ import { abis, contracts, publicClient, viemChain, CHAINS } from "@/lib/chain";
 import { ACTIONS, actionById, finaliseArgs, parseArgs, valueOf } from "@/lib/actions";
 import { DEMO_CHAIN_ID, KEY_FOR_ROLE, MAX_VALUE_WEI, demoAvailable } from "@/lib/demo";
 
-/**
- * Demo signing.
- *
- * The point of this route is that a visitor with no wallet and no tBOT can still
- * drive the whole instrument, issue, spend, be refused, present, examine,
- * settle, and watch it land on a public chain. It signs with the four throwaway
- * demo role keys.
- *
- * It is therefore deliberately fenced in:
- *
- *   - Testnet 968 only. Mainnet is refused outright, in code, not by convention.
- *   - Only the actions in the shared catalogue, resolved by id. No arbitrary
- *     contract, function or calldata can be passed in.
- *   - Amounts are capped, so the demo float cannot be drained by repetition.
- *   - If the keys are not configured the route reports that plainly and the UI
- *     falls back to asking the visitor to connect their own wallet.
- *
- * These keys are throwaway testnet keys holding faucet funds. Never point this at
- * a network where the money is real.
- */
+// Demo signing with throwaway testnet role keys: chain 968 only (mainnet refused in code), catalogue actions only, amounts capped; without keys the UI falls back to the visitor's wallet.
 
 
 export async function GET() {
@@ -88,8 +69,7 @@ export async function POST(request: Request) {
   const abi = abis[action.contract];
 
   try {
-    // A refusal must be mined to be evidence, so estimation is skipped and gas is
-    // supplied by hand. Everything else is estimated normally and should succeed.
+    // A refusal must be mined to be evidence, so estimation is skipped and gas supplied by hand.
     const hash = await wallet.writeContract({
       address,
       abi,
@@ -106,8 +86,7 @@ export async function POST(request: Request) {
       status: receipt.status,
       blockNumber: String(receipt.blockNumber),
       from: account.address,
-      // A reverted receipt is the expected outcome for a refusal, and a failure
-      // for anything else. The UI reads this rather than guessing.
+      // A reverted receipt is the expected outcome for a refusal and a failure for anything else.
       refusalRecorded: Boolean(action.expectRevert) && receipt.status === "reverted",
     });
   } catch (e) {

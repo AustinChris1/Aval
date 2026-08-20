@@ -1,9 +1,4 @@
-/**
- * Exports the ABIs and deployment records the web app needs, so the dashboard
- * never carries a hand-copied ABI that can drift from what is deployed.
- *
- *   npx hardhat run scripts/export-abis.ts
- */
+// Exports ABIs, deployments and docs for the web app: npx hardhat run scripts/export-abis.ts
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from "node:fs";
 
 const artifact = (name: string, file = name) =>
@@ -40,20 +35,13 @@ writeFileSync(
     `export const deployments = ${JSON.stringify(deployments, null, 2)} as const;\n`,
 );
 
-/**
- * Copy the documentation into the app.
- *
- * Vercel builds this project with `web` as its root directory, so anything
- * outside web/ simply does not exist at build time. The docs are copied in here
- * rather than read across the directory boundary, which keeps /docs working on a
- * deployment without a monorepo build config.
- */
+// Docs are copied into web/ because Vercel builds with web/ as its root directory.
 const DOCS: { slug: string; title: string; blurb: string; source: string }[] = [
   {
     slug: "overview",
     title: "Overview",
     blurb: "What AVAL is, where it runs, and how to try it in one minute.",
-    source: "docs/OVERVIEW.md",
+    source: "README.md",
   },
   {
     slug: "how-it-works",

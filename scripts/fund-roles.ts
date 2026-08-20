@@ -1,10 +1,4 @@
-/**
- * Splits the deployer's balance across the three other role keys so the whole
- * lifecycle can run. Written for the mainnet gas grant: 1 BOT arrives on the
- * deployer, and everything else needs only gas plus a small float.
- *
- *   npx hardhat run scripts/fund-roles.ts --network botMainnet
- */
+// Splits the deployer's balance across the other role keys; written for the 1 BOT mainnet gas grant. Run with --network botMainnet.
 import { network } from "hardhat";
 import { formatEther, parseEther } from "viem";
 

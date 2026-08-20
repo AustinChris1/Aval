@@ -46,8 +46,7 @@ export default async function Home() {
   const moved = letters.reduce((acc, l) => acc + Number(formatEther(l.letter.spent)), 0);
   const feature = open ?? letters[0];
 
-  // The latest refusal becomes the hero's crimson tag, a live link to a mined
-  // revert, not an illustration of one.
+  // The latest refusal becomes the hero's crimson tag: a live link to a mined revert.
   let refusalTag: { value: string; href: string } | null = null;
   if (feature) {
     try {

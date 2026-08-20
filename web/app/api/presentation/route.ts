@@ -3,14 +3,7 @@ import { parseAbiItem, type Hex } from "viem";
 import { DEFAULT_CHAIN_ID, abis, contracts, publicClient } from "@/lib/chain";
 import { getLetter } from "@/lib/indexer";
 
-/**
- * Returns the raw material for verifying a presentation: the document bytes as
- * they were emitted, the hash the credit stored, and the examiner's answer.
- *
- * This route deliberately does no checking. It fetches from the chain and hands
- * the bytes over; the hashing and the comparison happen in the browser, so the
- * person verifying does not have to take this server's word for anything.
- */
+// Hands over the raw document bytes, the stored hash and the examiner's answer; the browser does the hashing and comparison itself.
 export async function GET(request: Request) {
   const letterId = new URL(request.url).searchParams.get("letterId");
   if (!letterId) return NextResponse.json({ error: "letterId required" }, { status: 400 });

@@ -13,16 +13,11 @@ export function generateStaticParams() {
   return [{ slug: [] as string[] }, ...docsIndex.map((d) => ({ slug: [d.slug] }))];
 }
 
-/**
- * The documents are copied into web/content by scripts/export-abis.ts rather than
- * read across the repository boundary: Vercel builds this project with `web` as
- * its root directory, so anything above it does not exist at build time.
- */
+// Docs are copied into web/content by scripts/export-abis.ts; Vercel builds with web/ as root, so files above it do not exist at build time.
 async function loadDoc(slug: string) {
   const file = path.join(process.cwd(), "content", `${slug}.md`);
   const raw = await readFile(file, "utf8");
-  // Cross-references in the source markdown point at repository paths. Rewrite
-  // the ones that have a page here so they work as site navigation.
+  // Repository-path cross-references are rewritten to site routes where a page exists.
   const rewritten = raw
     .replace(/\]\(docs\/RESEARCH\.md\)/g, "](/docs/research)")
     .replace(/\]\(docs\/HOW-IT-WORKS\.md\)/g, "](/docs/how-it-works)")

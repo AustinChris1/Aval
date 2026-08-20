@@ -1,12 +1,4 @@
-/**
- * Pre-flight against a live BOT Chain endpoint.
- *
- * Confirms the things a deploy silently depends on: which chain answered, that
- * it is Cancun-capable (our bytecode uses MCOPY via OpenZeppelin 5.4), whether
- * eth_getLogs is usable for the dashboard, and what the deployer can pay for.
- *
- *   npx hardhat run scripts/chain-check.ts --network botTestnet
- */
+// Pre-flight against a live endpoint: chain id, Cancun/MCOPY support, eth_getLogs, deployer balance. Run: npx hardhat run scripts/chain-check.ts --network botTestnet
 import { network } from "hardhat";
 import { formatEther } from "viem";
 
@@ -37,9 +29,7 @@ const prev = await publicClient.getBlock({ blockNumber: blockNumber - 10n });
 const cadence = Number(head.timestamp - prev.timestamp) / 10;
 console.log(`block time       ~${cadence.toFixed(2)}s`);
 
-// Cancun probe: a chain serving blob sidecar RPCs has EIP-4844 active, which is
-// the same fork that introduced MCOPY. If this errors, drop evmVersion to
-// shanghai and pin OpenZeppelin to a 5.0.x line.
+// Blob RPCs mean EIP-4844 (and MCOPY) is active; if this errors, drop evmVersion to shanghai and pin OZ 5.0.x.
 try {
   await provider.request({ method: "eth_getBlobSidecars", params: ["latest"] });
   console.log("blob API         eth_getBlobSidecars answers -> Cancun active");
@@ -47,8 +37,7 @@ try {
   console.log(`blob API         UNAVAILABLE (${(e as Error).message}) -> re-check evmVersion`);
 }
 
-// The docs say eth_getLogs is disabled on the public mainnet RPC. It is not, as
-// of this writing, but verify per-endpoint rather than trusting either source.
+// The docs claim eth_getLogs is disabled on the public mainnet RPC; verify per-endpoint instead.
 try {
   const from = blockNumber > 200n ? blockNumber - 200n : 0n;
   const logs = await publicClient.getLogs({ fromBlock: from, toBlock: blockNumber });
