@@ -1,7 +1,7 @@
 import { formatEther } from "viem";
 import Link from "next/link";
 import { ArrowRight, CircleCheck } from "lucide-react";
-import { DEFAULT_CHAIN_ID, STATUS, addressUrl, chainInfo, contracts, short, txUrl } from "@/lib/chain";
+import { CHAINS, DEFAULT_CHAIN_ID, DEPLOYED_CHAIN_IDS, STATUS, addressUrl, chainInfo, contracts, short, txUrl, type ChainId } from "@/lib/chain";
 import { getLetter, getTimeline, totalLetters } from "@/lib/indexer";
 import { Addr, Clause, ClauseBody, Entry, SealDot, Sheet, Stamp } from "@/components/ui";
 import { CountUp, DrawRule, Reveal, SplitHeadline } from "@/components/motion";
@@ -314,16 +314,23 @@ export default async function Home() {
       <section className="py-20">
         <Clause n="§ 03" eyebrow="verified source" title="Deployment" id="deployment" />
         <ClauseBody className="mt-8">
-          <div className="divide-y divide-rule/60 border-y border-rule">
-            {Object.entries(c).map(([name, address]) => (
-              <Entry key={name} label={name}>
-                <Addr href={addressUrl(chainId, address)}>
-                  <span className="hidden sm:inline">{address}</span>
-                  <span className="sm:hidden">{short(address, 8, 6)}</span>
-                </Addr>
-              </Entry>
-            ))}
-          </div>
+          {[...DEPLOYED_CHAIN_IDS].sort((a, b) => a - b).map((cid) => (
+            <div key={cid} className="mb-8 last:mb-0">
+              <div className="mb-2 font-mono text-[10.5px] tracking-[0.18em] text-brass/70 uppercase">
+                {CHAINS[cid as ChainId].name} · chain {cid}
+              </div>
+              <div className="divide-y divide-rule/60 border-y border-rule">
+                {Object.entries(contracts(cid as ChainId)).map(([name, address]) => (
+                  <Entry key={name} label={name}>
+                    <Addr href={addressUrl(cid as ChainId, address)}>
+                      <span className="hidden sm:inline">{address}</span>
+                      <span className="sm:hidden">{short(address, 8, 6)}</span>
+                    </Addr>
+                  </Entry>
+                ))}
+              </div>
+            </div>
+          ))}
         </ClauseBody>
       </section>
     </>

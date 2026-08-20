@@ -65,10 +65,11 @@ console.log(`letter     ${addrLink(explorer, deployment.contracts.LetterOfCredit
 
 // --- 1. issue ------------------------------------------------------------
 
-const FACE = parseEther("0.5");
-const FEE = parseEther("0.05");
-const PER_CALL = parseEther("0.2");
-const JOB_AMOUNT = parseEther("0.2");
+// Tunable so the mainnet run can be small; the argument never depends on size.
+const FACE = parseEther(process.env.DEMO_FACE ?? "0.5");
+const FEE = parseEther(process.env.DEMO_FEE ?? "0.05");
+const PER_CALL = parseEther(process.env.DEMO_PER_CALL ?? "0.2");
+const JOB_AMOUNT = PER_CALL;
 const INVOICE_SELECTOR = toFunctionSelector("invoice(bytes32)");
 const invoiceRef = keccak256(stringToHex(`invoice-${Date.now()}`));
 

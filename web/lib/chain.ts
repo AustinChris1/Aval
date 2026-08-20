@@ -25,7 +25,14 @@ export const DEPLOYED_CHAIN_IDS = Object.keys(deployments)
   .map(Number)
   .filter((id): id is ChainId => id in CHAINS);
 
-export const DEFAULT_CHAIN_ID: ChainId = (DEPLOYED_CHAIN_IDS[0] ?? 968) as ChainId;
+/**
+ * The site's interactive surface stays on testnet: demo signing is refused on
+ * mainnet in code, so 968 is where a visitor can actually drive the product.
+ * Mainnet (677) is deployed and listed alongside, never the default.
+ */
+export const DEFAULT_CHAIN_ID: ChainId = (
+  DEPLOYED_CHAIN_IDS.includes(968 as ChainId) ? 968 : (DEPLOYED_CHAIN_IDS[0] ?? 968)
+) as ChainId;
 
 export function chainInfo(chainId: ChainId) {
   return CHAINS[chainId];

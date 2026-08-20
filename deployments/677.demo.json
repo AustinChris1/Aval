@@ -1,0 +1,48 @@
+{
+  "chainId": 677,
+  "letterId": "1",
+  "agentId": "0",
+  "score": 100,
+  "receipts": [
+    {
+      "step": "issue",
+      "hash": "0x26e9d86cc2aef807f6733784c45883949c363ebf5e2b789962b59efe0eeed3cd",
+      "outcome": "credit issued"
+    },
+    {
+      "step": "blocked-theft",
+      "hash": "0x2fb33a284c8e6c60a431971fa4b2325d032f8217e5cae5e945348e6a686fef32",
+      "outcome": "REFUSED, recorded on-chain"
+    },
+    {
+      "step": "blocked-selector",
+      "hash": "0x3c7b3b490e549b6afcebc7e665b17d23c7084e382734fa367c2374f8385704b0",
+      "outcome": "REFUSED, recorded on-chain"
+    },
+    {
+      "step": "job",
+      "hash": "0xe8f369e1715a911683faf6944373d51bc45f20db5cf9fd577db695e3b118a481",
+      "outcome": "supplier paid"
+    },
+    {
+      "step": "presentation",
+      "hash": "0x7dc6053309a6af89468fbff8aab4173a983f18b2d7182450db97f7e780156df1",
+      "outcome": "documents on-chain"
+    },
+    {
+      "step": "exam-request",
+      "hash": "0x27bbad3d2c88613cbb9c191dc34008108f16d1cfb716cf6b040cbad89f391b12",
+      "outcome": "examination requested"
+    },
+    {
+      "step": "examination",
+      "hash": "0x58f878dee48d03e50a25dadc16e17d52ab6c05b6d923aea667c07ca31c2dd8a2",
+      "outcome": "scored 100/100"
+    },
+    {
+      "step": "draw",
+      "hash": "0xfbbc2660a69eb4ae4ad35d248cd08989c2db36842349f0b938ca180c6f432a4d",
+      "outcome": "credit drawn"
+    }
+  ]
+}

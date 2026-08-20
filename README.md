@@ -173,11 +173,14 @@ All five are **verified with source** on Blockscout.
 
 | Contract | Testnet (968) | Mainnet (677) |
 | --- | --- | --- |
-| IdentityRegistry | [`0xe06a0801…5ffd`](https://scan.bohr.life/address/0xe06a0801706679e73dd04917a63aa796788f5ffd) | _pending_ |
-| ReputationRegistry | [`0x8a518ab8…1fbe`](https://scan.bohr.life/address/0x8a518ab8c75c562170d71a88151cf1611b811fbe) | _pending_ |
-| ValidationRegistry | [`0x84b1bb99…c511`](https://scan.bohr.life/address/0x84b1bb992c5bb33e4cd05b32cc969683d1f3c511) | _pending_ |
-| LetterOfCredit | [`0x1145970c…8e99`](https://scan.bohr.life/address/0x1145970c4eb218a7d1a05245503a0fc05e7b8e99) | _pending_ |
-| ServiceVendor (demo) | [`0xdd4ffa32…4d61`](https://scan.bohr.life/address/0xdd4ffa32cd6e8b2d0afeb1ab277683ad16bb4d61) | _pending_ |
+| IdentityRegistry | [`0xe06a0801…5ffd`](https://scan.bohr.life/address/0xe06a0801706679e73dd04917a63aa796788f5ffd) | [`0x1145970c…8e99`](https://scan.botchain.ai/address/0x1145970c4eb218a7d1a05245503a0fc05e7b8e99) |
+| ReputationRegistry | [`0x8a518ab8…1fbe`](https://scan.bohr.life/address/0x8a518ab8c75c562170d71a88151cf1611b811fbe) | [`0xdd4ffa32…78ee`](https://scan.botchain.ai/address/0xdd4ffa32cd6e8b2d0afeb1ab277683ad16bb4d61) |
+| ValidationRegistry | [`0x84b1bb99…c511`](https://scan.bohr.life/address/0x84b1bb992c5bb33e4cd05b32cc969683d1f3c511) | [`0x5aade5e3…e17e`](https://scan.botchain.ai/address/0x5aade5e3915168e6b7d3678cd0b054a3fbc2e17e) |
+| LetterOfCredit | [`0x1145970c…8e99`](https://scan.bohr.life/address/0x1145970c4eb218a7d1a05245503a0fc05e7b8e99) | [`0xb0457f33…03e2`](https://scan.botchain.ai/address/0xb0457f336778ee33b426069b8383af3efb8503e2) |
+| ServiceVendor (demo) | [`0xdd4ffa32…4d61`](https://scan.bohr.life/address/0xdd4ffa32cd6e8b2d0afeb1ab277683ad16bb4d61) | [`0x01d7aa2a…78ee`](https://scan.botchain.ai/address/0x01d7aa2a9b9b15c98ce8cf00fac6b1f825f578ee) |
+
+A full lifecycle also ran on **mainnet**, including two refusals mined as
+reverts and a settled credit; an open credit is live for anyone to inspect.
 
 ### The two transactions that are the product
 
