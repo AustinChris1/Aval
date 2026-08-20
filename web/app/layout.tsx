@@ -19,11 +19,11 @@ const sans = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swa
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-jetbrains", display: "swap" });
 
 export const metadata: Metadata = {
-  title: "AVAL — documentary credit for AI agents",
+  title: "AVAL · documentary credit for AI agents",
   description:
     "Lock money against a job, an agent, a rulebook and an examiner. The agent cannot spend outside the rulebook, and cannot be paid without documents someone actually checked.",
   openGraph: {
-    title: "AVAL — documentary credit for AI agents",
+    title: "AVAL · documentary credit for AI agents",
     description:
       "The agent never holds the money. A forbidden payment is a mined revert, not a log you read afterwards.",
     type: "website",

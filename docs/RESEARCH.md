@@ -15,7 +15,7 @@ Reproduce any of it with `npx hardhat run scripts/chain-check.ts --network botTe
 | RPC         | `https://rpc.botchain.ai`| `https://rpc.bohr.life` |
 | Explorer    | `scan.botchain.ai`       | `scan.bohr.life`        |
 | Native coin | BOT                      | tBOT (faucet)           |
-| Faucet      | —                        | `faucet.botchain.ai/basic`, 10 tBOT / 24h / address |
+| Faucet      | none                      | `faucet.botchain.ai/basic`, 10 tBOT / 24h / address |
 
 Both answered `eth_chainId`, `eth_blockNumber` and `web3_clientVersion` live.
 
