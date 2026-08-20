@@ -7,6 +7,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ConnectButton } from "./wallet";
 import { ThemeToggle } from "./theme-toggle";
+import { ChainSwitcher } from "./chain-switcher";
 import { Mark } from "./mark";
 import type { ChainId } from "@/lib/chain";
 
@@ -17,7 +18,7 @@ const LINKS = [
   { href: "/docs", label: "Docs" },
 ];
 
-export function Nav({ chainId, chainLabel }: { chainId: ChainId; chainLabel: string }) {
+export function Nav({ chainId }: { chainId: ChainId }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const { scrollY, scrollYProgress } = useScroll();
@@ -74,14 +75,8 @@ export function Nav({ chainId, chainLabel }: { chainId: ChainId; chainLabel: str
         </nav>
 
         <div className="ml-auto flex items-center gap-3">
-          <span className="hidden items-center gap-2 lg:flex">
-            <span className="relative flex size-1.5">
-              <span className="absolute inline-flex size-full animate-seal rounded-full bg-verd" />
-              <span className="relative inline-flex size-1.5 rounded-full bg-verd" />
-            </span>
-            <span className="font-mono text-[10.5px] tracking-[0.14em] text-ink-faint uppercase">
-              {chainLabel}
-            </span>
+          <span className="hidden lg:flex">
+            <ChainSwitcher current={chainId} />
           </span>
           <ThemeToggle />
           <span className="hidden md:block">
@@ -131,15 +126,7 @@ export function Nav({ chainId, chainLabel }: { chainId: ChainId; chainLabel: str
               </nav>
 
               <div className="mt-auto space-y-5 border-t border-rule pt-6">
-                <div className="flex items-center gap-2">
-                  <span className="relative flex size-1.5">
-                    <span className="absolute inline-flex size-full animate-seal rounded-full bg-verd" />
-                    <span className="relative inline-flex size-1.5 rounded-full bg-verd" />
-                  </span>
-                  <span className="font-mono text-[10.5px] tracking-[0.14em] text-ink-faint uppercase">
-                    {chainLabel}
-                  </span>
-                </div>
+                <ChainSwitcher current={chainId} />
                 <ConnectButton chainId={chainId} />
               </div>
             </div>

@@ -6,7 +6,8 @@ import { Backdrop } from "@/components/backdrop";
 import { Nav } from "@/components/nav";
 import { WalletProvider } from "@/components/wallet";
 import { ToastProvider } from "@/components/toast";
-import { DEFAULT_CHAIN_ID, chainInfo } from "@/lib/chain";
+import { chainInfo } from "@/lib/chain";
+import { activeChainId } from "@/lib/active-chain";
 
 const display = Instrument_Serif({
   subsets: ["latin"],
@@ -29,8 +30,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const info = chainInfo(DEFAULT_CHAIN_ID);
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const chainId = await activeChainId();
+  const info = chainInfo(chainId);
 
   return (
     <html lang="en" className={`${display.variable} ${sans.variable} ${mono.variable}`} suppressHydrationWarning>
@@ -47,7 +49,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <WalletProvider>
           <SmoothScroll />
           <Backdrop />
-          <Nav chainId={DEFAULT_CHAIN_ID} chainLabel={`${info.name.replace("BOT Chain ", "")} · ${DEFAULT_CHAIN_ID}`} />
+          <Nav chainId={chainId} />
           <main className="mx-auto max-w-6xl px-6 pb-32">{children}</main>
           <footer className="mx-auto max-w-6xl px-6 pb-16">
             <div className="rule mb-7" />
@@ -57,7 +59,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 the chain when the page renders.
               </p>
               <div className="font-mono text-[11px] tracking-[0.14em] text-ink-faint uppercase">
-                {info.name} · chain {DEFAULT_CHAIN_ID}
+                {info.name} · chain {chainId}
               </div>
             </div>
           </footer>

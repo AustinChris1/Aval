@@ -7,11 +7,8 @@ import { DocsNav } from "@/components/docs-nav";
 import { Reveal } from "@/components/motion";
 import { DocArticle } from "@/components/doc-article";
 
-export const dynamic = "force-static";
-
-export function generateStaticParams() {
-  return [{ slug: [] as string[] }, ...docsIndex.map((d) => ({ slug: [d.slug] }))];
-}
+// Dynamic so the nav's chain switcher (a cookie read in the layout) stays live here too.
+export const dynamic = "force-dynamic";
 
 // Docs are copied into web/content by scripts/export-abis.ts; Vercel builds with web/ as root, so files above it do not exist at build time.
 async function loadDoc(slug: string) {

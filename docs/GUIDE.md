@@ -4,10 +4,12 @@ A walkthrough for someone opening AVAL for the first time, what each page is,
 what every button does, and two ways to drive the whole thing: with no wallet
 at all, or end to end with your own.
 
-AVAL is live on both BOT Chain networks. This site's interactive playground
-runs on **testnet (chain 968)**, where the demo keys work and nothing is real
-money; the same contracts are deployed and verified on **mainnet (chain 677)**,
-where a full lifecycle has already settled.
+AVAL is live on both BOT Chain networks, and the switch in the header picks
+which one the whole site reads and writes. It opens on **testnet (chain 968)**,
+where the demo keys work and nothing is real money; flip it to **mainnet
+(chain 677)** to browse the same contracts with real BOT, where a full
+lifecycle has already settled. On mainnet the demo buttons disappear, since
+every action there is signed by your own wallet.
 
 ## The two ways to act
 

@@ -1,13 +1,12 @@
 import { formatEther } from "viem";
 import Link from "next/link";
 import { ArrowRight, CircleCheck } from "lucide-react";
-import { CHAINS, DEFAULT_CHAIN_ID, DEPLOYED_CHAIN_IDS, STATUS, addressUrl, chainInfo, contracts, short, txUrl, type ChainId } from "@/lib/chain";
+import { CHAINS, DEPLOYED_CHAIN_IDS, STATUS, addressUrl, chainInfo, contracts, short, txUrl, type ChainId } from "@/lib/chain";
+import { activeChainId } from "@/lib/active-chain";
 import { getLetter, getTimeline, totalLetters } from "@/lib/indexer";
 import { Addr, Clause, ClauseBody, Entry, SealDot, Sheet, Stamp } from "@/components/ui";
 import { CountUp, DrawRule, Reveal, SplitHeadline } from "@/components/motion";
 import { HeroSpecimen } from "@/components/hero-specimen";
-
-export const revalidate = 10;
 
 const TERMS = [
   { n: "01", title: "Locked, not handed over", body: "The credit holds the money. The agent only proposes." },
@@ -16,7 +15,7 @@ const TERMS = [
 ];
 
 export default async function Home() {
-  const chainId = DEFAULT_CHAIN_ID;
+  const chainId = await activeChainId();
   const info = chainInfo(chainId);
   const c = contracts(chainId);
 

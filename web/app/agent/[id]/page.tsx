@@ -1,17 +1,16 @@
 import Link from "next/link";
 import { ArrowLeft, BadgeCheck, Bot, KeyRound, Receipt } from "lucide-react";
-import { DEFAULT_CHAIN_ID, addressUrl, contracts, short } from "@/lib/chain";
+import { addressUrl, contracts, short } from "@/lib/chain";
+import { activeChainId } from "@/lib/active-chain";
 import { getAgent } from "@/lib/indexer";
 import { Addr, Badge, KeyValue, Panel, SectionHeading } from "@/components/ui";
 import { CountUp, DrawRule, Reveal } from "@/components/motion";
-
-export const revalidate = 15;
 
 const ZERO = "0x0000000000000000000000000000000000000000";
 
 export default async function AgentPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const chainId = DEFAULT_CHAIN_ID;
+  const chainId = await activeChainId();
   const c = contracts(chainId);
   const agent = await getAgent(chainId, BigInt(id));
   const bound = Boolean(agent.wallet && agent.wallet !== ZERO);

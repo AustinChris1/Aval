@@ -1,13 +1,12 @@
 import { CircleSlash, KeyRound, Radio, ShieldCheck, TriangleAlert } from "lucide-react";
-import { CHAINS, DEFAULT_CHAIN_ID, addressUrl, chainInfo, contracts } from "@/lib/chain";
+import { CHAINS, addressUrl, chainInfo, contracts } from "@/lib/chain";
+import { activeChainId } from "@/lib/active-chain";
 import { getErc8004Status } from "@/lib/indexer";
 import { Addr, Badge, KeyValue, Panel, SectionHeading } from "@/components/ui";
 import { CountUp, DrawRule, Reveal, SplitHeadline } from "@/components/motion";
 
-export const revalidate = 30;
-
 export default async function Erc8004Page() {
-  const chainId = DEFAULT_CHAIN_ID;
+  const chainId = await activeChainId();
   const info = chainInfo(chainId);
   const c = contracts(chainId);
 

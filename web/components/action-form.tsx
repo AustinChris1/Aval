@@ -257,6 +257,12 @@ export function ActionForm({
                   instrument without holding tBOT. It is refused on mainnet.
                 </p>
               )}
+              {!demoAvailable && chainId !== 968 && (
+                <p className="mt-3 text-[11.5px] leading-relaxed text-ink-faint">
+                  Demo signing is testnet-only. On mainnet every action is sent from your own
+                  wallet, with real BOT.
+                </p>
+              )}
 
               <AnimatePresence>
                 {outcome && (

@@ -1,13 +1,12 @@
-import { DEFAULT_CHAIN_ID, chainInfo, contracts } from "@/lib/chain";
+import { chainInfo, contracts } from "@/lib/chain";
+import { activeChainId } from "@/lib/active-chain";
 import { IssueForm } from "@/components/issue-form";
 import { ActionForm } from "@/components/action-form";
 import { actionById } from "@/lib/actions";
 import { Clause, ClauseBody, MarginNote, Sheet } from "@/components/ui";
 import { DrawRule, Reveal, SplitHeadline } from "@/components/motion";
 import { Mark } from "@/components/mark";
-import { demoAvailable } from "@/lib/demo";
-
-export const revalidate = 30;
+import { DEMO_CHAIN_ID, demoAvailable } from "@/lib/demo";
 
 const STEPS = [
   {
@@ -33,10 +32,10 @@ const STEPS = [
 ];
 
 export default async function IssuePage() {
-  const chainId = DEFAULT_CHAIN_ID;
+  const chainId = await activeChainId();
   const info = chainInfo(chainId);
   const c = contracts(chainId);
-  const demo = demoAvailable();
+  const demo = demoAvailable() && chainId === DEMO_CHAIN_ID;
   const register = actionById("register")!;
 
   const agentCard = {

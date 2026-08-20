@@ -38,7 +38,7 @@ export function VerifyPanel(props: {
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch(`/api/presentation?letterId=${props.letterId}`);
+      const res = await fetch(`/api/presentation?letterId=${props.letterId}&chain=${props.chainId}`);
       const data = (await res.json()) as Result & { error?: string };
       if (data.error) throw new Error(data.error);
 

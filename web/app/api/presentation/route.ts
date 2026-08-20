@@ -1,14 +1,16 @@
 import { NextResponse } from "next/server";
 import { parseAbiItem, type Hex } from "viem";
-import { DEFAULT_CHAIN_ID, abis, contracts, publicClient } from "@/lib/chain";
+import { DEFAULT_CHAIN_ID, abis, contracts, hasDeployment, publicClient, type ChainId } from "@/lib/chain";
 import { getLetter } from "@/lib/indexer";
 
 // Hands over the raw document bytes, the stored hash and the examiner's answer; the browser does the hashing and comparison itself.
 export async function GET(request: Request) {
-  const letterId = new URL(request.url).searchParams.get("letterId");
+  const params = new URL(request.url).searchParams;
+  const letterId = params.get("letterId");
   if (!letterId) return NextResponse.json({ error: "letterId required" }, { status: 400 });
 
-  const chainId = DEFAULT_CHAIN_ID;
+  const requested = Number(params.get("chain"));
+  const chainId: ChainId = hasDeployment(requested) ? (requested as ChainId) : DEFAULT_CHAIN_ID;
   const client = publicClient(chainId);
   const c = contracts(chainId);
 

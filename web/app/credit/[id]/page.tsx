@@ -1,27 +1,26 @@
 import { formatEther, toFunctionSelector, encodeFunctionData, keccak256, stringToHex } from "viem";
 import Link from "next/link";
 import { ArrowLeft, Ban, Coins, Lock } from "lucide-react";
-import { DEFAULT_CHAIN_ID, STATUS, addressUrl, chainInfo, contracts, short, abis } from "@/lib/chain";
+import { STATUS, addressUrl, chainInfo, contracts, short, abis } from "@/lib/chain";
+import { activeChainId } from "@/lib/active-chain";
 import { getLetter, getTimeline } from "@/lib/indexer";
 import { actionById } from "@/lib/actions";
-import { demoAvailable } from "@/lib/demo";
+import { DEMO_CHAIN_ID, demoAvailable } from "@/lib/demo";
 import { Addr, Badge, KeyValue, Panel, SectionHeading } from "@/components/ui";
 import { CountUp, DrawRule, Reveal } from "@/components/motion";
 import { Timeline } from "@/components/timeline";
 import { ActionForm } from "@/components/action-form";
 import { VerifyPanel } from "./verify";
 
-export const revalidate = 10;
-
 const ZERO_HASH = `0x${"0".repeat(64)}`;
 
 export default async function LetterPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const chainId = DEFAULT_CHAIN_ID;
+  const chainId = await activeChainId();
   const letterId = BigInt(id);
   const info = chainInfo(chainId);
   const c = contracts(chainId);
-  const demo = demoAvailable();
+  const demo = demoAvailable() && chainId === DEMO_CHAIN_ID;
 
   const [state, timeline] = await Promise.all([
     getLetter(chainId, letterId),
