@@ -3,7 +3,7 @@ export const docsIndex = [
   {
     "slug": "overview",
     "title": "Overview",
-    "blurb": "What AVAL is, why a documentary credit, and how the pieces fit together."
+    "blurb": "What AVAL is, where it runs, and how to try it in one minute."
   },
   {
     "slug": "how-it-works",

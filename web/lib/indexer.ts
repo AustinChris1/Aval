@@ -343,7 +343,12 @@ export async function getTimeline(chainId: ChainId, letterId: bigint) {
  * the interesting case is a deployed proxy whose registry logic is a placeholder.
  */
 export async function getErc8004Status(chainId: ChainId) {
-  const client = publicClient(chainId);
+  // Ours is judged on mainnet when we are deployed there: the placeholder
+  // proxies and the working registries then sit on the same chain, which is
+  // the honest comparison.
+  const { hasDeployment } = await import("./chain");
+  const ourChainId: ChainId = hasDeployment(677) ? (677 as ChainId) : chainId;
+  const client = publicClient(ourChainId);
   const canonicalClient = publicClient(677);
   const CANONICAL = {
     IdentityRegistry: "0x8004A169FB4a3325136EB29fA0ceB6D2e539a432" as Address,
@@ -366,7 +371,7 @@ export async function getErc8004Status(chainId: ChainId) {
     }
   };
 
-  const ours = contracts(chainId);
+  const ours = contracts(ourChainId);
   const [canonicalId, canonicalRep, ourId] = await Promise.all([
     checkOn(canonicalClient, CANONICAL.IdentityRegistry),
     checkOn(canonicalClient, CANONICAL.ReputationRegistry),
@@ -381,7 +386,7 @@ export async function getErc8004Status(chainId: ChainId) {
     })
     .catch(() => 0n);
 
-  return { canonicalId, canonicalRep, ourId, registered: registered as bigint };
+  return { canonicalId, canonicalRep, ourId, ourChainId, registered: registered as bigint };
 }
 
 /** An agent's identity plus the reputation only settled letters could write. */

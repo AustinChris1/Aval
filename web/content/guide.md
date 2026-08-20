@@ -4,8 +4,10 @@ A walkthrough for someone opening AVAL for the first time, what each page is,
 what every button does, and two ways to drive the whole thing: with no wallet
 at all, or end to end with your own.
 
-Everything runs on **BOT Chain Testnet (chain 968)**. Nothing here is real
-money.
+AVAL is live on both BOT Chain networks. This site's interactive playground
+runs on **testnet (chain 968)**, where the demo keys work and nothing is real
+money; the same contracts are deployed and verified on **mainnet (chain 677)**,
+where a full lifecycle has already settled.
 
 ## The two ways to act
 
@@ -77,8 +79,8 @@ be. Issuing locks real (test) value, so it is wallet-only by design.
 
 A live check, run on every page load, of the canonical ERC-8004 registry
 addresses on BOT Chain mainnet, which are placeholder proxies where `name()`
-reverts, beside AVAL's working registries on testnet. The integration story,
-provable in the page itself.
+reverts, beside AVAL's working registries on the same mainnet. The integration
+story, provable in the page itself.
 
 ### Docs
 

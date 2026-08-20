@@ -1,5 +1,5 @@
 import { CircleSlash, KeyRound, Radio, ShieldCheck, TriangleAlert } from "lucide-react";
-import { DEFAULT_CHAIN_ID, addressUrl, chainInfo, contracts } from "@/lib/chain";
+import { CHAINS, DEFAULT_CHAIN_ID, addressUrl, chainInfo, contracts } from "@/lib/chain";
 import { getErc8004Status } from "@/lib/indexer";
 import { Addr, Badge, KeyValue, Panel, SectionHeading } from "@/components/ui";
 import { CountUp, DrawRule, Reveal, SplitHeadline } from "@/components/motion";
@@ -93,7 +93,7 @@ export default async function Erc8004Page() {
           <section className="py-14">
             <SectionHeading
               n="§ 02" eyebrow="working, today"
-              title={`What AVAL deployed on ${info.name}`}
+              title={`What AVAL deployed on ${status ? CHAINS[status.ourChainId].name : info.name}`}
             >
               Ports of the ERC-8004 reference implementation with the external ABI unchanged, so
               anything written against the canonical registries works against these.
@@ -103,8 +103,8 @@ export default async function Erc8004Page() {
               <Reveal>
                 <RegistryCard
                   title="AVAL IdentityRegistry"
-                  chainId={chainId}
-                  address={c.IdentityRegistry}
+                  chainId={status.ourChainId}
+                  address={contracts(status.ourChainId).IdentityRegistry}
                   deployed={status.ourId.deployed}
                   working={status.ourId.working}
                   note={status.ourId.note}

@@ -27,6 +27,7 @@ async function loadDoc(slug: string) {
     .replace(/\]\(docs\/RESEARCH\.md\)/g, "](/docs/research)")
     .replace(/\]\(docs\/HOW-IT-WORKS\.md\)/g, "](/docs/how-it-works)")
     .replace(/\]\(docs\/GUIDE\.md\)/g, "](/docs/guide)")
+    .replace(/\]\(docs\/OVERVIEW\.md\)/g, "](/docs/overview)")
     .replace(/\]\(\.\.\/README\.md\)/g, "](/docs/overview)");
   return marked.parse(rewritten, { async: false, gfm: true }) as string;
 }

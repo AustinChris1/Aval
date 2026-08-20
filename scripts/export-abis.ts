@@ -52,8 +52,8 @@ const DOCS: { slug: string; title: string; blurb: string; source: string }[] = [
   {
     slug: "overview",
     title: "Overview",
-    blurb: "What AVAL is, why a documentary credit, and how the pieces fit together.",
-    source: "README.md",
+    blurb: "What AVAL is, where it runs, and how to try it in one minute.",
+    source: "docs/OVERVIEW.md",
   },
   {
     slug: "how-it-works",
