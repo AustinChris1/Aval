@@ -29,6 +29,7 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
 
   const { letter, mandate, available, holder, docURI } = state;
   const status = STATUS[letter.status] ?? "?";
+  const expired = BigInt(Math.floor(Date.now() / 1000)) > letter.expiry;
   const refusals = timeline.rows.filter((r) => r.refused).length;
 
   const rows = timeline.rows.map((r) => ({
@@ -100,25 +101,28 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
   const noteFor = (actionId: string): string | undefined => {
     const st = letter.status;
     const needsOpen = ["payToBlocked", "payTo", "execute", "presentDocuments"];
+    if (needsOpen.includes(actionId) && st === 1 && expired) {
+      return `This credit expired on ${new Date(Number(letter.expiry) * 1000).toUTCString()}, so every agent action will be refused with LetterExpired. Pick a newer Open credit from the register; the applicant can reclaim the unspent balance below.`;
+    }
     if (needsOpen.includes(actionId) && st !== 1) {
-      return `This letter is ${status}, and the agent may only act while a letter is Open, so this will be refused with BadStatus rather than by the mandate.`;
+      return `This credit is ${status}, and the agent may only act while a credit is Open, so this will be refused with BadStatus rather than by the mandate.`;
     }
     if (actionId === "draw" && st !== 2) {
-      return `Drawing requires documents to have been presented; this letter is ${status}.`;
+      return `Drawing requires documents to have been presented; this credit is ${status}.`;
     }
     if (actionId === "dispute" && st !== 2) {
-      return `A dispute can only be raised against a presentation; this letter is ${status}.`;
+      return `A dispute can only be raised against a presentation; this credit is ${status}.`;
     }
     if (actionId === "resolveDispute" && st !== 3) {
-      return `There is no open dispute on this letter; it is ${status}.`;
+      return `There is no open dispute on this credit; it is ${status}.`;
     }
     if (actionId === "cancel" && (st !== 1 || letter.spent > 0n)) {
       return letter.spent > 0n
-        ? "Capital has already been spent, so this letter can no longer be cancelled."
-        : `Only an Open letter can be cancelled; this one is ${status}.`;
+        ? "Capital has already been spent, so this credit can no longer be cancelled."
+        : `Only an Open credit can be cancelled; this one is ${status}.`;
     }
-    if (actionId === "refundExpired" && BigInt(Math.floor(Date.now() / 1000)) <= letter.expiry) {
-      return "This letter has not expired yet, so nothing can be reclaimed.";
+    if (actionId === "refundExpired" && !expired) {
+      return "This credit has not expired yet, so nothing can be reclaimed.";
     }
     if (actionId === "validationRequest" && letter.docHash === ZERO_HASH) {
       return "No documents have been presented yet, so there is no hash to examine.";
@@ -163,7 +167,9 @@ export default async function LetterPage({ params }: { params: Promise<{ id: str
           <h1 className="font-display text-[40px] leading-none tracking-[-0.015em] text-ink sm:text-[54px]">
             Credit №{String(id).padStart(4, "0")}
           </h1>
-          <Badge tone={status === "Settled" ? "ok" : "warn"}>{status}</Badge>
+          <Badge tone={status === "Settled" ? "ok" : "warn"}>
+            {letter.status === 1 && expired ? "Expired" : status}
+          </Badge>
         </Reveal>
 
         <Reveal delay={0.12} className="mt-6 max-w-[68ch]">

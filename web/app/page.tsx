@@ -40,8 +40,12 @@ export default async function Home() {
     )
   ).filter((l): l is NonNullable<typeof l> => l !== null);
 
+  const now = BigInt(Math.floor(Date.now() / 1000));
   const settled = letters.filter((l) => l.letter.status === 4).length;
-  const open = letters.find((l) => l.letter.status === 1);
+  // An Open credit past its expiry only refuses; never feature it over a live one.
+  const open =
+    letters.find((l) => l.letter.status === 1 && l.letter.expiry > now) ??
+    letters.find((l) => l.letter.status === 1);
   const moved = letters.reduce((acc, l) => acc + Number(formatEther(l.letter.spent)), 0);
   const feature = open ?? letters[0];
 
@@ -212,7 +216,8 @@ export default async function Home() {
                 </thead>
                 <tbody>
                   {letters.map((row) => {
-                    const status = STATUS[row.letter.status] ?? "?";
+                    const lapsed = row.letter.status === 1 && row.letter.expiry <= now;
+                    const status = lapsed ? "Expired" : (STATUS[row.letter.status] ?? "?");
                     return (
                       <tr
                         key={String(row.id)}

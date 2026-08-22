@@ -15,7 +15,7 @@ const agentId = BigInt((JSON.parse(readFileSync(agentStatePath, "utf8")) as { ag
 const FACE = parseEther(process.env.SEED_FACE ?? "0.08");
 const FEE = parseEther(process.env.SEED_FEE ?? "0.01");
 const PER_CALL = parseEther(process.env.SEED_PER_CALL ?? "0.02");
-const HOURS = 72n;
+const HOURS = BigInt(process.env.SEED_HOURS ?? "72");
 
 banner(`Seeding an open credit on chain ${chainId}`);
 

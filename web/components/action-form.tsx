@@ -247,7 +247,7 @@ export function ActionForm({
                   className="inline-flex items-center gap-2 rounded-lg border border-rule px-4 py-2 text-[13px] text-ink transition-colors hover:border-rule-bright hover:bg-stock-750 disabled:opacity-45"
                 >
                   {busy === "wallet" ? <Loader2 className="size-3.5 animate-spin" /> : null}
-                  Send from my wallet
+                  {busy === "wallet" ? "Confirm in your wallet…" : "Send from my wallet"}
                 </button>
               </div>
 
